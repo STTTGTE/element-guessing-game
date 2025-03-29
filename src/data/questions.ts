@@ -1,4 +1,3 @@
-
 import { Question } from "@/types/game";
 
 export const questions: Question[] = [
@@ -73,5 +72,113 @@ export const questions: Question[] = [
     text: "I am a heavy, bluish-gray metal historically used in plumbing. What am I?",
     correctElement: "Pb",
     hint: "My symbol comes from the Latin word 'plumbum'."
+  },
+  {
+    id: 13,
+    text: "I am a transition metal used in stainless steel. What am I?",
+    correctElement: "Cr",
+    hint: "My name comes from the Greek word for 'color'"
+  },
+  {
+    id: 14,
+    text: "I am a shiny, costly precious metal used in jewelry and industrial applications. What am I?",
+    correctElement: "Pt",
+    hint: "I have a similar appearance to silver"
+  },
+  {
+    id: 15,
+    text: "I am a metal that is liquid at room temperature, along with bromine. What am I?",
+    correctElement: "Hg",
+    hint: "I'm named after a Roman god"
+  },
+  {
+    id: 16,
+    text: "I am a rare earth element used in powerful magnets. What am I?",
+    correctElement: "Nd",
+    hint: "My name means 'new twin'"
+  },
+  {
+    id: 17,
+    text: "I am the most electronegative element. What am I?",
+    correctElement: "F",
+    hint: "I'm named after the Latin word for 'flow'"
+  },
+  {
+    id: 18,
+    text: "I am a metal that glows green in flames. What am I?",
+    correctElement: "Cu",
+    hint: "You might find me in electrical wiring"
+  },
+  {
+    id: 19,
+    text: "I am a noble gas used in advertising signs with a reddish-orange glow. What am I?",
+    correctElement: "Ne",
+    hint: "My name means 'new'"
+  },
+  {
+    id: 20,
+    text: "I am the most abundant metal in the Earth's crust. What am I?",
+    correctElement: "Al",
+    hint: "I'm used in making cans and foil"
+  },
+  {
+    id: 21,
+    text: "I am a radioactive element used in nuclear power plants. What am I?",
+    correctElement: "U",
+    hint: "I'm named after a planet"
+  },
+  {
+    id: 22,
+    text: "I am a metal that's known for its resistance to corrosion. What am I?",
+    correctElement: "Ti",
+    hint: "I'm named after the Titans in Greek mythology"
+  },
+  {
+    id: 23,
+    text: "I am a halogen with a distinctive violet vapor. What am I?",
+    correctElement: "I",
+    hint: "My name comes from the Greek word for 'violet'"
+  },
+  {
+    id: 24,
+    text: "I am a transition metal used to strengthen steel alloys. What am I?",
+    correctElement: "Mn",
+    hint: "My name comes from the Latin word 'magnes', meaning magnet"
+  },
+  {
+    id: 25,
+    text: "I am the second-lightest noble gas. What am I?",
+    correctElement: "Ne",
+    hint: "I'm used in signs that glow reddish-orange"
+  },
+  {
+    id: 26,
+    text: "I am a metalloid used in semiconductors and solar cells. What am I?",
+    correctElement: "Si",
+    hint: "I'm the second most abundant element in the Earth's crust"
+  },
+  {
+    id: 27,
+    text: "I am a transition metal used in catalytic converters. What am I?",
+    correctElement: "Pd",
+    hint: "I'm named after the asteroid Pallas"
+  },
+  {
+    id: 28,
+    text: "I am a silvery-white metal that ignites spontaneously in air. What am I?",
+    correctElement: "Cs",
+    hint: "I'm the most electropositive element"
+  },
+  {
+    id: 29,
+    text: "I am a radioactive element used in smoke detectors. What am I?",
+    correctElement: "Am",
+    hint: "I'm named after a continent"
+  },
+  {
+    id: 30,
+    text: "I am the rarest naturally occurring element in the Earth's crust. What am I?",
+    correctElement: "Rn",
+    hint: "I'm a noble gas that can cause health issues in basements"
   }
 ];
