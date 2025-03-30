@@ -6,10 +6,52 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type Database = {
+export interface Database {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          id: string
+          username: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          username: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          username?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      game_history: {
+        Row: {
+          id: string
+          user_id: string
+          score: number
+          total_questions: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          score: number
+          total_questions: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          score?: number
+          total_questions?: number
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -26,7 +68,7 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type PublicSchema = Database["public"]
 
 export type Tables<
   PublicTableNameOrOptions extends

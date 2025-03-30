@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { ElementData } from "@/types/game";
 import { elementData } from "@/data/elements";
 import { cn } from "@/lib/utils";
@@ -10,6 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      div: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+      button: React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
+    }
+  }
+}
 
 interface PeriodicTableProps {
   onElementClick: (element: ElementData) => void;
@@ -113,7 +121,7 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
                             "w-14 h-14 rounded-md flex flex-col items-center justify-center transition-all",
                             getElementColor(element.category),
                             isSelected && "ring-2 ring-blue-500 scale-105",
-                            isCorrect && "bg-green-200 hover:bg-green-300"
+                            isSelected && isCorrect && "bg-green-200 hover:bg-green-300"
                           )}
                         >
                           <div className="atomic-number text-[9px] text-gray-500 absolute top-1 left-1.5">{element.atomicNumber}</div>
@@ -131,7 +139,7 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
                           "w-14 h-14 rounded-md flex flex-col items-center justify-center transition-all",
                           getElementColor(element.category),
                           isSelected && "ring-2 ring-blue-500 scale-105",
-                          isCorrect && "bg-green-200 hover:bg-green-300"
+                          isSelected && isCorrect && "bg-green-200 hover:bg-green-300"
                         )}
                       >
                         <div className="atomic-number text-[9px] text-gray-500 absolute top-1 left-1.5">{element.atomicNumber}</div>
@@ -164,7 +172,7 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
                             "w-14 h-14 rounded-md flex flex-col items-center justify-center transition-all",
                             getElementColor(element.category),
                             isSelected && "ring-2 ring-blue-500 scale-105",
-                            isCorrect && "bg-green-200 hover:bg-green-300"
+                            isSelected && isCorrect && "bg-green-200 hover:bg-green-300"
                           )}
                         >
                           <div className="atomic-number text-[9px] text-gray-500 absolute top-1 left-1.5">{element.atomicNumber}</div>
@@ -196,7 +204,7 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
                             "w-14 h-14 rounded-md flex flex-col items-center justify-center transition-all",
                             getElementColor(element.category),
                             isSelected && "ring-2 ring-blue-500 scale-105",
-                            isCorrect && "bg-green-200 hover:bg-green-300"
+                            isSelected && isCorrect && "bg-green-200 hover:bg-green-300"
                           )}
                         >
                           <div className="atomic-number text-[9px] text-gray-500 absolute top-1 left-1.5">{element.atomicNumber}</div>
@@ -226,7 +234,7 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
                     "element w-full h-14 rounded-md flex flex-col items-center justify-center transition-all",
                     getElementColor(element.category),
                     isSelected && "ring-2 ring-blue-500 scale-105",
-                    isCorrect && "bg-green-200 hover:bg-green-300"
+                    isSelected && isCorrect && "bg-green-200 hover:bg-green-300"
                   )}
                 >
                   <div className="atomic-number text-[9px] text-gray-500 absolute top-1 left-1.5">{element.atomicNumber}</div>
