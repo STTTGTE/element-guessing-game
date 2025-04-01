@@ -6,6 +6,7 @@ import { supabase as supabaseClient } from '@/integrations/supabase/client'
 
 export const supabase = supabaseClient
 
+// Define types for database tables
 export type GameHistory = {
   id: string
   user_id: string

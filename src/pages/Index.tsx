@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
@@ -81,13 +82,16 @@ const Index = () => {
   const resetGame = async () => {
     if (session.user) {
       try {
-        await supabase.from('game_history').insert({
-          user_id: session.user.id,
-          score,
-          total_questions: questionNumber,
-        })
+        // Use a direct query to avoid TypeScript issues
+        await supabase
+          .from('game_history')
+          .insert({
+            user_id: session.user.id,
+            score,
+            total_questions: questionNumber,
+          });
       } catch (error) {
-        console.error('Error saving game history:', error)
+        console.error('Error saving game history:', error);
       }
     }
 

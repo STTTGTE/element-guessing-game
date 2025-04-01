@@ -28,7 +28,7 @@ export function Achievements() {
       case 'calendar':
         return <Calendar className="h-5 w-5" />
       case 'flask':
-        return <Beaker className="h-5 w-5" /> // Changed Flask to Beaker
+        return <Beaker className="h-5 w-5" />
       default:
         return <Trophy className="h-5 w-5" />
     }

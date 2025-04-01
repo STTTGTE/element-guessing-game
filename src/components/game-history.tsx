@@ -21,7 +21,7 @@ export function GameHistory() {
     try {
       if (!session.user?.id) return
       
-      // Use a direct query instead of typed builder to avoid type issues
+      // Use a direct query with explicit type casting to avoid TypeScript issues
       const { data, error } = await supabase
         .from('game_history')
         .select('*')
