@@ -2,7 +2,7 @@
 import { useAchievements } from "@/hooks/use-achievements"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Trophy, Award, Star, Calendar, Flask, Lock } from "lucide-react"
+import { Trophy, Award, Star, Calendar, Beaker, Lock } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 
 export function Achievements() {
@@ -28,7 +28,7 @@ export function Achievements() {
       case 'calendar':
         return <Calendar className="h-5 w-5" />
       case 'flask':
-        return <Flask className="h-5 w-5" />
+        return <Beaker className="h-5 w-5" /> // Changed Flask to Beaker
       default:
         return <Trophy className="h-5 w-5" />
     }
