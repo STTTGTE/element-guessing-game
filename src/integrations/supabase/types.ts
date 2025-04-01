@@ -6,51 +6,88 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
-      profiles: {
+      achievements: {
         Row: {
-          id: string
-          username: string
+          condition: string
           created_at: string
-          updated_at: string
+          description: string
+          icon: string | null
+          id: string
+          name: string
         }
         Insert: {
-          id: string
-          username: string
+          condition: string
           created_at?: string
-          updated_at?: string
+          description: string
+          icon?: string | null
+          id?: string
+          name: string
         }
         Update: {
-          id?: string
-          username?: string
+          condition?: string
           created_at?: string
-          updated_at?: string
+          description?: string
+          icon?: string | null
+          id?: string
+          name?: string
         }
+        Relationships: []
       }
-      game_history: {
+      user_achievements: {
         Row: {
+          achievement_id: string
+          earned_at: string
           id: string
           user_id: string
-          score: number
-          total_questions: number
-          created_at: string
         }
         Insert: {
+          achievement_id: string
+          earned_at?: string
           id?: string
           user_id: string
-          score: number
-          total_questions: number
-          created_at?: string
         }
         Update: {
+          achievement_id?: string
+          earned_at?: string
           id?: string
           user_id?: string
-          score?: number
-          total_questions?: number
-          created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_streaks: {
+        Row: {
+          created_at: string
+          current_streak: number
+          last_played: string | null
+          max_streak: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number
+          last_played?: string | null
+          max_streak?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number
+          last_played?: string | null
+          max_streak?: number
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -68,7 +105,7 @@ export interface Database {
   }
 }
 
-type PublicSchema = Database["public"]
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends

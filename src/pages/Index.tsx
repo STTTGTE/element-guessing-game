@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
@@ -12,6 +13,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { ElementData, Question } from "@/types/game";
 import { elementData } from "@/data/elements";
 import { questions } from "@/data/questions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; 
+import { Achievements } from "@/components/achievements";
+import { StreakDisplay } from "@/components/streak-display";
+import { useAchievements } from "@/hooks/use-achievements";
+import { useStreaks } from "@/hooks/use-streaks";
 
 const Index = () => {
   const { session } = useAuth();
@@ -20,6 +26,8 @@ const Index = () => {
   const [questionNumber, setQuestionNumber] = useState(0);
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
   const { toast } = useToast();
+  const { checkAndGrantAchievements } = useAchievements();
+  const { updateStreak } = useStreaks();
 
   // Initialize with a random question
   useEffect(() => {
@@ -43,6 +51,13 @@ const Index = () => {
       
       setScore(score + 1);
       nextQuestion();
+      
+      // Update user streak if logged in
+      if (session.user) {
+        const currentStreak = await updateStreak();
+        // Check for achievement unlocks
+        checkAndGrantAchievements(score + 1, currentStreak || 1);
+      }
     } else if (currentQuestion) {
       // Wrong answer
       toast({
@@ -144,7 +159,22 @@ const Index = () => {
         </div>
 
         <div className="w-full lg:w-80">
-          <GameHistory />
+          <Tabs defaultValue="history" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="history">History</TabsTrigger>
+              <TabsTrigger value="streak">Streak</TabsTrigger>
+              <TabsTrigger value="achievements">Trophies</TabsTrigger>
+            </TabsList>
+            <TabsContent value="history" className="mt-2">
+              <GameHistory />
+            </TabsContent>
+            <TabsContent value="streak" className="mt-2">
+              <StreakDisplay />
+            </TabsContent>
+            <TabsContent value="achievements" className="mt-2">
+              <Achievements />
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { AuthContext, AuthState } from '@/lib/auth'
@@ -80,6 +81,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const signInWithGoogle = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        }
+      })
+      if (error) throw error
+    } catch (error) {
+      toast({
+        title: "Error signing in with Google",
+        description: error.message,
+        variant: "destructive",
+      })
+      throw error
+    }
+  }
+
   const signUp = async (email: string, password: string, username: string) => {
     try {
       const { data: { user }, error } = await supabase.auth.signUp({
@@ -119,7 +139,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ session, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ session, signIn, signInWithGoogle, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   )
