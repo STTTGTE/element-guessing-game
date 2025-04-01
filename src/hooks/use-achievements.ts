@@ -105,6 +105,6 @@ export function useAchievements() {
     achievements,
     userAchievements,
     loading,
-    checkAndGrantAchievements
+    checkAndGrantAchievements: session.user ? checkAndGrantAchievements : () => Promise.resolve()
   }
 }

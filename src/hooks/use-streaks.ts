@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useAuth } from './use-auth'
 import { supabase, UserStreak } from '@/lib/supabase'
@@ -7,18 +6,18 @@ import { useToast } from '@/components/ui/use-toast'
 export function useStreaks() {
   const { session } = useAuth()
   const { toast } = useToast()
-  const [streak, setStreak] = useState<UserStreak | null>(null)
+  const [userStreak, setUserStreak] = useState<UserStreak | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (session.user) {
-      fetchStreak()
+      fetchUserStreak()
     } else {
       setLoading(false)
     }
   }, [session.user])
 
-  const fetchStreak = async () => {
+  const fetchUserStreak = async () => {
     if (!session.user) return
 
     try {
@@ -29,166 +28,95 @@ export function useStreaks() {
         .single()
 
       if (error) {
-        if (error.code === 'PGRST116') { // Record not found
-          // Initialize streak
-          await initializeStreak()
-        } else {
-          throw error
+        // If no streak exists, create a new one
+        if (error.message.includes('No rows found')) {
+          await createNewStreak(session.user.id)
+          return // Exit to prevent further errors, the next fetch will get the new streak
         }
-      } else {
-        setStreak(data)
-        // Check if streak needs to be reset
-        if (data) {
-          const lastPlayed = new Date(data.last_played)
-          const today = new Date()
-          const yesterday = new Date(today)
-          yesterday.setDate(yesterday.getDate() - 1)
-          
-          // If the user hasn't played in more than a day, reset streak
-          if (lastPlayed < yesterday) {
-            if (isMoreThanOneDay(lastPlayed, today)) {
-              await resetStreak()
-            }
-          }
-        }
+        throw error
       }
+
+      setUserStreak(data)
     } catch (error) {
-      console.error('Error fetching streak:', error)
+      console.error('Error fetching user streak:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const initializeStreak = async () => {
-    if (!session.user) return
-
+  const createNewStreak = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('user_streaks')
-        .insert([
-          { user_id: session.user.id, current_streak: 1, max_streak: 1 }
-        ])
-        .select()
-        .single()
+        .insert([{ user_id: userId, current_streak: 0, max_streak: 0, last_played: null }])
 
       if (error) throw error
-      setStreak(data)
+
+      // After creating, immediately fetch the new streak
+      fetchUserStreak()
     } catch (error) {
-      console.error('Error initializing streak:', error)
+      console.error('Error creating new streak:', error)
     }
   }
 
-  const updateStreak = async () => {
-    if (!session.user || !streak) return
+  const updateStreak = async (): Promise<number | undefined> => {
+    if (!session.user) return
+
+    const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
 
     try {
-      const lastPlayed = new Date(streak.last_played)
-      const today = new Date()
-      
-      // Format dates to compare just the date part (ignoring time)
-      const lastPlayedDate = lastPlayed.toISOString().split('T')[0]
-      const todayDate = today.toISOString().split('T')[0]
-      
-      // Only increment streak if the user hasn't played today
-      if (lastPlayedDate !== todayDate) {
-        const yesterday = new Date(today)
-        yesterday.setDate(yesterday.getDate() - 1)
-        const yesterdayDate = yesterday.toISOString().split('T')[0]
-        
-        // If the user played yesterday, increment streak
-        if (lastPlayedDate === yesterdayDate) {
-          const newCurrentStreak = streak.current_streak + 1
-          const newMaxStreak = Math.max(newCurrentStreak, streak.max_streak)
-          
-          const { data, error } = await supabase
-            .from('user_streaks')
-            .update({ 
-              current_streak: newCurrentStreak, 
-              max_streak: newMaxStreak,
-              last_played: today.toISOString()
-            })
-            .eq('user_id', session.user.id)
-            .select()
-            .single()
-            
-          if (error) throw error
-          setStreak(data)
-          
-          // Show streak notification if it's a new day
-          toast({
-            title: "Streak Updated!",
-            description: `You're on a ${newCurrentStreak} day streak! Keep it up!`,
-            className: "bg-green-500 text-white"
-          })
-          
-          return newCurrentStreak
-        } else {
-          // If the user didn't play yesterday but played before, reset streak to 1
-          if (isMoreThanOneDay(lastPlayed, today)) {
-            await resetStreak()
-            return 1
-          }
-        }
+      // If no streak exists, create a new one
+      if (!userStreak) {
+        await createNewStreak(session.user.id)
+        return 1 // Indicate the start of a new streak
       }
-      
-      // Update last_played to today
+
+      const lastPlayed = userStreak.last_played ? userStreak.last_played.split('T')[0] : null
+
+      if (lastPlayed === today) {
+        // Already played today, do nothing
+        return userStreak.current_streak
+      }
+
+      const yesterday = new Date()
+      yesterday.setDate(yesterday.getDate() - 1)
+      const yesterdayStr = yesterday.toISOString().split('T')[0]
+
+      let newStreak = 1
+      if (lastPlayed === yesterdayStr) {
+        // Continue streak
+        newStreak = (userStreak.current_streak || 0) + 1
+      }
+
       const { data, error } = await supabase
         .from('user_streaks')
-        .update({ last_played: today.toISOString() })
-        .eq('user_id', session.user.id)
-        .select()
-        .single()
-        
-      if (error) throw error
-      setStreak(data)
-      return data.current_streak
-    } catch (error) {
-      console.error('Error updating streak:', error)
-      return streak.current_streak
-    }
-  }
-
-  const resetStreak = async () => {
-    if (!session.user) return
-
-    try {
-      const { data, error } = await supabase
-        .from('user_streaks')
-        .update({ 
-          current_streak: 1, 
-          last_played: new Date().toISOString() 
+        .update({
+          current_streak: newStreak,
+          max_streak: Math.max(newStreak, userStreak.max_streak || 0),
+          last_played: new Date().toISOString(),
         })
         .eq('user_id', session.user.id)
         .select()
         .single()
-        
+
       if (error) throw error
-      setStreak(data)
-      
-      toast({
-        title: "Streak Reset",
-        description: "Your streak has been reset. Play daily to build it back up!",
-        variant: "destructive"
-      })
-      
-      return 1
+
+      setUserStreak(data)
+      return data.current_streak
     } catch (error) {
-      console.error('Error resetting streak:', error)
-      return 1
+      console.error('Error updating streak:', error)
+      toast({
+        title: "Streak Error",
+        description: "Failed to update streak. Please try again.",
+        variant: "destructive",
+      })
+      return undefined
     }
   }
 
-  // Helper function to check if more than a day has passed
-  const isMoreThanOneDay = (date1: Date, date2: Date) => {
-    const diffTime = Math.abs(date2.getTime() - date1.getTime())
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays > 1
-  }
-
   return {
-    streak,
+    userStreak,
     loading,
-    updateStreak,
-    resetStreak
+    updateStreak: session.user ? updateStreak : () => Promise.resolve(0)
   }
 }

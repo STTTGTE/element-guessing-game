@@ -18,6 +18,8 @@ import { Achievements } from "@/components/achievements";
 import { StreakDisplay } from "@/components/streak-display";
 import { useAchievements } from "@/hooks/use-achievements";
 import { useStreaks } from "@/hooks/use-streaks";
+import { Button } from "@/components/ui/button";
+import { LogIn } from "lucide-react";
 
 const Index = () => {
   const { session } = useAuth();
@@ -25,6 +27,7 @@ const Index = () => {
   const [score, setScore] = useState(0);
   const [questionNumber, setQuestionNumber] = useState(0);
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
+  const [guestMode, setGuestMode] = useState(false);
   const { toast } = useToast();
   const { checkAndGrantAchievements } = useAchievements();
   const { updateStreak } = useStreaks();
@@ -50,7 +53,7 @@ const Index = () => {
       setScore(score + 1);
       nextQuestion();
       
-      if (session.user) {
+      if (session.user && !guestMode) {
         const currentStreak = await updateStreak();
         checkAndGrantAchievements(score + 1, currentStreak || 1);
       }
@@ -80,16 +83,13 @@ const Index = () => {
   };
 
   const resetGame = async () => {
-    if (session.user) {
+    if (session.user && !guestMode) {
       try {
-        // Use a direct query to avoid TypeScript issues
-        await supabase
-          .from('game_history')
-          .insert({
-            user_id: session.user.id,
-            score,
-            total_questions: questionNumber,
-          });
+        await supabase.rpc('insert_game_history', {
+          p_user_id: session.user.id,
+          p_score: score,
+          p_total_questions: questionNumber
+        });
       } catch (error) {
         console.error('Error saving game history:', error);
       }
@@ -100,6 +100,14 @@ const Index = () => {
     nextQuestion();
   };
 
+  const startGuestMode = () => {
+    setGuestMode(true);
+  };
+
+  const exitGuestMode = () => {
+    setGuestMode(false);
+  };
+
   if (session.loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -108,10 +116,16 @@ const Index = () => {
     );
   }
 
-  if (!session.user) {
+  if (!session.user && !guestMode) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-6">
         <AuthForm />
+        <div className="text-center">
+          <p className="text-gray-500 mb-2">or</p>
+          <Button onClick={startGuestMode} variant="outline">
+            Play as Guest
+          </Button>
+        </div>
       </div>
     );
   }
@@ -123,7 +137,14 @@ const Index = () => {
           <h1 className="text-2xl md:text-3xl font-bold">Element Guessing Game</h1>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <UserNav />
+            {guestMode ? (
+              <Button onClick={exitGuestMode} size="sm" className="flex items-center gap-2">
+                <LogIn className="h-4 w-4" />
+                Sign In
+              </Button>
+            ) : (
+              <UserNav />
+            )}
           </div>
         </div>
       </header>
@@ -152,24 +173,38 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="w-full lg:w-80">
-          <Tabs defaultValue="history" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="history">History</TabsTrigger>
-              <TabsTrigger value="streak">Streak</TabsTrigger>
-              <TabsTrigger value="achievements">Trophies</TabsTrigger>
-            </TabsList>
-            <TabsContent value="history" className="mt-2">
-              <GameHistory />
-            </TabsContent>
-            <TabsContent value="streak" className="mt-2">
-              <StreakDisplay />
-            </TabsContent>
-            <TabsContent value="achievements" className="mt-2">
-              <Achievements />
-            </TabsContent>
-          </Tabs>
-        </div>
+        {!guestMode ? (
+          <div className="w-full lg:w-80">
+            <Tabs defaultValue="history" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="history">History</TabsTrigger>
+                <TabsTrigger value="streak">Streak</TabsTrigger>
+                <TabsTrigger value="achievements">Trophies</TabsTrigger>
+              </TabsList>
+              <TabsContent value="history" className="mt-2">
+                <GameHistory />
+              </TabsContent>
+              <TabsContent value="streak" className="mt-2">
+                <StreakDisplay />
+              </TabsContent>
+              <TabsContent value="achievements" className="mt-2">
+                <Achievements />
+              </TabsContent>
+            </Tabs>
+          </div>
+        ) : (
+          <div className="w-full lg:w-80">
+            <div className="bg-card text-card-foreground rounded-lg shadow-md p-4">
+              <h3 className="text-xl font-bold mb-4">Guest Mode</h3>
+              <p className="text-muted-foreground mb-4">
+                You're playing as a guest. Sign in to track your progress, earn achievements, and keep your streak going!
+              </p>
+              <Button onClick={exitGuestMode} className="w-full">
+                Sign In Now
+              </Button>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
