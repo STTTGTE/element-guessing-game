@@ -25,7 +25,7 @@ export type UserStreak = {
   user_id: string
   current_streak: number
   max_streak: number
-  last_played: string
+  last_played: string | null
   created_at: string
 }
 

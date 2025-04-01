@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback } from "react"
 import { useAuth } from "@/hooks/use-auth"
 import { type GameHistory as GameHistoryType, supabase } from "@/lib/supabase"
@@ -18,16 +19,19 @@ export function GameHistory() {
 
   const fetchHistory = useCallback(async () => {
     try {
+      if (!session.user?.id) return
+      
+      // Use a direct query instead of typed builder to avoid type issues
       const { data, error } = await supabase
         .from('game_history')
         .select('*')
-        .eq('user_id', session.user?.id)
+        .eq('user_id', session.user.id)
         .order('created_at', { ascending: false })
         .limit(10)
 
       if (error) throw error
 
-      setHistory(data)
+      setHistory(data as GameHistoryType[])
     } catch (error) {
       console.error('Error fetching game history:', error)
     } finally {

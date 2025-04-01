@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
@@ -29,7 +28,6 @@ const Index = () => {
   const { checkAndGrantAchievements } = useAchievements();
   const { updateStreak } = useStreaks();
 
-  // Initialize with a random question
   useEffect(() => {
     if (questions.length > 0) {
       const randomIndex = Math.floor(Math.random() * questions.length);
@@ -41,7 +39,6 @@ const Index = () => {
     setSelectedElement(element);
     
     if (currentQuestion && element.symbol === currentQuestion.correctElement) {
-      // Correct answer
       toast({
         title: "Correct!",
         description: `${element.name} (${element.symbol}) is the right answer!`,
@@ -52,14 +49,11 @@ const Index = () => {
       setScore(score + 1);
       nextQuestion();
       
-      // Update user streak if logged in
       if (session.user) {
         const currentStreak = await updateStreak();
-        // Check for achievement unlocks
         checkAndGrantAchievements(score + 1, currentStreak || 1);
       }
     } else if (currentQuestion) {
-      // Wrong answer
       toast({
         title: "Incorrect!",
         description: `The correct answer was ${elementData.find(e => e.symbol === currentQuestion.correctElement)?.name} (${currentQuestion.correctElement})`,
@@ -71,7 +65,6 @@ const Index = () => {
   };
 
   const nextQuestion = () => {
-    // Find a random question that's different from the current one
     let randomIndex;
     let newQuestion;
     
@@ -86,16 +79,13 @@ const Index = () => {
   };
 
   const resetGame = async () => {
-    // Save game history if user is logged in
     if (session.user) {
       try {
-        await supabase.from('game_history').insert([
-          {
-            user_id: session.user.id,
-            score,
-            total_questions: questionNumber,
-          },
-        ])
+        await supabase.from('game_history').insert({
+          user_id: session.user.id,
+          score,
+          total_questions: questionNumber,
+        })
       } catch (error) {
         console.error('Error saving game history:', error)
       }
