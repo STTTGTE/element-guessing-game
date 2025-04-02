@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Flag, Swords, Clock, Shield } from "lucide-react";
-import multiplayerService, { MultiplayerGameState, MultiplayerGameResult } from "@/services/multiplayer-service";
+import multiplayerService, { MultiplayerGameState, MultiplayerGameResult } from "@/services/multiplayer";
 
 export function MultiplayerGame() {
   const { session } = useAuth();
@@ -20,7 +19,6 @@ export function MultiplayerGame() {
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
   const [gameResult, setGameResult] = useState<MultiplayerGameResult | null>(null);
 
-  // Find or create a game
   const findGame = async () => {
     if (!session.user) return;
     
@@ -40,7 +38,6 @@ export function MultiplayerGame() {
     }
   };
 
-  // Leave the current game
   const leaveGame = async () => {
     if (!session.user || !gameState) return;
     
@@ -54,7 +51,6 @@ export function MultiplayerGame() {
     }
   };
 
-  // Handle element selection
   const handleElementClick = async (element: ElementData) => {
     if (!session.user || !gameState || gameState.status !== 'active') return;
     
@@ -80,7 +76,6 @@ export function MultiplayerGame() {
     setSelectedElement(null);
   };
 
-  // Setup listeners for game state and results
   useEffect(() => {
     const unsubscribeState = multiplayerService.subscribeToGameState((state) => {
       setGameState(state);
@@ -90,7 +85,6 @@ export function MultiplayerGame() {
     const unsubscribeResult = multiplayerService.subscribeToGameResult((result) => {
       setGameResult(result);
       
-      // Show toast with game result
       if (result.is_draw) {
         toast({
           title: "Game Over",
@@ -120,17 +114,14 @@ export function MultiplayerGame() {
     };
   }, [session.user, toast]);
 
-  // Determine if the user is player 1 or 2
   const isPlayer1 = gameState?.player1_id === session.user?.id;
 
-  // Format time remaining
   const formatTimeRemaining = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  // Render different views based on game state
   if (!gameState) {
     return (
       <div className="w-full max-w-4xl mx-auto p-4">
@@ -253,11 +244,9 @@ export function MultiplayerGame() {
     );
   }
 
-  // Active game view
   return (
     <div className="w-full max-w-5xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-        {/* Game info */}
         <div className="lg:col-span-3 flex justify-between items-center bg-card text-card-foreground rounded-lg shadow-sm p-4">
           <div className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-amber-500" />
@@ -289,7 +278,6 @@ export function MultiplayerGame() {
         </div>
       </div>
 
-      {/* Question */}
       <div className="bg-card text-card-foreground rounded-lg shadow-sm p-4 mb-4">
         {currentQuestion ? (
           <div className="text-center">
@@ -301,7 +289,6 @@ export function MultiplayerGame() {
         )}
       </div>
 
-      {/* Periodic table */}
       <div className="bg-card text-card-foreground rounded-lg shadow-sm p-2 sm:p-4 overflow-x-auto">
         <PeriodicTable 
           onElementClick={handleElementClick} 
