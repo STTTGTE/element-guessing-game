@@ -63,12 +63,10 @@ export function DebugPanel() {
   return (
     <Card className="fixed bottom-4 right-4 w-96 shadow-lg z-50 opacity-90 hover:opacity-100 transition-opacity">
       <CardHeader className="p-3">
-        <CollapsibleTrigger asChild onClick={() => setIsOpen(!isOpen)}>
-          <CardTitle className="text-sm flex justify-between items-center cursor-pointer">
-            Debug Panel
-            <span>{isOpen ? '▲' : '▼'}</span>
-          </CardTitle>
-        </CollapsibleTrigger>
+        <CardTitle className="text-sm flex justify-between items-center cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+          Debug Panel
+          <span>{isOpen ? '▲' : '▼'}</span>
+        </CardTitle>
       </CardHeader>
       <Collapsible open={isOpen}>
         <CollapsibleContent>
