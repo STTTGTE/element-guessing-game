@@ -43,7 +43,7 @@ export function AuthForm() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://element-guessing-game.vercel.app/',
+          redirectTo: window.location.origin,
         }
       })
       if (error) throw error
