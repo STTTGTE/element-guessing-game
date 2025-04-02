@@ -36,6 +36,81 @@ export type Database = {
         }
         Relationships: []
       }
+      game_history: {
+        Row: {
+          created_at: string
+          game_mode: string | null
+          id: string
+          score: number
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          game_mode?: string | null
+          id?: string
+          score: number
+          total_questions: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          game_mode?: string | null
+          id?: string
+          score?: number
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      multiplayer_games: {
+        Row: {
+          created_at: string
+          current_question_index: number
+          id: string
+          is_active: boolean
+          player1_errors: number
+          player1_id: string
+          player1_score: number
+          player2_errors: number
+          player2_id: string | null
+          player2_score: number
+          status: string
+          time_remaining: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_question_index?: number
+          id?: string
+          is_active?: boolean
+          player1_errors?: number
+          player1_id: string
+          player1_score?: number
+          player2_errors?: number
+          player2_id?: string | null
+          player2_score?: number
+          status: string
+          time_remaining?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_question_index?: number
+          id?: string
+          is_active?: boolean
+          player1_errors?: number
+          player1_id?: string
+          player1_score?: number
+          player2_errors?: number
+          player2_id?: string | null
+          player2_score?: number
+          status?: string
+          time_remaining?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string
