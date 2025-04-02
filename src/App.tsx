@@ -5,6 +5,7 @@ import { AuthProvider } from "./components/auth-provider";
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "./components/ui/toaster";
 import { MultiplayerGame } from "./components/multiplayer";
+import Index from "./pages/Index";
 import './App.css';
 
 function App() {
@@ -13,7 +14,7 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<MultiplayerGame />} />
+            <Route path="/" element={<Index />} />
             {/* Add any additional routes here */}
           </Routes>
         </Router>

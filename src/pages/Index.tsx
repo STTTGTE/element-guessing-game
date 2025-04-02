@@ -20,7 +20,7 @@ import { useAchievements } from "@/hooks/use-achievements";
 import { useStreaks } from "@/hooks/use-streaks";
 import { Button } from "@/components/ui/button";
 import { LogIn, UserPlus, Swords } from "lucide-react";
-import { MultiplayerGame } from "@/components/MultiplayerGame";
+import { MultiplayerGame } from "@/components/multiplayer";
 
 const Index = () => {
   const { session } = useAuth();
