@@ -59,7 +59,7 @@ class MultiplayerService {
           .from('multiplayer_games')
           .update({
             player2_id: user.id,
-            status: 'active',
+            status: 'active' as const,
             updated_at: new Date().toISOString()
           })
           .eq('id', data.id)
@@ -71,10 +71,16 @@ class MultiplayerService {
           return null;
         }
 
-        this.gameStateService.setGameState(updatedGame);
-        this.gameStateService.setupRealtimeListener(updatedGame.id);
+        // Fix typing issue by casting the status to the correct type
+        const typedGame: MultiplayerGameState = {
+          ...updatedGame,
+          status: updatedGame.status as 'waiting' | 'active' | 'completed'
+        };
+
+        this.gameStateService.setGameState(typedGame);
+        this.gameStateService.setupRealtimeListener(typedGame.id);
         this.gameStateService.startGameTimer();
-        return updatedGame;
+        return typedGame;
       } else {
         // Create new game
         const { data: newGame, error: createError } = await supabase
@@ -88,7 +94,7 @@ class MultiplayerService {
             current_question_index: 0,
             is_active: true,
             time_remaining: 180, // 3 minutes in seconds
-            status: 'waiting'
+            status: 'waiting' as const
           })
           .select('*')
           .single();
@@ -98,9 +104,15 @@ class MultiplayerService {
           return null;
         }
 
-        this.gameStateService.setGameState(newGame);
-        this.gameStateService.setupRealtimeListener(newGame.id);
-        return newGame;
+        // Fix typing issue by casting the status to the correct type
+        const typedGame: MultiplayerGameState = {
+          ...newGame,
+          status: newGame.status as 'waiting' | 'active' | 'completed'
+        };
+
+        this.gameStateService.setGameState(typedGame);
+        this.gameStateService.setupRealtimeListener(typedGame.id);
+        return typedGame;
       }
     } catch (error) {
       console.error('Error in findGame:', error);

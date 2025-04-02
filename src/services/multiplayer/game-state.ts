@@ -85,7 +85,13 @@ export class GameStateService {
         }, 
         (payload) => {
           if (payload.new) {
-            this.currentGame = payload.new as MultiplayerGameState;
+            // Fix typing issue by casting the status to the correct type
+            const typedGame: MultiplayerGameState = {
+              ...payload.new as any,
+              status: (payload.new as any).status as 'waiting' | 'active' | 'completed'
+            };
+            
+            this.currentGame = typedGame;
             this.notifyGameStateListeners();
             
             // Check if game is completed
