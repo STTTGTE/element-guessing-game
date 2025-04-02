@@ -19,6 +19,7 @@ export function MultiplayerGame() {
     scores: Record<string, number>;
     questionNumber: number;
     isSearching: boolean;
+    channel: any;
   }>({
     gameId: null,
     players: [],
@@ -26,96 +27,183 @@ export function MultiplayerGame() {
     scores: {},
     questionNumber: 0,
     isSearching: false,
+    channel: null,
   });
 
   useEffect(() => {
     if (!session.user) return;
 
-    // Subscribe to game updates
-    const gameChannel = supabase.channel('game_updates');
-    
-    gameChannel
+    // Clean up any existing channel
+    if (gameState.channel) {
+      gameState.channel.unsubscribe();
+    }
+
+    // Create a new channel for the user
+    const channel = supabase.channel(`game:${session.user.id}`, {
+      config: {
+        broadcast: { self: true },
+        presence: { key: session.user.id },
+      },
+    });
+
+    channel
       .on('presence', { event: 'sync' }, () => {
-        const state = gameChannel.presenceState();
+        const state = channel.presenceState();
         const players = Object.keys(state);
         setGameState(prev => ({
           ...prev,
           players
         }));
       })
-      .on('broadcast', { event: 'game_action' }, ({ payload }) => {
+      .on('broadcast', { event: 'game_update' }, ({ payload }) => {
+        console.log('Received game update:', payload);
         setGameState(prev => ({
           ...prev,
-          ...payload
+          ...payload,
         }));
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await gameChannel.track({
-            user_id: session.user.id,
-            online_at: new Date().toISOString(),
-          });
-        }
       });
 
+    channel.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        await channel.track({
+          user_id: session.user.id,
+          online_at: new Date().toISOString(),
+        });
+      }
+    });
+
+    setGameState(prev => ({ ...prev, channel }));
+
     return () => {
-      gameChannel.unsubscribe();
+      channel.unsubscribe();
     };
   }, [session.user]);
 
   const findMatch = async () => {
-    if (!session.user) return;
+    if (!session.user || !gameState.channel) return;
 
     setGameState(prev => ({ ...prev, isSearching: true }));
     
     try {
-      const { data, error } = await supabase
+      // First, check if there's anyone else searching
+      const { data: existingMatch } = await supabase
         .from('matchmaking')
-        .insert({
-          user_id: session.user.id,
-          status: 'searching'
-        })
-        .select()
+        .select('*')
+        .eq('status', 'searching')
+        .neq('user_id', session.user.id)
         .single();
 
-      if (error) throw error;
-
-      // Start checking for match
-      const checkMatch = setInterval(async () => {
-        const { data: match } = await supabase
+      if (existingMatch) {
+        // Found a match, create a game
+        const { data: match, error: matchError } = await supabase
           .from('matches')
-          .select('*')
-          .eq('player1_id', session.user.id)
-          .or(`player2_id.eq.${session.user.id}`)
+          .insert({
+            player1_id: existingMatch.user_id,
+            player2_id: session.user.id,
+            status: 'active',
+            current_question: questions[Math.floor(Math.random() * questions.length)],
+            scores: {
+              [existingMatch.user_id]: 0,
+              [session.user.id]: 0
+            }
+          })
+          .select()
           .single();
 
-        if (match) {
-          clearInterval(checkMatch);
-          setGameState(prev => ({
-            ...prev,
-            gameId: match.id,
-            isSearching: false,
-            currentQuestion: questions[Math.floor(Math.random() * questions.length)],
-            scores: {
-              [match.player1_id]: 0,
-              [match.player2_id]: 0
-            }
-          }));
-        }
-      }, 2000);
+        if (matchError) throw matchError;
 
-      // Cleanup after 30 seconds if no match found
-      setTimeout(() => {
-        clearInterval(checkMatch);
-        if (!gameState.gameId) {
-          setGameState(prev => ({ ...prev, isSearching: false }));
-          toast({
-            title: "No match found",
-            description: "Please try again later",
-            variant: "destructive"
+        // Update the existing matchmaking entry
+        await supabase
+          .from('matchmaking')
+          .update({ status: 'matched' })
+          .eq('user_id', existingMatch.user_id);
+
+        // Set up the game state
+        const gameUpdate = {
+          gameId: match.id,
+          isSearching: false,
+          currentQuestion: match.current_question,
+          scores: match.scores,
+          questionNumber: 0
+        };
+
+        setGameState(prev => ({
+          ...prev,
+          ...gameUpdate
+        }));
+
+        // Broadcast the game update
+        gameState.channel.send({
+          type: 'broadcast',
+          event: 'game_update',
+          payload: gameUpdate
+        });
+
+      } else {
+        // No match found, create a matchmaking entry
+        const { error: matchmakingError } = await supabase
+          .from('matchmaking')
+          .insert({
+            user_id: session.user.id,
+            status: 'searching'
           });
-        }
-      }, 30000);
+
+        if (matchmakingError) throw matchmakingError;
+
+        // Start checking for matches
+        const checkMatch = setInterval(async () => {
+          const { data: match } = await supabase
+            .from('matches')
+            .select('*')
+            .or(`player1_id.eq.${session.user.id},player2_id.eq.${session.user.id}`)
+            .eq('status', 'active')
+            .single();
+
+          if (match) {
+            clearInterval(checkMatch);
+            
+            const gameUpdate = {
+              gameId: match.id,
+              isSearching: false,
+              currentQuestion: match.current_question,
+              scores: match.scores,
+              questionNumber: 0
+            };
+
+            setGameState(prev => ({
+              ...prev,
+              ...gameUpdate
+            }));
+
+            // Broadcast the game update
+            gameState.channel.send({
+              type: 'broadcast',
+              event: 'game_update',
+              payload: gameUpdate
+            });
+          }
+        }, 2000);
+
+        // Cleanup after 30 seconds if no match found
+        setTimeout(() => {
+          clearInterval(checkMatch);
+          if (!gameState.gameId) {
+            setGameState(prev => ({ ...prev, isSearching: false }));
+            
+            // Clean up matchmaking entry
+            supabase
+              .from('matchmaking')
+              .delete()
+              .eq('user_id', session.user.id);
+
+            toast({
+              title: "No match found",
+              description: "Please try again later",
+              variant: "destructive"
+            });
+          }
+        }, 30000);
+      }
 
     } catch (error) {
       console.error('Error finding match:', error);
@@ -129,7 +217,7 @@ export function MultiplayerGame() {
   };
 
   const handleElementClick = async (element: ElementData) => {
-    if (!gameState.currentQuestion || !gameState.gameId || !session.user) return;
+    if (!gameState.currentQuestion || !gameState.gameId || !session.user || !gameState.channel) return;
 
     if (element.symbol === gameState.currentQuestion.correctElement) {
       // Update scores
@@ -141,12 +229,23 @@ export function MultiplayerGame() {
       // Get next question
       const nextQuestion = questions[Math.floor(Math.random() * questions.length)];
       
-      setGameState(prev => ({
-        ...prev,
+      const gameUpdate = {
         scores: newScores,
         currentQuestion: nextQuestion,
-        questionNumber: prev.questionNumber + 1
+        questionNumber: gameState.questionNumber + 1
+      };
+
+      setGameState(prev => ({
+        ...prev,
+        ...gameUpdate
       }));
+
+      // Broadcast the game update
+      gameState.channel.send({
+        type: 'broadcast',
+        event: 'game_update',
+        payload: gameUpdate
+      });
 
       toast({
         title: "Correct!",
@@ -201,6 +300,17 @@ export function MultiplayerGame() {
   return (
     <div className="flex flex-col gap-4">
       <div className="bg-card text-card-foreground rounded-lg shadow-md p-4">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold">Players:</h3>
+          <div className="flex gap-2">
+            {gameState.players.map(playerId => (
+              <div key={playerId} className="px-3 py-1 bg-primary/10 rounded">
+                {playerId === session.user?.id ? 'You' : 'Opponent'}
+              </div>
+            ))}
+          </div>
+        </div>
+
         {gameState.currentQuestion ? (
           <QuestionPanel
             question={gameState.currentQuestion}
