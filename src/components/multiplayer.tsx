@@ -255,9 +255,22 @@ export function MultiplayerGame() {
           .eq('user_id', session.user.id)
           .single();
         
-        if (matchmakingError && matchmakingError.code !== 'PGRST116') {
-          console.error("Error checking matchmaking:", matchmakingError);
-          throw matchmakingError;
+        if (matchmakingError) {
+          // PGRST116 means no rows returned, which is expected if user is not in matchmaking
+          if (matchmakingError.code !== 'PGRST116') {
+            console.error("Error checking matchmaking:", matchmakingError);
+            // Only throw if it's not a "no rows returned" error
+            if (matchmakingError.code === '42P01') {
+              // Table doesn't exist error
+              throw new Error("Matchmaking table doesn't exist. Please run the setup SQL scripts.");
+            } else if (matchmakingError.code === '42501') {
+              // Permission denied error
+              throw new Error("Permission denied when accessing matchmaking table. Check RLS policies.");
+            } else if (matchmakingError.message && matchmakingError.message.includes('404')) {
+              // 404 error - table not found
+              throw new Error("Matchmaking table not found (404). Please run the setup SQL scripts.");
+            }
+          }
         }
         
         if (matchmakingData) {
@@ -281,9 +294,22 @@ export function MultiplayerGame() {
           .eq('status', 'active')
           .single();
         
-        if (matchesError && matchesError.code !== 'PGRST116') {
-          console.error("Error checking matches:", matchesError);
-          throw matchesError;
+        if (matchesError) {
+          // PGRST116 means no rows returned, which is expected if user is not in a match
+          if (matchesError.code !== 'PGRST116') {
+            console.error("Error checking matches:", matchesError);
+            // Only throw if it's not a "no rows returned" error
+            if (matchesError.code === '42P01') {
+              // Table doesn't exist error
+              throw new Error("Matches table doesn't exist. Please run the setup SQL scripts.");
+            } else if (matchesError.code === '42501') {
+              // Permission denied error
+              throw new Error("Permission denied when accessing matches table. Check RLS policies.");
+            } else if (matchesError.message && matchesError.message.includes('404')) {
+              // 404 error - table not found
+              throw new Error("Matches table not found (404). Please run the setup SQL scripts.");
+            }
+          }
         }
         
         if (matchesData) {
@@ -297,7 +323,7 @@ export function MultiplayerGame() {
         console.error("Error checking existing game:", error);
         setGameState(prev => ({ 
           ...prev, 
-          error: "Error checking game status. Please try again.",
+          error: error.message || "Error checking game status. Please try again.",
           loading: false
         }));
       }
@@ -335,6 +361,16 @@ export function MultiplayerGame() {
       
       if (error) {
         console.error("Error starting matchmaking:", error);
+        if (error.code === '42P01') {
+          // Table doesn't exist error
+          throw new Error("Matchmaking table doesn't exist. Please run the setup SQL scripts.");
+        } else if (error.code === '42501') {
+          // Permission denied error
+          throw new Error("Permission denied when accessing matchmaking table. Check RLS policies.");
+        } else if (error.message && error.message.includes('404')) {
+          // 404 error - table not found
+          throw new Error("Matchmaking table not found (404). Please run the setup SQL scripts.");
+        }
         throw error;
       }
       
@@ -353,7 +389,7 @@ export function MultiplayerGame() {
       console.error("Error in matchmaking:", error);
       setGameState(prev => ({ 
         ...prev, 
-        error: "Error starting matchmaking. Please try again.",
+        error: error.message || "Error starting matchmaking. Please try again.",
         isSearching: false,
         loading: false
       }));

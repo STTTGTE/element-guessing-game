@@ -93,25 +93,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             username: user.email || `user_${user.id.substring(0, 8)}`
           };
           
-          const { data: newProfile, error: createError } = await supabase
-            .from('profiles')
-            .insert(newProfileData)
-            .select()
-            .single();
+          try {
+            const { data: newProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert(newProfileData)
+              .select()
+              .single();
+              
+            if (createError) {
+              console.error("Error creating profile:", createError)
+              // Even if we can't create a profile, we still have a user
+              setSession({
+                user,
+                profile: null,
+                loading: false,
+              })
+              return;
+            }
             
-          if (createError) {
-            console.error("Error creating profile:", createError)
-            throw createError
+            setSession({
+              user,
+              profile: newProfile as Profile,
+              loading: false,
+            })
+          } catch (createProfileError) {
+            console.error("Exception creating profile:", createProfileError)
+            // Even if we can't create a profile, we still have a user
+            setSession({
+              user,
+              profile: null,
+              loading: false,
+            })
           }
-          
-          setSession({
-            user,
-            profile: newProfile as Profile,
-            loading: false,
-          })
         } else {
           console.error("Error fetching profile:", error)
-          throw error
+          // Even if profile fetch fails, we still have a user
+          setSession({
+            user,
+            profile: null,
+            loading: false,
+          })
         }
       } else {
         console.log("Profile found:", data)
