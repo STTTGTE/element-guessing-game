@@ -80,7 +80,7 @@ export function MultiplayerGame() {
                 : newData.current_question;
                 
               const scores = typeof newData.scores === 'string'
-                ? JSON.parse(newData.scores)
+                ? (newData.scores === '[object Object]' ? {} : JSON.parse(newData.scores))
                 : newData.scores;
               
               setGameState(prev => ({
@@ -140,7 +140,7 @@ export function MultiplayerGame() {
         : data.current_question;
         
       const scores = typeof data.scores === 'string'
-        ? JSON.parse(data.scores)
+        ? (data.scores === '[object Object]' ? {} : JSON.parse(data.scores))
         : data.scores;
       
       // Update game state
