@@ -7,5 +7,10 @@
   ],
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://yhwpnavhhhbwzwymarug.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlod3BuYXZoaGhid3p3eW1hcnVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMyNjUxMjYsImV4cCI6MjA1ODg0MTEyNn0.-nF37cWTUf6QQwgU05SThG3Pqprn4f-vhPa2xWuZsac",
+    "NEXT_PUBLIC_REDIRECT_URL": "https://element-guessing-game.vercel.app/"
+  }
 }
