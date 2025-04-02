@@ -28,7 +28,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (data.session?.user) {
           console.log("Found existing session for user:", data.session.user.id)
-          await fetchProfile(data.session.user)
+          try {
+            await fetchProfile(data.session.user)
+          } catch (error) {
+            console.error("Error fetching profile during initialization:", error)
+            // Even if profile fetch fails, we still have a user
+            setSession({
+              user: data.session.user,
+              profile: null,
+              loading: false,
+            })
+          }
         } else {
           console.log("No active session found")
           setSession({ user: null, profile: null, loading: false })
@@ -54,7 +64,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               description: "Welcome back!",
             })
           }
-          await fetchProfile(session.user)
+          try {
+            await fetchProfile(session.user)
+          } catch (error) {
+            console.error("Error fetching profile during auth state change:", error)
+            // Even if profile fetch fails, we still have a user
+            setSession({
+              user: session.user,
+              profile: null,
+              loading: false,
+            })
+          }
         } else {
           if (event === 'SIGNED_OUT') {
             console.log("User signed out")
