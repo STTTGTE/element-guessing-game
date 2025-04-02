@@ -19,7 +19,7 @@ serve(async (req) => {
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') || ''
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-    const { p_user_id, p_score, p_total_questions } = await req.json()
+    const { p_user_id, p_score, p_total_questions, p_game_mode } = await req.json()
 
     if (!p_user_id || typeof p_score !== 'number' || typeof p_total_questions !== 'number') {
       return new Response(
@@ -28,12 +28,15 @@ serve(async (req) => {
       )
     }
 
+    const gameMode = p_game_mode || 'single'
+
     const { data, error } = await supabase
       .from('game_history')
       .insert({
         user_id: p_user_id,
         score: p_score,
-        total_questions: p_total_questions
+        total_questions: p_total_questions,
+        game_mode: gameMode
       })
 
     if (error) throw error

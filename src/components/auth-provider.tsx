@@ -1,9 +1,8 @@
-
 import { useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { AuthContext, AuthState } from '@/lib/auth'
 import { Profile, supabase } from '@/lib/supabase'
-import { useToast } from './ui/use-toast'
+import { useToast } from '@/components/ui/use-toast'
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<AuthState>({
@@ -46,13 +45,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single()
+        .single();
 
       if (error) throw error
 
       setSession({
         user,
-        profile: data as Profile,
+        profile: data as unknown as Profile,
         loading: false,
       })
     } catch (error) {

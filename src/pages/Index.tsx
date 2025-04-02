@@ -19,7 +19,8 @@ import { StreakDisplay } from "@/components/streak-display";
 import { useAchievements } from "@/hooks/use-achievements";
 import { useStreaks } from "@/hooks/use-streaks";
 import { Button } from "@/components/ui/button";
-import { LogIn } from "lucide-react";
+import { LogIn, UserPlus, Swords } from "lucide-react";
+import { MultiplayerGame } from "@/components/MultiplayerGame";
 
 const Index = () => {
   const { session } = useAuth();
@@ -28,18 +29,21 @@ const Index = () => {
   const [questionNumber, setQuestionNumber] = useState(0);
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
   const [guestMode, setGuestMode] = useState(false);
+  const [gameMode, setGameMode] = useState<'single' | 'multiplayer'>('single');
   const { toast } = useToast();
   const { checkAndGrantAchievements } = useAchievements();
   const { updateStreak } = useStreaks();
 
   useEffect(() => {
-    if (questions.length > 0) {
+    if (questions.length > 0 && gameMode === 'single') {
       const randomIndex = Math.floor(Math.random() * questions.length);
       setCurrentQuestion(questions[randomIndex]);
     }
-  }, []);
+  }, [gameMode]);
 
   const handleElementClick = async (element: ElementData) => {
+    if (gameMode !== 'single') return;
+    
     setSelectedElement(element);
     
     if (currentQuestion && element.symbol === currentQuestion.correctElement) {
@@ -85,10 +89,12 @@ const Index = () => {
   const resetGame = async () => {
     if (session.user && !guestMode) {
       try {
+        // Use a direct query to avoid TypeScript issues
         await supabase.rpc('insert_game_history', {
           p_user_id: session.user.id,
           p_score: score,
-          p_total_questions: questionNumber
+          p_total_questions: questionNumber,
+          p_game_mode: 'single'
         });
       } catch (error) {
         console.error('Error saving game history:', error);
@@ -108,6 +114,17 @@ const Index = () => {
     setGuestMode(false);
   };
 
+  const switchGameMode = (mode: 'single' | 'multiplayer') => {
+    if (gameMode !== mode) {
+      setGameMode(mode);
+      if (mode === 'single') {
+        setScore(0);
+        setQuestionNumber(0);
+        nextQuestion();
+      }
+    }
+  };
+
   if (session.loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -122,7 +139,8 @@ const Index = () => {
         <AuthForm />
         <div className="text-center">
           <p className="text-gray-500 mb-2">or</p>
-          <Button onClick={startGuestMode} variant="outline">
+          <Button onClick={startGuestMode} variant="outline" className="flex items-center gap-2">
+            <UserPlus className="h-4 w-4" />
             Play as Guest
           </Button>
         </div>
@@ -149,28 +167,47 @@ const Index = () => {
         </div>
       </header>
 
+      <div className="bg-muted/40 border-b">
+        <div className="max-w-7xl mx-auto px-4">
+          <Tabs value={gameMode} onValueChange={(value) => switchGameMode(value as 'single' | 'multiplayer')} className="w-full">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mt-2">
+              <TabsTrigger value="single">Single Player</TabsTrigger>
+              <TabsTrigger value="multiplayer" className="flex items-center gap-1">
+                <Swords className="h-4 w-4" /> Multiplayer
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      </div>
+
       <main className="flex flex-col lg:flex-row flex-grow p-2 sm:p-4 md:p-6 max-w-7xl mx-auto w-full gap-4 md:gap-6">
         <div className="flex flex-col flex-grow gap-4 md:gap-6">
-          <div className="bg-card text-card-foreground rounded-lg shadow-md p-4 md:p-6">
-            {currentQuestion ? (
-              <QuestionPanel 
-                question={currentQuestion} 
-                questionNumber={questionNumber} 
-              />
-            ) : (
-              <div className="text-center p-4">Loading question...</div>
-            )}
-          </div>
+          {gameMode === 'single' ? (
+            <>
+              <div className="bg-card text-card-foreground rounded-lg shadow-md p-4 md:p-6">
+                {currentQuestion ? (
+                  <QuestionPanel 
+                    question={currentQuestion} 
+                    questionNumber={questionNumber} 
+                  />
+                ) : (
+                  <div className="text-center p-4">Loading question...</div>
+                )}
+              </div>
 
-          <ScoreBoard score={score} questionNumber={questionNumber} resetGame={resetGame} />
-          
-          <div className="bg-card text-card-foreground rounded-lg shadow-md p-2 sm:p-4 overflow-x-auto">
-            <PeriodicTable 
-              onElementClick={handleElementClick} 
-              selectedElement={selectedElement}
-              correctElement={currentQuestion?.correctElement}
-            />
-          </div>
+              <ScoreBoard score={score} questionNumber={questionNumber} resetGame={resetGame} />
+              
+              <div className="bg-card text-card-foreground rounded-lg shadow-md p-2 sm:p-4 overflow-x-auto">
+                <PeriodicTable 
+                  onElementClick={handleElementClick} 
+                  selectedElement={selectedElement}
+                  correctElement={currentQuestion?.correctElement}
+                />
+              </div>
+            </>
+          ) : (
+            <MultiplayerGame />
+          )}
         </div>
 
         {!guestMode ? (

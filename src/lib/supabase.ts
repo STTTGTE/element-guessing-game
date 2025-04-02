@@ -13,6 +13,7 @@ export type GameHistory = {
   score: number
   total_questions: number
   created_at: string
+  game_mode?: string
 }
 
 export type Profile = {
@@ -45,4 +46,20 @@ export type UserAchievement = {
   achievement_id: string
   earned_at: string
   achievement?: Achievement
+}
+
+export type MultiplayerGame = {
+  id: string
+  player1_id: string
+  player2_id: string | null
+  player1_score: number
+  player2_score: number
+  player1_errors: number
+  player2_errors: number
+  current_question_index: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+  time_remaining: number
+  status: 'waiting' | 'active' | 'completed'
 }

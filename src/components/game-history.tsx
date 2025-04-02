@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 export function GameHistory() {
   const { session } = useAuth()
@@ -27,11 +28,11 @@ export function GameHistory() {
         .select('*')
         .eq('user_id', session.user.id)
         .order('created_at', { ascending: false })
-        .limit(10)
+        .limit(10);
 
       if (error) throw error
 
-      setHistory(data as GameHistoryType[])
+      setHistory(data as unknown as GameHistoryType[])
     } catch (error) {
       console.error('Error fetching game history:', error)
     } finally {
@@ -59,6 +60,7 @@ export function GameHistory() {
           <TableHeader>
             <TableRow>
               <TableHead>Date</TableHead>
+              <TableHead>Mode</TableHead>
               <TableHead>Score</TableHead>
               <TableHead>Questions</TableHead>
               <TableHead>Accuracy</TableHead>
@@ -69,6 +71,13 @@ export function GameHistory() {
               <TableRow key={game.id}>
                 <TableCell>
                   {new Date(game.created_at).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  {game.game_mode === 'multiplayer' ? (
+                    <Badge variant="secondary">Multiplayer</Badge>
+                  ) : (
+                    <Badge variant="outline">Single</Badge>
+                  )}
                 </TableCell>
                 <TableCell>{game.score}</TableCell>
                 <TableCell>{game.total_questions}</TableCell>
