@@ -2,18 +2,17 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://yhwpnavhhhbwzwymarug.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlod3BuYXZoaGhid3p3eW1hcnVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMyNjUxMjYsImV4cCI6MjA1ODg0MTEyNn0.-nF37cWTUf6QQwgU05SThG3Pqprn4f-vhPa2xWuZsac";
+const SUPABASE_URL = "https://yhwpnavhhhbwzwymarug.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlod3BuYXZoaGhid3p3eW1hcnVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMyNjUxMjYsImV4cCI6MjA1ODg0MTEyNn0.-nF37cWTUf6QQwgU05SThG3Pqprn4f-vhPa2xWuZsac";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    flowType: 'pkce',
-    autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true
+    storageKey: 'element-game-auth-token',
+    storage: localStorage
   },
   realtime: {
     params: {

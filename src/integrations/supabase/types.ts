@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type Database = {
+export interface Database {
   public: {
     Tables: {
       achievements: {
@@ -61,72 +61,176 @@ export type Database = {
           total_questions?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "game_history_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      matchmaking: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matchmaking_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      matches: {
+        Row: {
+          created_at: string
+          current_question: Json | null
+          id: string
+          player1_id: string
+          player2_id: string
+          question_number: number
+          scores: Json
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          current_question?: Json | null
+          id?: string
+          player1_id: string
+          player2_id: string
+          question_number?: number
+          scores?: Json
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          current_question?: Json | null
+          id?: string
+          player1_id?: string
+          player2_id?: string
+          question_number?: number
+          scores?: Json
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_player1_id_fkey"
+            columns: ["player1_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_player2_id_fkey"
+            columns: ["player2_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       multiplayer_games: {
         Row: {
           created_at: string
-          current_question_index: number
           id: string
-          is_active: boolean
-          player1_errors: number
           player1_id: string
-          player1_score: number
-          player2_errors: number
-          player2_id: string | null
-          player2_score: number
+          player2_id: string
           status: string
-          time_remaining: number
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
           created_at?: string
-          current_question_index?: number
           id?: string
-          is_active?: boolean
-          player1_errors?: number
           player1_id: string
-          player1_score?: number
-          player2_errors?: number
-          player2_id?: string | null
-          player2_score?: number
-          status: string
-          time_remaining?: number
-          updated_at?: string
+          player2_id: string
+          status?: string
+          updated_at?: string | null
         }
         Update: {
           created_at?: string
-          current_question_index?: number
           id?: string
-          is_active?: boolean
-          player1_errors?: number
           player1_id?: string
-          player1_score?: number
-          player2_errors?: number
-          player2_id?: string | null
-          player2_score?: number
+          player2_id?: string
           status?: string
-          time_remaining?: number
-          updated_at?: string
+          updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "multiplayer_games_player1_id_fkey"
+            columns: ["player1_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "multiplayer_games_player2_id_fkey"
+            columns: ["player2_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       user_achievements: {
         Row: {
           achievement_id: string
-          earned_at: string
+          created_at: string
           id: string
           user_id: string
         }
         Insert: {
           achievement_id: string
-          earned_at?: string
+          created_at?: string
           id?: string
           user_id: string
         }
         Update: {
           achievement_id?: string
-          earned_at?: string
+          created_at?: string
           id?: string
           user_id?: string
         }
@@ -134,10 +238,15 @@ export type Database = {
           {
             foreignKeyName: "user_achievements_achievement_id_fkey"
             columns: ["achievement_id"]
-            isOneToOne: false
             referencedRelation: "achievements"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
         ]
       }
       user_streaks: {
@@ -162,7 +271,14 @@ export type Database = {
           max_streak?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_streaks_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
