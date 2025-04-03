@@ -31,7 +31,7 @@ export function DebugPanel() {
           {
             headers: {
               'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${session.session?.access_token}`,
+              'Authorization': `Bearer ${session.user.id}`, // Fixed: removed session.session
             },
           }
         );

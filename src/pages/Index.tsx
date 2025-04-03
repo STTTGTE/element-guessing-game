@@ -59,7 +59,8 @@ const Index = () => {
       
       if (session.user && !guestMode) {
         const currentStreak = await updateStreak();
-        if (currentStreak !== null) {
+        if (currentStreak !== null && currentStreak !== undefined) {
+          // Fixed: Added null and undefined check to ensure currentStreak is a number
           checkAndGrantAchievements(score + 1, currentStreak);
         }
       }
