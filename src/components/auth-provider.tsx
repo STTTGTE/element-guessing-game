@@ -1,265 +1,124 @@
-import { useEffect, useState } from 'react'
-import { User } from '@supabase/supabase-js'
-import { AuthContext, AuthState } from '@/lib/auth'
-import { Profile, supabase } from '@/lib/supabase'
-import { useToast } from '@/components/ui/use-toast'
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<AuthState>({
+import { createContext, useEffect, useState, ReactNode } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+
+// Define the auth context type
+export type AuthContextType = {
+  session: {
+    user: User | null;
+    loading: boolean;
+    profile: Record<string, any> | null;
+  };
+  signOut: () => Promise<void>;
+};
+
+// Create context with default values
+export const AuthContext = createContext<AuthContextType>({
+  session: {
     user: null,
-    profile: null,
     loading: true,
-  })
-  const { toast } = useToast()
+    profile: null,
+  },
+  signOut: async () => {},
+});
 
-  useEffect(() => {
-    console.log("Auth provider mounted, checking session")
-    
-    // Check active session
-    const initializeAuth = async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession()
-        
-        if (error) {
-          console.error("Error getting session:", error)
-          setSession({ user: null, profile: null, loading: false })
-          return
-        }
-        
-        if (data.session?.user) {
-          console.log("Found existing session for user:", data.session.user.id)
-          try {
-            await fetchProfile(data.session.user)
-          } catch (error) {
-            console.error("Error fetching profile during initialization:", error)
-            // Even if profile fetch fails, we still have a user
-            setSession({
-              user: data.session.user,
-              profile: null,
-              loading: false,
-            })
-          }
-        } else {
-          console.log("No active session found")
-          setSession({ user: null, profile: null, loading: false })
-        }
-      } catch (error) {
-        console.error("Unexpected error during auth initialization:", error)
-        setSession({ user: null, profile: null, loading: false })
-      }
-    }
-    
-    initializeAuth()
+// Auth provider component
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<Record<string, any> | null>(null);
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log("Auth state changed:", event, session?.user?.id)
-        
-        if (session?.user) {
-          if (event === 'SIGNED_IN') {
-            console.log("User signed in:", session.user.id)
-            toast({
-              title: "Signed in successfully",
-              description: "Welcome back!",
-            })
-          }
-          try {
-            await fetchProfile(session.user)
-          } catch (error) {
-            console.error("Error fetching profile during auth state change:", error)
-            // Even if profile fetch fails, we still have a user
-            setSession({
-              user: session.user,
-              profile: null,
-              loading: false,
-            })
-          }
-        } else {
-          if (event === 'SIGNED_OUT') {
-            console.log("User signed out")
-            toast({
-              title: "Signed out",
-              description: "You have been signed out",
-            })
-          }
-          setSession({ user: null, profile: null, loading: false })
-        }
-      }
-    )
-
-    return () => {
-      console.log("Auth provider unmounting, unsubscribing")
-      subscription.unsubscribe()
-    }
-  }, [toast])
-
-  const fetchProfile = async (user: User) => {
-    console.log("Fetching profile for user:", user.id)
+  // Sign out function
+  const signOut = async () => {
     try {
-      // First, check if profile exists
+      await supabase.auth.signOut();
+      setUser(null);
+      setProfile(null);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  // Fetch user profile
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      // Using a generic query approach to avoid type errors with specific tables
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', userId)
         .single();
-
-      if (error) {
-        if (error.code === 'PGRST116') { // Not found
-          console.log("Profile not found, creating one")
-          // Profile doesn't exist, create one
-          const newProfileData = {
-            id: user.id,
-            username: user.email || `user_${user.id.substring(0, 8)}`
-          };
-          
-          try {
-            const { data: newProfile, error: createError } = await supabase
-              .from('profiles')
-              .insert(newProfileData)
-              .select()
-              .single();
-              
-            if (createError) {
-              console.error("Error creating profile:", createError)
-              // Even if we can't create a profile, we still have a user
-              setSession({
-                user,
-                profile: null,
-                loading: false,
-              })
-              return;
-            }
-            
-            setSession({
-              user,
-              profile: newProfile as Profile,
-              loading: false,
-            })
-          } catch (createProfileError) {
-            console.error("Exception creating profile:", createProfileError)
-            // Even if we can't create a profile, we still have a user
-            setSession({
-              user,
-              profile: null,
-              loading: false,
-            })
-          }
-        } else {
-          console.error("Error fetching profile:", error)
-          // Even if profile fetch fails, we still have a user
-          setSession({
-            user,
-            profile: null,
-            loading: false,
-          })
-        }
-      } else {
-        console.log("Profile found:", data)
-        setSession({
-          user,
-          profile: data as Profile,
-          loading: false,
-        })
-      }
-    } catch (error) {
-      console.error('Error in profile flow:', error)
-      // Even if profile fetch fails, we still have a user
-      setSession({
-        user,
-        profile: null,
-        loading: false,
-      })
-    }
-  }
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-      if (error) throw error
-    } catch (error) {
-      toast({
-        title: "Error signing in",
-        description: error.message,
-        variant: "destructive",
-      })
-      throw error
-    }
-  }
-
-  const signInWithGoogle = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin,
-        }
-      })
-      if (error) throw error
-    } catch (error) {
-      toast({
-        title: "Error signing in with Google",
-        description: error.message,
-        variant: "destructive",
-      })
-      throw error
-    }
-  }
-
-  const signUp = async (email: string, password: string, username: string) => {
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            username,
-          },
-        },
-      })
-      if (error) throw error
       
-      toast({
-        title: "Sign up successful",
-        description: "Please check your email for a confirmation link",
-      })
+      if (error) {
+        // If error is not "not found", log it
+        if (error.code !== 'PGRST116') {
+          console.error('Error fetching user profile:', error);
+        }
+        return;
+      }
+      
+      setProfile(data);
     } catch (error) {
-      toast({
-        title: "Error signing up",
-        description: error.message,
-        variant: "destructive",
-      })
-      throw error
+      console.error('Exception fetching user profile:', error);
     }
-  }
+  };
 
-  const signOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
-    } catch (error) {
-      toast({
-        title: "Error signing out",
-        description: error.message,
-        variant: "destructive",
-      })
-    }
-  }
+  // Initialize auth state
+  useEffect(() => {
+    // Get the current session
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          setUser(session.user);
+          await fetchUserProfile(session.user.id);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setUser(session?.user || null);
+        setLoading(false);
+        
+        if (session?.user) {
+          // Using setTimeout to avoid potential auth deadlocks
+          setTimeout(() => {
+            fetchUserProfile(session.user.id);
+          }, 0);
+        } else {
+          setProfile(null);
+        }
+      }
+    );
+
+    // Clean up the subscription
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
-        session,
-        signIn,
-        signInWithGoogle,
-        signUp,
+        session: {
+          user,
+          loading,
+          profile,
+        },
         signOut,
       }}
     >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }

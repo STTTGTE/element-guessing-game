@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
@@ -89,7 +88,6 @@ const Index = () => {
   const resetGame = async () => {
     if (session.user && !guestMode) {
       try {
-        // Use a direct query to avoid TypeScript issues
         await supabase.rpc('insert_game_history', {
           p_user_id: session.user.id,
           p_score: score,
