@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from './use-auth'
 import { supabase, UserStreak } from '@/lib/supabase'
-import { useToast } from '@/components/ui/use-toast'
+import { useToast } from './use-toast'
 
 export function useStreaks() {
   const { session } = useAuth()
@@ -60,8 +60,8 @@ export function useStreaks() {
     }
   }
 
-  const updateStreak = async (): Promise<number | undefined> => {
-    if (!session.user) return
+  const updateStreak = async (): Promise<number | null | undefined> => {
+    if (!session.user) return null;
 
     const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
 
@@ -118,6 +118,6 @@ export function useStreaks() {
   return {
     userStreak,
     loading,
-    updateStreak: session.user ? updateStreak : () => Promise.resolve(0)
+    updateStreak: session.user ? updateStreak : () => Promise.resolve(null)
   }
 }

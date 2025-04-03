@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
@@ -60,7 +59,6 @@ const Index = () => {
       if (session.user && !guestMode) {
         const currentStreak = await updateStreak();
         if (currentStreak !== null && currentStreak !== undefined) {
-          // Fixed: Added null and undefined check to ensure currentStreak is a number
           checkAndGrantAchievements(score + 1, currentStreak);
         }
       }
