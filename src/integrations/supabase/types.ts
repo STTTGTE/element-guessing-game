@@ -63,6 +63,63 @@ export type Database = {
         }
         Relationships: []
       }
+      matches: {
+        Row: {
+          created_at: string
+          current_question: Json
+          id: string
+          player1_id: string
+          player2_id: string
+          question_number: number
+          scores: Json
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_question: Json
+          id?: string
+          player1_id: string
+          player2_id: string
+          question_number?: number
+          scores?: Json
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_question?: Json
+          id?: string
+          player1_id?: string
+          player2_id?: string
+          question_number?: number
+          scores?: Json
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      matchmaking: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       multiplayer_games: {
         Row: {
           created_at: string
