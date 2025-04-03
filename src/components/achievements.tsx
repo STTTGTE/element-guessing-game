@@ -2,12 +2,13 @@
 import { useAchievements } from "@/hooks/use-achievements"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Trophy, Award, Star, Calendar, Beaker, Lock } from "lucide-react"
+import { Trophy, Award, Star, Calendar, Beaker, Lock, AlertTriangle } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
 
 export function Achievements() {
-  const { achievements, userAchievements, loading } = useAchievements()
+  const { achievements, userAchievements, loading, error, fetchAchievements } = useAchievements()
   const { session } = useAuth()
   
   if (!session.user) {
@@ -33,6 +34,26 @@ export function Achievements() {
 
   const isAchievementUnlocked = (achievementId: string) => {
     return userAchievements.some(ua => ua.achievement_id === achievementId)
+  }
+
+  if (error) {
+    return (
+      <Card className="w-full">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-xl">Achievements</CardTitle>
+          <CardDescription>Unlock achievements by playing the game</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-6 text-center gap-2">
+            <AlertTriangle className="h-8 w-8 text-amber-500" />
+            <p className="text-muted-foreground">Failed to load achievements</p>
+            <Button variant="outline" size="sm" onClick={() => fetchAchievements()}>
+              Try Again
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (

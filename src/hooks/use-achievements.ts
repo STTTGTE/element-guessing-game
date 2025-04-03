@@ -11,6 +11,7 @@ export function useAchievements() {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [userAchievements, setUserAchievements] = useState<UserAchievement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch user achievements from the database
   const fetchAchievements = async () => {
@@ -18,6 +19,7 @@ export function useAchievements() {
     
     try {
       setLoading(true);
+      setError(null);
       
       // Fetch all achievements
       const { data: achievementsData, error: achievementsError } = await supabase
@@ -45,6 +47,7 @@ export function useAchievements() {
       setUserAchievements(data || []);
     } catch (error: any) {
       console.error('Error fetching achievements:', error.message);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -81,6 +84,7 @@ export function useAchievements() {
       }
     } catch (error: any) {
       console.error('Error granting achievements:', error.message);
+      setError(error.message);
     }
   };
 
@@ -88,6 +92,8 @@ export function useAchievements() {
   useEffect(() => {
     if (session.user && !session.loading) {
       fetchAchievements();
+    } else {
+      setLoading(false);
     }
   }, [session.user, session.loading]);
 
@@ -95,6 +101,7 @@ export function useAchievements() {
     achievements, 
     userAchievements,
     loading, 
+    error,
     fetchAchievements, 
     checkAndGrantAchievements 
   };

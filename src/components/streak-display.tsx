@@ -1,28 +1,83 @@
 
 import { useStreaks } from "@/hooks/use-streaks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Flame } from "lucide-react"
+import { Flame, AlertTriangle } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
 
 export function StreakDisplay() {
-  const { userStreak, loading } = useStreaks()
+  const { userStreak, loading, error } = useStreaks()
   const { session } = useAuth()
   
-  if (loading) {
-    return <div className="text-center py-2">Loading streak...</div>
-  }
-  
-  if (!session.user || !userStreak) {
+  if (!session.user) {
     return null
   }
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Never';
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric' 
     })
+  }
+
+  if (error) {
+    return (
+      <Card className="w-full">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">Daily Streak</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-4 text-center gap-2">
+            <AlertTriangle className="h-8 w-8 text-amber-500" />
+            <p className="text-muted-foreground">Failed to load streak information</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (loading) {
+    return (
+      <Card className="w-full">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">Daily Streak</CardTitle>
+            <Skeleton className="h-8 w-8 rounded-full" />
+          </div>
+          <Skeleton className="h-4 w-36 mt-1" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+            <div className="flex justify-between items-center">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (!userStreak) {
+    return (
+      <Card className="w-full">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">Daily Streak</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-4 text-muted-foreground">
+            Play a game to start your streak!
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (

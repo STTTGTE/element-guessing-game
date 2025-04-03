@@ -60,6 +60,8 @@ const Index = () => {
       if (session.user && !guestMode) {
         try {
           const currentStreak = await updateStreak();
+          
+          // Only check for achievements if updateStreak returns a number
           if (typeof currentStreak === 'number') {
             checkAndGrantAchievements(score + 1, currentStreak);
           }

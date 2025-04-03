@@ -9,6 +9,7 @@ export function useStreaks() {
   const { toast } = useToast()
   const [userStreak, setUserStreak] = useState<UserStreak | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (session.user) {
@@ -22,6 +23,9 @@ export function useStreaks() {
     if (!session.user) return
 
     try {
+      setLoading(true)
+      setError(null)
+      
       const { data, error } = await supabase
         .from('user_streaks')
         .select('*')
@@ -38,8 +42,9 @@ export function useStreaks() {
       }
 
       setUserStreak(data as unknown as UserStreak)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching user streak:', error)
+      setError(error.message)
     } finally {
       setLoading(false)
     }
@@ -55,8 +60,10 @@ export function useStreaks() {
 
       // After creating, immediately fetch the new streak
       fetchUserStreak()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating new streak:', error)
+      setError(error.message)
+      setLoading(false) // Make sure to set loading to false in case of error
     }
   }
 
@@ -104,7 +111,7 @@ export function useStreaks() {
 
       setUserStreak(data)
       return newStreak
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating streak:', error)
       toast({
         title: "Streak Error",
@@ -118,6 +125,7 @@ export function useStreaks() {
   return {
     userStreak,
     loading,
+    error,
     updateStreak: session.user ? updateStreak : () => Promise.resolve(null)
   }
 }
