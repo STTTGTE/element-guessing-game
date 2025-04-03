@@ -1,23 +1,46 @@
 
 import { supabase } from "@/lib/supabase";
-import { GameStateListener, GameResultListener, MultiplayerGameState, MultiplayerGameResult } from "./types";
+import { RealtimeChannel } from "@supabase/supabase-js";
+import { questions } from "@/data/questions";
+import { MultiplayerGameState, MultiplayerGameResult, GameStateListener, GameResultListener } from "./types";
 
 export class GameStateService {
-  private channel: any;
+  private gameState: MultiplayerGameState | null = null;
+  private channel: RealtimeChannel | null = null;
   private gameStateListeners: GameStateListener[] = [];
   private gameResultListeners: GameResultListener[] = [];
-  private currentGame: MultiplayerGameState | null = null;
-  private gameStartTime: number = 0;
-  private gameTimerId: number | null = null;
+  private timer: NodeJS.Timeout | null = null;
+
+  constructor() {}
+
+  /**
+   * Set the game state
+   */
+  public setGameState(gameState: MultiplayerGameState) {
+    this.gameState = gameState;
+    // Notify all listeners
+    this.notifyGameStateListeners();
+  }
+
+  /**
+   * Get the current game state
+   */
+  public getGameState(): MultiplayerGameState | null {
+    return this.gameState;
+  }
 
   /**
    * Subscribe to game state changes
    */
-  public subscribeToGameState(callback: GameStateListener) {
+  public subscribeToGameState(callback: GameStateListener): () => void {
     this.gameStateListeners.push(callback);
-    if (this.currentGame) {
-      callback(this.currentGame);
+    
+    // Immediately call the callback with the current state if it exists
+    if (this.gameState) {
+      callback(this.gameState);
     }
+    
+    // Return unsubscribe function
     return () => {
       this.gameStateListeners = this.gameStateListeners.filter(cb => cb !== callback);
     };
@@ -26,78 +49,66 @@ export class GameStateService {
   /**
    * Subscribe to game result
    */
-  public subscribeToGameResult(callback: GameResultListener) {
+  public subscribeToGameResult(callback: GameResultListener): () => void {
     this.gameResultListeners.push(callback);
+    
+    // Return unsubscribe function
     return () => {
       this.gameResultListeners = this.gameResultListeners.filter(cb => cb !== callback);
     };
   }
 
   /**
-   * Updates the currently stored game state
-   */
-  public setGameState(gameState: MultiplayerGameState) {
-    this.currentGame = gameState;
-    this.notifyGameStateListeners();
-  }
-
-  /**
-   * Get the current game state
-   */
-  public getGameState(): MultiplayerGameState | null {
-    return this.currentGame;
-  }
-
-  /**
-   * Notify all game state listeners of the current state
-   */
-  public notifyGameStateListeners() {
-    if (this.currentGame) {
-      this.gameStateListeners.forEach(listener => listener(this.currentGame!));
-    }
-  }
-
-  /**
-   * Notify all game result listeners
-   */
-  public notifyGameResultListeners(result: MultiplayerGameResult) {
-    this.gameResultListeners.forEach(listener => listener(result));
-  }
-
-  /**
-   * Set up realtime listener for game updates
+   * Setup realtime listener for game state changes
    */
   public setupRealtimeListener(gameId: string) {
-    // Remove existing channel if any
-    if (this.channel) {
-      supabase.removeChannel(this.channel);
-    }
-
-    // Subscribe to changes on this game
+    // Clean up existing channel if any
+    this.cleanup();
+    
+    // Create a new channel
     this.channel = supabase
       .channel(`game-${gameId}`)
-      .on('postgres_changes', 
-        { 
-          event: 'UPDATE', 
-          schema: 'public', 
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
           table: 'multiplayer_games',
           filter: `id=eq.${gameId}`
-        }, 
+        },
         (payload) => {
-          if (payload.new) {
-            // Fix typing issue by casting the status to the correct type
-            const typedGame: MultiplayerGameState = {
-              ...payload.new as any,
-              status: (payload.new as any).status as 'waiting' | 'active' | 'completed'
+          console.log('Game state changed:', payload);
+          
+          if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+            const newData = payload.new as any;
+            
+            const updatedGameState: MultiplayerGameState = {
+              id: newData.id,
+              player1_id: newData.player1_id,
+              player2_id: newData.player2_id,
+              player1_score: newData.player1_score,
+              player2_score: newData.player2_score,
+              player1_errors: newData.player1_errors,
+              player2_errors: newData.player2_errors,
+              current_question_index: newData.current_question_index,
+              is_active: newData.is_active,
+              time_remaining: newData.time_remaining,
+              status: newData.status,
+              created_at: newData.created_at,
+              updated_at: newData.updated_at
             };
             
-            this.currentGame = typedGame;
+            this.gameState = updatedGameState;
             this.notifyGameStateListeners();
             
             // Check if game is completed
-            if (this.currentGame.status === 'completed') {
-              this.handleGameEnd();
+            if (updatedGameState.status === 'completed') {
+              this.handleGameCompleted(updatedGameState);
             }
+          } else if (payload.eventType === 'DELETE') {
+            this.gameState = null;
+            this.notifyGameStateListeners();
+            this.cleanup();
           }
         }
       )
@@ -108,126 +119,160 @@ export class GameStateService {
    * Start the game timer
    */
   public startGameTimer() {
-    if (this.gameTimerId) {
-      clearInterval(this.gameTimerId);
+    if (this.timer) {
+      clearInterval(this.timer);
     }
     
-    this.gameStartTime = Date.now();
-    this.gameTimerId = window.setInterval(() => this.updateGameTime(), 1000);
+    this.timer = setInterval(() => {
+      if (this.gameState && this.gameState.status === 'active') {
+        const newTimeRemaining = Math.max(0, this.gameState.time_remaining - 1);
+        
+        // Update local state first for responsive UI
+        this.gameState = {
+          ...this.gameState,
+          time_remaining: newTimeRemaining
+        };
+        
+        this.notifyGameStateListeners();
+        
+        // Update time in database every 5 seconds to reduce database load
+        if (newTimeRemaining % 5 === 0 || newTimeRemaining === 0) {
+          this.updateTimeRemaining(newTimeRemaining);
+        }
+        
+        // End game if time is up
+        if (newTimeRemaining === 0) {
+          this.handleTimeUp();
+        }
+      }
+    }, 1000);
   }
 
   /**
-   * Update the game time remaining
+   * Update the time remaining in the database
    */
-  private async updateGameTime() {
-    if (!this.currentGame || this.currentGame.status !== 'active') {
-      if (this.gameTimerId) {
-        clearInterval(this.gameTimerId);
-        this.gameTimerId = null;
-      }
-      return;
-    }
-
-    const elapsedSeconds = Math.floor((Date.now() - this.gameStartTime) / 1000);
-    const timeRemaining = Math.max(0, 180 - elapsedSeconds); // 3 minutes = 180 seconds
+  private async updateTimeRemaining(newTime: number) {
+    if (!this.gameState) return;
     
-    if (timeRemaining === 0) {
-      // Time's up, end the game
-      await this.endGame();
-      if (this.gameTimerId) {
-        clearInterval(this.gameTimerId);
-        this.gameTimerId = null;
-      }
-    } else if (this.currentGame) {
-      // Update time remaining
+    try {
       await supabase
         .from('multiplayer_games')
-        .update({ time_remaining: timeRemaining })
-        .eq('id', this.currentGame.id);
+        .update({ 
+          time_remaining: newTime 
+        })
+        .eq('id', this.gameState.id);
+    } catch (error) {
+      console.error('Error updating time remaining:', error);
     }
   }
 
   /**
-   * Handle the end of a game
+   * Handle game timer reaching zero
    */
-  private handleGameEnd() {
-    if (!this.currentGame) return;
-
-    const { player1_score, player2_score, player1_id, player2_id } = this.currentGame;
+  private async handleTimeUp() {
+    if (!this.gameState) return;
     
-    // Determine winner based on scores
+    // Determine winner based on score
     let winnerId: string | null = null;
-    let isDraw = false;
     
-    if (player1_score > player2_score) {
-      winnerId = player1_id;
-    } else if (player2_score > player1_score) {
-      winnerId = player2_id;
-    } else {
-      isDraw = true;
-    }
-
-    // Notify all listeners about the game result
-    const result: MultiplayerGameResult = {
-      winner_id: winnerId,
-      player1_score,
-      player2_score,
-      player1_id,
-      player2_id,
-      is_draw: isDraw
-    };
-
-    this.notifyGameResultListeners(result);
+    if (this.gameState.player1_score > this.gameState.player2_score) {
+      winnerId = this.gameState.player1_id;
+    } else if (this.gameState.player2_score > this.gameState.player1_score) {
+      winnerId = this.gameState.player2_id;
+    } // Null means it's a draw
+    
+    await this.endGame(winnerId);
   }
 
   /**
-   * End the game with an optional winner
+   * End the game and declare a winner
    */
-  public async endGame(winnerId: string | null = null) {
-    if (!this.currentGame) return;
-
-    const { player1_score, player2_score, player1_id, player2_id } = this.currentGame;
+  public async endGame(winnerId: string | null) {
+    if (!this.gameState) return;
     
-    // Determine winner if not specified
-    let finalWinnerId = winnerId;
-    let isDraw = false;
-    
-    if (!finalWinnerId) {
-      if (player1_score > player2_score) {
-        finalWinnerId = player1_id;
-      } else if (player2_score > player1_score) {
-        finalWinnerId = player2_id;
-      } else {
-        isDraw = true;
+    try {
+      await supabase
+        .from('multiplayer_games')
+        .update({
+          status: 'completed',
+          is_active: false,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', this.gameState.id);
+      
+      // Create a game result object
+      const gameResult: MultiplayerGameResult = {
+        winner_id: winnerId,
+        player1_score: this.gameState.player1_score,
+        player2_score: this.gameState.player2_score,
+        player1_id: this.gameState.player1_id,
+        player2_id: this.gameState.player2_id,
+        is_draw: winnerId === null
+      };
+      
+      // Notify result listeners
+      this.notifyGameResultListeners(gameResult);
+      
+      // Stop the timer
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
       }
+    } catch (error) {
+      console.error('Error ending game:', error);
     }
-
-    // Update game status
-    await supabase
-      .from('multiplayer_games')
-      .update({
-        status: 'completed',
-        is_active: false,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', this.currentGame.id);
-
-    // Notify all listeners about the game result
-    const result: MultiplayerGameResult = {
-      winner_id: finalWinnerId,
-      player1_score,
-      player2_score,
-      player1_id,
-      player2_id,
-      is_draw: isDraw
+  }
+  
+  /**
+   * Handle game completed event
+   */
+  private handleGameCompleted(gameState: MultiplayerGameState) {
+    // Determine winner based on score
+    let winnerId: string | null = null;
+    
+    if (gameState.player1_score > gameState.player2_score) {
+      winnerId = gameState.player1_id;
+    } else if (gameState.player2_score > gameState.player1_score) {
+      winnerId = gameState.player2_id;
+    } // Null means it's a draw
+    
+    // Create a game result object
+    const gameResult: MultiplayerGameResult = {
+      winner_id: winnerId,
+      player1_score: gameState.player1_score,
+      player2_score: gameState.player2_score,
+      player1_id: gameState.player1_id,
+      player2_id: gameState.player2_id,
+      is_draw: winnerId === null
     };
+    
+    // Notify result listeners
+    this.notifyGameResultListeners(gameResult);
+    
+    // Stop the timer
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
 
-    this.notifyGameResultListeners(result);
-
-    // Clean up
-    if (this.gameTimerId) {
-      clearInterval(this.gameTimerId);
-      this.gameTimerId = null;
+  /**
+   * Notify all game state listeners
+   */
+  private notifyGameStateListeners() {
+    if (!this.gameState) return;
+    
+    for (const listener of this.gameStateListeners) {
+      listener(this.gameState);
+    }
+  }
+  
+  /**
+   * Notify all game result listeners
+   */
+  private notifyGameResultListeners(result: MultiplayerGameResult) {
+    for (const listener of this.gameResultListeners) {
+      listener(result);
     }
   }
 
@@ -235,16 +280,14 @@ export class GameStateService {
    * Clean up all resources
    */
   public cleanup() {
-    if (this.gameTimerId) {
-      clearInterval(this.gameTimerId);
-      this.gameTimerId = null;
-    }
     if (this.channel) {
-      supabase.removeChannel(this.channel);
+      this.channel.unsubscribe();
       this.channel = null;
     }
-    this.gameStateListeners = [];
-    this.gameResultListeners = [];
-    this.currentGame = null;
+    
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
   }
 }

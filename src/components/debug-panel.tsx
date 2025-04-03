@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,40 +18,64 @@ export function DebugPanel() {
 
     try {
       // Check profiles table
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('count(*)')
-        .single();
-      
-      results.profiles = {
-        exists: !profilesError || profilesError.code !== '42P01',
-        count: profilesData?.count || 0,
-        error: profilesError ? `${profilesError.code}: ${profilesError.message}` : null
-      };
+      try {
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('count')
+          .single();
+        
+        results.profiles = {
+          exists: !profilesError,
+          count: profilesData?.count ?? 0,
+          error: profilesError ? `${profilesError.code}: ${profilesError.message}` : null
+        };
+      } catch (err) {
+        results.profiles = {
+          exists: false,
+          count: 0,
+          error: err instanceof Error ? err.message : String(err)
+        };
+      }
 
       // Check matchmaking table
-      const { data: matchmakingData, error: matchmakingError } = await supabase
-        .from('matchmaking')
-        .select('count(*)')
-        .single();
-      
-      results.matchmaking = {
-        exists: !matchmakingError || matchmakingError.code !== '42P01',
-        count: matchmakingData?.count || 0,
-        error: matchmakingError ? `${matchmakingError.code}: ${matchmakingError.message}` : null
-      };
+      try {
+        const { data: matchmakingData, error: matchmakingError } = await supabase
+          .from('matchmaking')
+          .select('count')
+          .single();
+        
+        results.matchmaking = {
+          exists: !matchmakingError,
+          count: matchmakingData?.count ?? 0,
+          error: matchmakingError ? `${matchmakingError.code}: ${matchmakingError.message}` : null
+        };
+      } catch (err) {
+        results.matchmaking = {
+          exists: false,
+          count: 0,
+          error: err instanceof Error ? err.message : String(err)
+        };
+      }
 
       // Check matches table
-      const { data: matchesData, error: matchesError } = await supabase
-        .from('matches')
-        .select('count(*)')
-        .single();
-      
-      results.matches = {
-        exists: !matchesError || matchesError.code !== '42P01',
-        count: matchesData?.count || 0,
-        error: matchesError ? `${matchesError.code}: ${matchesError.message}` : null
-      };
+      try {
+        const { data: matchesData, error: matchesError } = await supabase
+          .from('matches')
+          .select('count')
+          .single();
+        
+        results.matches = {
+          exists: !matchesError,
+          count: matchesData?.count ?? 0,
+          error: matchesError ? `${matchesError.code}: ${matchesError.message}` : null
+        };
+      } catch (err) {
+        results.matches = {
+          exists: false,
+          count: 0,
+          error: err instanceof Error ? err.message : String(err)
+        };
+      }
 
       setDbStatus(results);
     } catch (error) {

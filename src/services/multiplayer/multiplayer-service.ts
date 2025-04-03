@@ -1,4 +1,3 @@
-
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { ElementData } from "@/types/game";
@@ -8,7 +7,8 @@ import {
   MultiplayerGameState, 
   MultiplayerGameResult, 
   GameStateListener, 
-  GameResultListener 
+  GameResultListener,
+  MultiplayerGameDB
 } from "./types";
 
 class MultiplayerService {
@@ -59,7 +59,7 @@ class MultiplayerService {
           .from('multiplayer_games')
           .update({
             player2_id: user.id,
-            status: 'active' as const,
+            status: 'active',
             updated_at: new Date().toISOString()
           })
           .eq('id', data.id)
@@ -71,31 +71,35 @@ class MultiplayerService {
           return null;
         }
 
-        // Fix typing issue by casting the status to the correct type
-        const typedGame: MultiplayerGameState = {
-          ...updatedGame,
-          status: updatedGame.status as 'waiting' | 'active' | 'completed'
+        // Cast to the correct type
+        const typedGame = updatedGame as unknown as MultiplayerGameDB;
+        const gameState: MultiplayerGameState = {
+          ...typedGame,
+          status: typedGame.status as 'waiting' | 'active' | 'completed'
         };
 
-        this.gameStateService.setGameState(typedGame);
-        this.gameStateService.setupRealtimeListener(typedGame.id);
+        this.gameStateService.setGameState(gameState);
+        this.gameStateService.setupRealtimeListener(gameState.id);
         this.gameStateService.startGameTimer();
-        return typedGame;
+        return gameState;
       } else {
         // Create new game
+        const gameData = {
+          player1_id: user.id,
+          player1_score: 0,
+          player2_score: 0,
+          player1_errors: 0,
+          player2_errors: 0,
+          current_question_index: 0,
+          is_active: true,
+          time_remaining: 180, // 3 minutes in seconds
+          status: 'waiting',
+          player2_id: null,
+        };
+
         const { data: newGame, error: createError } = await supabase
           .from('multiplayer_games')
-          .insert({
-            player1_id: user.id,
-            player1_score: 0,
-            player2_score: 0,
-            player1_errors: 0,
-            player2_errors: 0,
-            current_question_index: 0,
-            is_active: true,
-            time_remaining: 180, // 3 minutes in seconds
-            status: 'waiting' as const
-          })
+          .insert(gameData)
           .select('*')
           .single();
 
@@ -104,15 +108,16 @@ class MultiplayerService {
           return null;
         }
 
-        // Fix typing issue by casting the status to the correct type
-        const typedGame: MultiplayerGameState = {
-          ...newGame,
-          status: newGame.status as 'waiting' | 'active' | 'completed'
+        // Cast to the correct type
+        const typedGame = newGame as unknown as MultiplayerGameDB;
+        const gameState: MultiplayerGameState = {
+          ...typedGame,
+          status: typedGame.status as 'waiting' | 'active' | 'completed'
         };
 
-        this.gameStateService.setGameState(typedGame);
-        this.gameStateService.setupRealtimeListener(typedGame.id);
-        return typedGame;
+        this.gameStateService.setGameState(gameState);
+        this.gameStateService.setupRealtimeListener(gameState.id);
+        return gameState;
       }
     } catch (error) {
       console.error('Error in findGame:', error);

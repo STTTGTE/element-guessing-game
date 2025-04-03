@@ -34,3 +34,20 @@ export interface GameStateListener {
 export interface GameResultListener {
   (result: MultiplayerGameResult): void;
 }
+
+// Define table structure for database operations
+export type MultiplayerGameDB = {
+  id: string;
+  player1_id: string;
+  player2_id: string | null;
+  player1_score: number;
+  player2_score: number;
+  player1_errors: number;
+  player2_errors: number;
+  current_question_index: number;
+  is_active: boolean;
+  time_remaining: number;
+  status: 'waiting' | 'active' | 'completed';
+  created_at: string;
+  updated_at: string;
+};

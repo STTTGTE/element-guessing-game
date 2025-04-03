@@ -8,7 +8,7 @@ import { AuthForm } from "@/components/auth/auth-form";
 import { GameHistory } from "@/components/game-history";
 import { UserNav } from "@/components/user-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { ElementData, Question } from "@/types/game";
 import { elementData } from "@/data/elements";
 import { questions } from "@/data/questions";
@@ -114,7 +114,7 @@ const Index = () => {
 
   const switchGameMode = (mode: 'single' | 'multiplayer') => {
     if (gameMode !== mode) {
-      setGameMode(mode);
+      setGameMode(mode as 'single' | 'multiplayer');
       if (mode === 'single') {
         setScore(0);
         setQuestionNumber(0);
