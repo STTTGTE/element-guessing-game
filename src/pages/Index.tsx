@@ -58,9 +58,13 @@ const Index = () => {
       nextQuestion();
       
       if (session.user && !guestMode) {
-        const currentStreak = await updateStreak();
-        if (typeof currentStreak === 'number') {
-          checkAndGrantAchievements(score + 1, currentStreak);
+        try {
+          const currentStreak = await updateStreak();
+          if (typeof currentStreak === 'number') {
+            checkAndGrantAchievements(score + 1, currentStreak);
+          }
+        } catch (error) {
+          console.error("Error updating streak:", error);
         }
       }
     } else if (currentQuestion) {

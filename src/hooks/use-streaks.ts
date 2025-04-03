@@ -60,7 +60,7 @@ export function useStreaks() {
     }
   }
 
-  const updateStreak = async (): Promise<number | null | undefined> => {
+  const updateStreak = async (): Promise<number | null> => {
     if (!session.user) return null;
 
     const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
@@ -103,7 +103,7 @@ export function useStreaks() {
       if (error) throw error
 
       setUserStreak(data)
-      return data.current_streak
+      return newStreak
     } catch (error) {
       console.error('Error updating streak:', error)
       toast({
@@ -111,7 +111,7 @@ export function useStreaks() {
         description: "Failed to update streak. Please try again.",
         variant: "destructive",
       })
-      return undefined
+      return null
     }
   }
 
