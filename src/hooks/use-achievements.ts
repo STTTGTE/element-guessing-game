@@ -1,110 +1,90 @@
 
-import { useState, useEffect } from 'react'
-import { useAuth } from './use-auth'
-import { supabase, Achievement, UserAchievement } from '@/lib/supabase'
-import { useToast } from '@/components/ui/use-toast'
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from './use-auth';
+import { useToast } from './use-toast';
+import { UserAchievement } from '@/lib/supabase';
 
 export function useAchievements() {
-  const { session } = useAuth()
-  const { toast } = useToast()
-  const [achievements, setAchievements] = useState<Achievement[]>([])
-  const [userAchievements, setUserAchievements] = useState<UserAchievement[]>([])
-  const [loading, setLoading] = useState(true)
+  const { session } = useAuth();
+  const { toast } = useToast();
+  const [achievements, setAchievements] = useState<UserAchievement[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (session.user) {
-      fetchAchievements()
-      fetchUserAchievements()
-    } else {
-      setLoading(false)
-    }
-  }, [session.user])
-
+  // Fetch user achievements from the database
   const fetchAchievements = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('achievements')
-        .select('*')
-        .order('created_at', { ascending: true })
-
-      if (error) throw error
-      setAchievements(data)
-    } catch (error) {
-      console.error('Error fetching achievements:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchUserAchievements = async () => {
-    if (!session.user) return
+    if (!session.user) return;
     
     try {
+      setLoading(true);
+      
       const { data, error } = await supabase
         .from('user_achievements')
-        .select('*, achievement:achievements(*)')
-        .eq('user_id', session.user.id)
-
-      if (error) throw error
-      setUserAchievements(data)
-    } catch (error) {
-      console.error('Error fetching user achievements:', error)
+        .select(`
+          id,
+          user_id,
+          achievement_id,
+          earned_at,
+          achievement:achievements(*)
+        `)
+        .eq('user_id', session.user.id);
+      
+      if (error) throw error;
+      
+      // The data returned has the correct shape for our UserAchievement type
+      setAchievements(data || []);
+    } catch (error: any) {
+      console.error('Error fetching achievements:', error.message);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
+  // Check achievement conditions and grant them if needed
   const checkAndGrantAchievements = async (score: number, streak: number) => {
-    if (!session.user) return
+    if (!session.user) return;
     
     try {
-      // Get achievements that the user doesn't have yet
-      const unearned = achievements.filter(achievement => 
-        !userAchievements.some(ua => ua.achievement_id === achievement.id)
-      )
+      // Call an edge function or RPC to handle achievement granting
+      const { data, error } = await supabase.functions.invoke('update_achievements', {
+        body: {
+          user_id: session.user.id,
+          score,
+          streak
+        }
+      });
       
-      // Check each achievement if it should be granted
-      for (const achievement of unearned) {
-        const condition = achievement.condition
-        let shouldGrant = false
-        
-        // Evaluate the condition
-        if (condition.includes('score >=')) {
-          const requiredScore = parseInt(condition.split('>=')[1].trim())
-          shouldGrant = score >= requiredScore
-        } else if (condition.includes('streak >=')) {
-          const requiredStreak = parseInt(condition.split('>=')[1].trim())
-          shouldGrant = streak >= requiredStreak
-        }
-        
-        if (shouldGrant) {
-          // Grant the achievement
-          const { error } = await supabase
-            .from('user_achievements')
-            .insert([
-              { user_id: session.user.id, achievement_id: achievement.id }
-            ])
-            
-          if (error) throw error
-          
-          // Show toast notification
+      if (error) throw error;
+      
+      if (data?.newAchievements?.length > 0) {
+        // Show a toast for each new achievement
+        data.newAchievements.forEach((achievement: any) => {
           toast({
-            title: "Achievement Unlocked!",
-            description: `${achievement.name}: ${achievement.description}`,
-            className: "bg-amber-500 text-white border-amber-600"
-          })
-          
-          // Refresh user achievements
-          fetchUserAchievements()
-        }
+            title: "Achievement Unlocked! 🏆",
+            description: achievement.name,
+            className: "achievement-toast",
+          });
+        });
+        
+        // Refresh achievements list
+        fetchAchievements();
       }
-    } catch (error) {
-      console.error('Error granting achievements:', error)
+    } catch (error: any) {
+      console.error('Error granting achievements:', error.message);
     }
-  }
+  };
 
-  return {
-    achievements,
-    userAchievements,
-    loading,
-    checkAndGrantAchievements: session.user ? checkAndGrantAchievements : () => Promise.resolve()
-  }
+  // Fetch achievements on component mount or when user logs in
+  useEffect(() => {
+    if (session.user && !session.loading) {
+      fetchAchievements();
+    }
+  }, [session.user, session.loading]);
+
+  return { 
+    achievements, 
+    loading, 
+    fetchAchievements, 
+    checkAndGrantAchievements 
+  };
 }

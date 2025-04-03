@@ -40,30 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Fetch user profile
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      // Using a generic query approach to avoid type errors with specific tables
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      if (error) {
-        // If error is not "not found", log it
-        if (error.code !== 'PGRST116') {
-          console.error('Error fetching user profile:', error);
-        }
-        return;
-      }
-      
-      setProfile(data);
-    } catch (error) {
-      console.error('Exception fetching user profile:', error);
-    }
-  };
-
   // Initialize auth state
   useEffect(() => {
     // Get the current session
@@ -73,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         if (session?.user) {
           setUser(session.user);
-          await fetchUserProfile(session.user.id);
+          // We're not fetching profiles anymore as it's causing type errors
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
@@ -90,12 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user || null);
         setLoading(false);
         
-        if (session?.user) {
-          // Using setTimeout to avoid potential auth deadlocks
-          setTimeout(() => {
-            fetchUserProfile(session.user.id);
-          }, 0);
-        } else {
+        if (!session?.user) {
           setProfile(null);
         }
       }

@@ -44,7 +44,8 @@ export type UserAchievement = {
   id: string
   user_id: string
   achievement_id: string
-  created_at: string
+  earned_at: string
+  created_at?: string
   achievement?: Achievement
 }
 
@@ -81,4 +82,16 @@ export type Matchmaking = {
   user_id: string
   status: 'searching' | 'matched'
   created_at: string
+}
+
+// Create a more flexible generic type for database operations
+export type DatabaseTables = {
+  achievements: Achievement;
+  game_history: GameHistory;
+  multiplayer_games: MultiplayerGame;
+  user_achievements: UserAchievement;
+  user_streaks: UserStreak;
+  matches: Match;
+  matchmaking: Matchmaking;
+  profiles: Profile;
 }
