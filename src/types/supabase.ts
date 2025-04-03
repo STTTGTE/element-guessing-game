@@ -103,8 +103,8 @@ export interface Database {
           id?: string
           player1_id: string
           player2_id: string
-          question_number: number
-          scores: Json
+          question_number?: number
+          scores?: Json
           status: string
           updated_at?: string
         }
@@ -196,10 +196,18 @@ export interface Database {
           earned_at: string
           id: string
           user_id: string
+          achievement?: {
+            id: string
+            name: string
+            description: string
+            icon: string | null
+            condition: string
+            created_at: string
+          }
         }
         Insert: {
           achievement_id: string
-          earned_at: string
+          earned_at?: string
           id?: string
           user_id: string
         }
@@ -250,3 +258,12 @@ export interface Database {
     }
   }
 }
+
+export type Achievement = Database['public']['Tables']['achievements']['Row'];
+export type UserAchievement = Database['public']['Tables']['user_achievements']['Row'];
+export type GameHistory = Database['public']['Tables']['game_history']['Row'];
+export type Profile = Database['public']['Tables']['profiles']['Row'];
+export type UserStreak = Database['public']['Tables']['user_streaks']['Row'];
+export type Matchmaking = Database['public']['Tables']['matchmaking']['Row'];
+export type Match = Database['public']['Tables']['matches']['Row'];
+export type MultiplayerGame = Database['public']['Tables']['multiplayer_games']['Row'];

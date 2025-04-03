@@ -17,7 +17,7 @@ export function Achievements() {
     return null
   }
 
-  const getAchievementIcon = (icon: string | undefined) => {
+  const getAchievementIcon = (icon: string | null) => {
     switch (icon) {
       case 'trophy':
         return <Trophy className="h-5 w-5" />

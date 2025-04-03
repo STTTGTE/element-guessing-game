@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
@@ -114,7 +115,7 @@ const Index = () => {
 
   const switchGameMode = (mode: 'single' | 'multiplayer') => {
     if (gameMode !== mode) {
-      setGameMode(mode as 'single' | 'multiplayer');
+      setGameMode(mode);
       if (mode === 'single') {
         setScore(0);
         setQuestionNumber(0);
@@ -167,7 +168,11 @@ const Index = () => {
 
       <div className="bg-muted/40 border-b">
         <div className="max-w-7xl mx-auto px-4">
-          <Tabs value={gameMode} onValueChange={(value) => switchGameMode(value as 'single' | 'multiplayer')} className="w-full">
+          <Tabs 
+            value={gameMode} 
+            onValueChange={(value) => switchGameMode(value as 'single' | 'multiplayer')} 
+            className="w-full"
+          >
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mt-2">
               <TabsTrigger value="single">Single Player</TabsTrigger>
               <TabsTrigger value="multiplayer" className="flex items-center gap-1">

@@ -1,50 +1,71 @@
 
-import { Clock, Shield } from "lucide-react";
-import { MultiplayerGameState } from "@/services/multiplayer";
+import { User, Clock, Award } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
-interface GameStatusBarProps {
-  gameState: MultiplayerGameState;
+// Define the minimal game state needed for this component
+interface GameStatusProps {
+  gameState: {
+    player1_id: string;
+    player2_id: string | null;
+    player1_score: number;
+    player2_score: number;
+    current_question_index: number;
+    status: string;
+  };
   userId: string;
 }
 
-export function GameStatusBar({ gameState, userId }: GameStatusBarProps) {
-  const isPlayer1 = gameState.player1_id === userId;
+export function GameStatusBar({ gameState, userId }: GameStatusProps) {
+  const isPlayer1 = userId === gameState.player1_id;
+  const userScore = isPlayer1 ? gameState.player1_score : gameState.player2_score;
+  const opponentScore = isPlayer1 ? gameState.player2_score : gameState.player1_score;
   
-  const formatTimeRemaining = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
+  // Calculate progress (1-based for display)
+  const currentQuestion = gameState.current_question_index + 1;
+  const totalQuestions = 10; // Assuming 10 questions per game
+  const progress = (currentQuestion / totalQuestions) * 100;
 
   return (
-    <div className="lg:col-span-3 flex justify-between items-center bg-card text-card-foreground rounded-lg shadow-sm p-4">
-      <div className="flex items-center gap-2">
-        <Clock className="h-5 w-5 text-amber-500" />
-        <span className="font-bold">{formatTimeRemaining(gameState.time_remaining || 0)}</span>
-      </div>
-      
-      <div className="flex items-center gap-4">
-        <div className="text-center">
-          <div className="text-sm text-muted-foreground">You</div>
-          <div className="font-bold text-lg">
-            {isPlayer1 ? gameState.player1_score : gameState.player2_score}
+    <>
+      <Card>
+        <CardContent className="p-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <User className="h-4 w-4 text-primary" />
+            <span className="font-medium">You</span>
           </div>
-        </div>
-        <div className="text-xl">vs</div>
-        <div className="text-center">
-          <div className="text-sm text-muted-foreground">Opponent</div>
-          <div className="font-bold text-lg">
-            {isPlayer1 ? gameState.player2_score : gameState.player1_score}
+          <div className="bg-primary text-primary-foreground px-2 py-0.5 rounded font-bold">
+            {userScore}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
       
-      <div className="flex items-center gap-2">
-        <Shield className="h-5 w-5 text-red-500" />
-        <span className="font-bold">
-          {isPlayer1 ? (3 - gameState.player1_errors) : (3 - gameState.player2_errors)}/3
-        </span>
-      </div>
-    </div>
+      <Card>
+        <CardContent className="p-3">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <Award className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm">Progress</span>
+            </div>
+            <span className="text-sm font-medium">
+              {currentQuestion}/{totalQuestions}
+            </span>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardContent className="p-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <User className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">Opponent</span>
+          </div>
+          <div className="bg-muted text-muted-foreground px-2 py-0.5 rounded font-bold">
+            {opponentScore}
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }
