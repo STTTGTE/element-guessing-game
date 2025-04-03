@@ -130,9 +130,20 @@ export function MultiplayerGame() {
 
   // Render game result when the game is completed
   if (gameState.status === 'completed' || gameResult) {
+    // Convert MultiplayerGameResult to GameResult format
+    const convertedResult = gameResult ? {
+      winnerId: gameResult.winner_id,
+      scores: {
+        [gameResult.player1_id]: gameResult.player1_score,
+        [gameResult.player2_id || '']: gameResult.player2_score
+      },
+      isDraw: gameResult.is_draw,
+      players: [gameResult.player1_id, gameResult.player2_id || '']
+    } : null;
+    
     return (
       <GameResult 
-        gameResult={gameResult!} 
+        gameResult={convertedResult!} 
         user={session.user} 
         onPlayAgain={findGame} 
         onLeaveGame={leaveGame} 

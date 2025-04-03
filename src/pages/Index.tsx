@@ -59,7 +59,9 @@ const Index = () => {
       
       if (session.user && !guestMode) {
         const currentStreak = await updateStreak();
-        checkAndGrantAchievements(score + 1, currentStreak || 1);
+        if (currentStreak !== null) {
+          checkAndGrantAchievements(score + 1, currentStreak);
+        }
       }
     } else if (currentQuestion) {
       toast({

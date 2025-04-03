@@ -25,12 +25,16 @@ export function DebugPanel() {
       // Try to fetch profile data if it exists
       let profileData = null;
       try {
-        const { data } = await supabase
+        // Use a safe approach without relying on table types
+        const { data, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
-          .single();
-        profileData = data;
+          .maybeSingle();
+          
+        if (!error) {
+          profileData = data;
+        }
       } catch (error) {
         console.log('No profiles table or no profile found:', error);
       }
@@ -38,11 +42,14 @@ export function DebugPanel() {
       // Try to fetch matchmaking data if it exists
       let matchmakingData = null;
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('matchmaking')
           .select('*')
           .eq('user_id', session.user.id);
-        matchmakingData = data;
+          
+        if (!error) {
+          matchmakingData = data;
+        }
       } catch (error) {
         console.log('No matchmaking table or no matchmaking data found:', error);
       }
@@ -50,12 +57,15 @@ export function DebugPanel() {
       // Try to fetch active matches if they exist
       let matchesData = null;
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('matches')
           .select('*')
           .or(`player1_id.eq.${session.user.id},player2_id.eq.${session.user.id}`)
           .eq('status', 'active');
-        matchesData = data;
+          
+        if (!error) {
+          matchesData = data;
+        }
       } catch (error) {
         console.log('No matches table or no matches found:', error);
       }

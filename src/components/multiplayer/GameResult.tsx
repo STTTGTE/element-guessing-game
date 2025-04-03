@@ -4,11 +4,16 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Trophy, Award, RefreshCw, Home } from "lucide-react";
 
-// Import the GameResult type from our service
-import { GameResult as GameResultType } from "./multiplayer-service";
+// Define the consistent GameResult type
+export interface GameResult {
+  winnerId: string | null;
+  scores: Record<string, number>;
+  isDraw: boolean;
+  players: string[];
+}
 
 interface GameResultProps {
-  gameResult: GameResultType;
+  gameResult: GameResult;
   user: User | null;
   onPlayAgain: () => Promise<void>;
   onLeaveGame: () => void;
