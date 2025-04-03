@@ -25,15 +25,18 @@ export function DebugPanel() {
       // Try to fetch profile data if it exists
       let profileData = null;
       try {
-        // Use a safe approach without relying on table types
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .maybeSingle();
-          
-        if (!error) {
-          profileData = data;
+        // Use a generic approach that doesn't rely on typed tables
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}&select=*`,
+          {
+            headers: {
+              'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${session.session?.access_token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          profileData = await response.json();
         }
       } catch (error) {
         console.log('No profiles table or no profile found:', error);

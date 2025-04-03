@@ -1,6 +1,6 @@
 
 import { supabase } from '@/lib/supabase';
-import { User } from '@supabase/supabase-js';
+import { User } from "@supabase/supabase-js";
 import { ElementData, Question } from '@/types/game';
 import { Match, Matchmaking } from '@/types/supabase';
 import { questions } from '@/data/questions';
@@ -138,13 +138,22 @@ class MultiplayerService {
       const questionNumber = (gameData.question_number + 1) % questions.length;
       const nextQuestion = questions[questionNumber];
       
+      // Safely convert the Question to a JSON-compatible object
+      const questionJson = {
+        id: nextQuestion.id,
+        text: nextQuestion.text,
+        correctElement: nextQuestion.correctElement,
+        hint: nextQuestion.hint || null,
+        difficulty: nextQuestion.difficulty || null
+      };
+      
       // Update game state
       const { error: updateError } = await supabase
         .from('matches')
         .update({
           scores,
           question_number: questionNumber,
-          current_question: nextQuestion
+          current_question: questionJson
         })
         .eq('id', gameId);
       
