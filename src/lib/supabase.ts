@@ -4,22 +4,8 @@ import type { Database } from '@/types/supabase'
 // Use the values from the integrations/supabase/client.ts file which are already properly configured
 import { supabase as supabaseClient } from '@/integrations/supabase/client'
 
-export const supabase = createClient<Database>(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-    global: {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    },
-  }
-);
+// Export the supabase client directly
+export const supabase = supabaseClient;
 
 // Define types for database tables
 export type GameHistory = {
