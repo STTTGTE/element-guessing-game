@@ -72,11 +72,16 @@ begin
       select id, text, "correctElement", hint, difficulty
       from (
         values
-          (1, 'Which element is a noble gas with atomic number 10?', 'Ne', 'It''s used in lighting and signs', 'medium'),
-          (2, 'Which element is the most abundant metal in Earth''s crust?', 'Al', 'It''s lightweight and used in cans', 'easy'),
-          (3, 'Which element is a halogen with atomic number 35?', 'Br', 'It''s a reddish-brown liquid at room temperature', 'hard'),
-          (4, 'Which element is essential for human life and forms the backbone of DNA?', 'P', 'It glows in the dark', 'medium'),
-          (5, 'Which element is the lightest metal on the periodic table?', 'Li', 'It''s used in batteries', 'easy')
+          (1, 'What is the most abundant element in the universe?', 'H', 'This element is the lightest and makes up most stars', 'easy'),
+          (2, 'Which element is essential for life and forms the basis of organic chemistry?', 'C', 'This element can form up to four covalent bonds', 'easy'),
+          (3, 'Which noble gas is used in lighting and signs, giving a reddish-orange glow?', 'Ne', 'This element has atomic number 10', 'medium'),
+          (4, 'Which halogen is a purple gas at room temperature?', 'I', 'This element is used as an antiseptic', 'medium'),
+          (5, 'Which transition metal is liquid at room temperature?', 'Hg', 'This element was historically known as quicksilver', 'medium'),
+          (6, 'Which alkali metal explodes violently when it comes into contact with water?', 'Cs', 'This element has the lowest electronegativity', 'hard'),
+          (7, 'Which element is used in semiconductor devices and solar cells?', 'Si', 'This element is the second most abundant in Earth''s crust', 'medium'),
+          (8, 'Which noble gas is used in MRI machines?', 'He', 'This element is extracted from natural gas', 'easy'),
+          (9, 'Which element is essential for strong bones and teeth?', 'Ca', 'This element is the most abundant metal in the human body', 'easy'),
+          (10, 'Which radioactive element was discovered by Marie Curie?', 'Ra', 'This element glows blue in the dark', 'hard')
       ) as q(id, text, "correctElement", hint, difficulty)
       order by random()
       limit 1

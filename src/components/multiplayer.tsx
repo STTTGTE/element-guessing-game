@@ -426,16 +426,34 @@ export function MultiplayerGame() {
       const newScores = { ...gameState.scores };
       newScores[userId] = (newScores[userId] || 0) + (isCorrect ? 1 : 0);
       
+      // Get a random question from our questions array
+      const availableQuestions = questions.filter(q => 
+        q.id !== gameState.currentQuestion?.id
+      );
+      const nextQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+      
+      // Convert the question to a plain object for Supabase
+      const nextQuestionObject = {
+        id: nextQuestion.id,
+        text: nextQuestion.text,
+        correctElement: nextQuestion.correctElement,
+        hint: nextQuestion.hint,
+        difficulty: nextQuestion.difficulty
+      };
+      
       // Update game state in database
       const { error } = await supabase
         .from('matches')
         .update({
-          scores: newScores
+          scores: newScores,
+          current_question: nextQuestionObject,
+          question_number: gameState.questionNumber + 1,
+          status: gameState.questionNumber >= 9 ? 'completed' : 'active'
         })
         .eq('id', gameState.gameId);
       
       if (error) {
-        console.error("Error updating scores:", error);
+        console.error("Error updating game state:", error);
         throw error;
       }
       
