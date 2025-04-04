@@ -1,4 +1,3 @@
-
 import { useStreaks } from "@/hooks/use-streaks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Flame } from "lucide-react"
@@ -47,7 +46,7 @@ export function StreakDisplay() {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">Best streak</span>
-            <span className="font-medium">{userStreak.max_streak} {userStreak.max_streak === 1 ? 'day' : 'days'}</span>
+            <span className="font-medium">{userStreak.longest_streak} {userStreak.longest_streak === 1 ? 'day' : 'days'}</span>
           </div>
           <div className="pt-2 text-xs text-muted-foreground">
             Play every day to keep your streak going!

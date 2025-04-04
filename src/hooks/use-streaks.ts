@@ -74,7 +74,7 @@ export function useStreaks() {
         .insert({
           user_id: userId,
           current_streak: 0,
-          max_streak: 0,
+          longest_streak: 0,
           last_played: null
         });
 
@@ -123,7 +123,7 @@ export function useStreaks() {
         .from('user_streaks')
         .update({
           current_streak: newStreak,
-          max_streak: Math.max(newStreak, userStreak.max_streak || 0),
+          longest_streak: Math.max(newStreak, userStreak.longest_streak || 0),
           last_played: new Date().toISOString(),
         })
         .eq('user_id', session.user.id)
