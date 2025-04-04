@@ -48,10 +48,10 @@ const Index = () => {
       <main className="flex flex-col lg:flex-row flex-grow p-2 sm:p-4 md:p-6 max-w-7xl mx-auto w-full gap-4 md:gap-6">
         <div className="flex flex-col flex-grow gap-4 md:gap-6">
           <Tabs value={gameMode} className="hidden">
-            <TabsContent value="single" forceMount={gameMode === 'single'}>
+            <TabsContent value="single" forceMount={gameMode === 'single' ? true : undefined}>
               <SinglePlayerGame guestMode={guestMode} />
             </TabsContent>
-            <TabsContent value="multiplayer" forceMount={gameMode === 'multiplayer'}>
+            <TabsContent value="multiplayer" forceMount={gameMode === 'multiplayer' ? true : undefined}>
               <MultiplayerGame />
             </TabsContent>
           </Tabs>
