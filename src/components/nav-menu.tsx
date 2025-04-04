@@ -69,7 +69,7 @@ export function NavMenu() {
       >
         <div className="flex flex-col h-full p-4">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-bold">Menu</h2>
+            <h2 className="text-xl font-bold text-foreground">Menu</h2>
             <Button variant="ghost" size="icon" onClick={closeMenu}>
               <X className="h-5 w-5" />
             </Button>
@@ -125,7 +125,7 @@ export function NavMenu() {
               <div className="space-y-2">
                 <div className="flex items-center space-x-2 px-2 py-1">
                   <User className="h-5 w-5" />
-                  <span className="font-medium">{session.profile?.username || "User"}</span>
+                  <span className="font-medium text-foreground">{session.profile?.username || "User"}</span>
                 </div>
                 <Button 
                   variant="ghost" 
@@ -198,7 +198,7 @@ function NavLink({
       asChild
       onClick={onClick}
     >
-      <Link to={to}>
+      <Link to={to} className="text-foreground">
         {icon}
         <span className="ml-2">{label}</span>
       </Link>

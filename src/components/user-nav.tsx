@@ -30,10 +30,10 @@ export function UserNav() {
         <DropdownMenuItem className="flex items-center gap-2">
           <User className="h-4 w-4" />
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{profile.username}</p>
+            <p className="text-sm font-medium leading-none text-foreground">{profile.username}</p>
           </div>
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-red-600" onClick={() => signOut()}>
+        <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => signOut()}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

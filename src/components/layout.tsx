@@ -16,7 +16,7 @@ export function Layout({ children }: LayoutProps) {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center">
             <NavMenu />
-            <h1 className="text-xl font-bold ml-4">Periodic Table Game</h1>
+            <h1 className="text-xl font-bold ml-4 text-foreground">Periodic Table Game</h1>
           </div>
           <div className="flex items-center space-x-4">
             {session.user && <UserNav />}

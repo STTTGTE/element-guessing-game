@@ -46,29 +46,29 @@ export function GameHistory() {
   }, [session.user, fetchHistory])
 
   if (loading) {
-    return <div>Loading history...</div>
+    return <div className="text-foreground">Loading history...</div>
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Games</CardTitle>
+        <CardTitle className="text-foreground">Recent Games</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Mode</TableHead>
-              <TableHead>Score</TableHead>
-              <TableHead>Questions</TableHead>
-              <TableHead>Accuracy</TableHead>
+              <TableHead className="text-foreground">Date</TableHead>
+              <TableHead className="text-foreground">Mode</TableHead>
+              <TableHead className="text-foreground">Score</TableHead>
+              <TableHead className="text-foreground">Questions</TableHead>
+              <TableHead className="text-foreground">Accuracy</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {history.map((game) => (
               <TableRow key={game.id}>
-                <TableCell>
+                <TableCell className="text-foreground">
                   {new Date(game.created_at).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
@@ -78,9 +78,9 @@ export function GameHistory() {
                     <Badge variant="outline">Single</Badge>
                   )}
                 </TableCell>
-                <TableCell>{game.score}</TableCell>
-                <TableCell>{game.total_questions}</TableCell>
-                <TableCell>
+                <TableCell className="text-foreground">{game.score}</TableCell>
+                <TableCell className="text-foreground">{game.total_questions}</TableCell>
+                <TableCell className="text-foreground">
                   {Math.round((game.score / game.total_questions) * 100)}%
                 </TableCell>
               </TableRow>

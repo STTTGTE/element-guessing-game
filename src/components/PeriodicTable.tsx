@@ -124,9 +124,9 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
                             isSelected && isCorrect && "bg-green-200 hover:bg-green-300"
                           )}
                         >
-                          <div className="atomic-number text-[9px] text-gray-500 absolute top-1 left-1.5">{element.atomicNumber}</div>
-                          <div className="symbol text-lg font-bold">{element.symbol}</div>
-                          <div className="name text-[10px] font-medium truncate max-w-full px-1">{element.name}</div>
+                          <div className="atomic-number text-[9px] text-gray-500 dark:text-gray-300 absolute top-1 left-1.5">{element.atomicNumber}</div>
+                          <div className="symbol text-lg font-bold text-gray-900 dark:text-white">{element.symbol}</div>
+                          <div className="name text-[10px] font-medium truncate max-w-full px-1 text-gray-700 dark:text-gray-200">{element.name}</div>
                         </button>
                       );
                     }
@@ -142,9 +142,9 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
                           isSelected && isCorrect && "bg-green-200 hover:bg-green-300"
                         )}
                       >
-                        <div className="atomic-number text-[9px] text-gray-500 absolute top-1 left-1.5">{element.atomicNumber}</div>
-                        <div className="symbol text-lg font-bold">{element.symbol}</div>
-                        <div className="name text-[10px] font-medium truncate max-w-full px-1">{element.name}</div>
+                        <div className="atomic-number text-[9px] text-gray-500 dark:text-gray-300 absolute top-1 left-1.5">{element.atomicNumber}</div>
+                        <div className="symbol text-lg font-bold text-gray-900 dark:text-white">{element.symbol}</div>
+                        <div className="name text-[10px] font-medium truncate max-w-full px-1 text-gray-700 dark:text-gray-200">{element.name}</div>
                       </button>
                     );
                   })}
@@ -175,9 +175,9 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
                             isSelected && isCorrect && "bg-green-200 hover:bg-green-300"
                           )}
                         >
-                          <div className="atomic-number text-[9px] text-gray-500 absolute top-1 left-1.5">{element.atomicNumber}</div>
-                          <div className="symbol text-lg font-bold">{element.symbol}</div>
-                          <div className="name text-[10px] font-medium truncate max-w-full px-1">{element.name}</div>
+                          <div className="atomic-number text-[9px] text-gray-500 dark:text-gray-300 absolute top-1 left-1.5">{element.atomicNumber}</div>
+                          <div className="symbol text-lg font-bold text-gray-900 dark:text-white">{element.symbol}</div>
+                          <div className="name text-[10px] font-medium truncate max-w-full px-1 text-gray-700 dark:text-gray-200">{element.name}</div>
                         </button>
                       );
                     })}
@@ -207,9 +207,9 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
                             isSelected && isCorrect && "bg-green-200 hover:bg-green-300"
                           )}
                         >
-                          <div className="atomic-number text-[9px] text-gray-500 absolute top-1 left-1.5">{element.atomicNumber}</div>
-                          <div className="symbol text-lg font-bold">{element.symbol}</div>
-                          <div className="name text-[10px] font-medium truncate max-w-full px-1">{element.name}</div>
+                          <div className="atomic-number text-[9px] text-gray-500 dark:text-gray-300 absolute top-1 left-1.5">{element.atomicNumber}</div>
+                          <div className="symbol text-lg font-bold text-gray-900 dark:text-white">{element.symbol}</div>
+                          <div className="name text-[10px] font-medium truncate max-w-full px-1 text-gray-700 dark:text-gray-200">{element.name}</div>
                         </button>
                       );
                     })}
@@ -237,9 +237,9 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
                     isSelected && isCorrect && "bg-green-200 hover:bg-green-300"
                   )}
                 >
-                  <div className="atomic-number text-[9px] text-gray-500 absolute top-1 left-1.5">{element.atomicNumber}</div>
-                  <div className="symbol text-lg font-bold">{element.symbol}</div>
-                  <div className="name text-[10px] font-medium truncate max-w-full px-1">{element.name}</div>
+                  <div className="atomic-number text-[9px] text-gray-500 dark:text-gray-300 absolute top-1 left-1.5">{element.atomicNumber}</div>
+                  <div className="symbol text-lg font-bold text-gray-900 dark:text-white">{element.symbol}</div>
+                  <div className="name text-[10px] font-medium truncate max-w-full px-1 text-gray-700 dark:text-gray-200">{element.name}</div>
                 </button>
               );
             })}
@@ -252,7 +252,7 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
   return (
     <div className="periodic-table w-full overflow-x-auto">
       <div className="flex justify-between items-center mb-4">
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 dark:text-gray-300">
           Click on an element to make your guess!
         </div>
         
@@ -292,44 +292,44 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
       
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2">
         <div className="flex items-center">
-          <div className="w-4 h-4 rounded bg-nonmetal bg-emerald-100 mr-2"></div>
-          <span className="text-xs">Nonmetal</span>
+          <div className="w-4 h-4 rounded bg-nonmetal bg-emerald-100 dark:bg-emerald-900 mr-2"></div>
+          <span className="text-xs text-gray-700 dark:text-gray-200">Nonmetal</span>
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 rounded bg-noble-gas bg-purple-100 mr-2"></div>
-          <span className="text-xs">Noble Gas</span>
+          <div className="w-4 h-4 rounded bg-noble-gas bg-purple-100 dark:bg-purple-900 mr-2"></div>
+          <span className="text-xs text-gray-700 dark:text-gray-200">Noble Gas</span>
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 rounded bg-alkali-metal bg-red-100 mr-2"></div>
-          <span className="text-xs">Alkali Metal</span>
+          <div className="w-4 h-4 rounded bg-alkali-metal bg-red-100 dark:bg-red-900 mr-2"></div>
+          <span className="text-xs text-gray-700 dark:text-gray-200">Alkali Metal</span>
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 rounded bg-alkaline-earth bg-orange-100 mr-2"></div>
-          <span className="text-xs">Alkaline Earth</span>
+          <div className="w-4 h-4 rounded bg-alkaline-earth bg-orange-100 dark:bg-orange-900 mr-2"></div>
+          <span className="text-xs text-gray-700 dark:text-gray-200">Alkaline Earth</span>
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 rounded bg-transition bg-blue-100 mr-2"></div>
-          <span className="text-xs">Transition Metal</span>
+          <div className="w-4 h-4 rounded bg-transition bg-blue-100 dark:bg-blue-900 mr-2"></div>
+          <span className="text-xs text-gray-700 dark:text-gray-200">Transition Metal</span>
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 rounded bg-post-transition bg-indigo-100 mr-2"></div>
-          <span className="text-xs">Post-Transition</span>
+          <div className="w-4 h-4 rounded bg-post-transition bg-indigo-100 dark:bg-indigo-900 mr-2"></div>
+          <span className="text-xs text-gray-700 dark:text-gray-200">Post-Transition</span>
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 rounded bg-metalloid bg-teal-100 mr-2"></div>
-          <span className="text-xs">Metalloid</span>
+          <div className="w-4 h-4 rounded bg-metalloid bg-teal-100 dark:bg-teal-900 mr-2"></div>
+          <span className="text-xs text-gray-700 dark:text-gray-200">Metalloid</span>
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 rounded bg-lanthanide bg-rose-100 mr-2"></div>
-          <span className="text-xs">Lanthanide</span>
+          <div className="w-4 h-4 rounded bg-lanthanide bg-rose-100 dark:bg-rose-900 mr-2"></div>
+          <span className="text-xs text-gray-700 dark:text-gray-200">Lanthanide</span>
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 rounded bg-actinide bg-pink-100 mr-2"></div>
-          <span className="text-xs">Actinide</span>
+          <div className="w-4 h-4 rounded bg-actinide bg-pink-100 dark:bg-pink-900 mr-2"></div>
+          <span className="text-xs text-gray-700 dark:text-gray-200">Actinide</span>
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 rounded bg-halogen bg-yellow-100 mr-2"></div>
-          <span className="text-xs">Halogen</span>
+          <div className="w-4 h-4 rounded bg-halogen bg-yellow-100 dark:bg-yellow-900 mr-2"></div>
+          <span className="text-xs text-gray-700 dark:text-gray-200">Halogen</span>
         </div>
       </div>
     </div>
