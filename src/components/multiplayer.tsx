@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
@@ -84,13 +83,16 @@ export function MultiplayerGame() {
                 ? (newData.scores === '[object Object]' ? {} : JSON.parse(newData.scores))
                 : newData.scores;
               
+              // Ensure players array is properly initialized
+              const players = [newData.player1_id, newData.player2_id].filter(Boolean);
+              
               setGameState(prev => ({
                 ...prev,
                 currentQuestion: currentQuestion as Question,
                 scores: scores as Record<string, number>,
                 questionNumber: newData.question_number,
                 gameId: newData.id,
-                players: [newData.player1_id, newData.player2_id],
+                players,
                 isSearching: false
               }));
               
@@ -144,10 +146,13 @@ export function MultiplayerGame() {
         ? (data.scores === '[object Object]' ? {} : JSON.parse(data.scores))
         : data.scores;
       
+      // Ensure players array is properly initialized
+      const players = [data.player1_id, data.player2_id].filter(Boolean);
+      
       // Update game state
       setGameState({
         gameId: data.id,
-        players: [data.player1_id, data.player2_id],
+        players,
         currentQuestion: currentQuestion as Question,
         scores: scores as Record<string, number>,
         questionNumber: data.question_number,
