@@ -83,6 +83,7 @@ export function SinglePlayerGame({ guestMode }: SinglePlayerGameProps) {
   const resetGame = async () => {
     if (session.user && !guestMode) {
       try {
+        // Fix for TypeScript error - explicitly using number for score and questionNumber
         await supabase.rpc('insert_game_history', {
           p_user_id: session.user.id,
           p_score: score,
