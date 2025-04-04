@@ -1,27 +1,36 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./components/auth-provider";
-import { ThemeProvider } from "./components/theme-provider";
-import { Toaster } from "./components/ui/toaster";
-import { DebugPanel } from "./components/debug-panel";
-import Index from "./pages/Index";
+import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/components/auth-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { DebugPanel } from "@/components/debug-panel";
+import { Layout } from "@/components/layout";
+import Landing from "@/pages/Landing";
+import Index from "@/pages/Index";
+import Multiplayer from "@/pages/Multiplayer";
+import History from "@/pages/History";
+import Streak from "@/pages/Streak";
+import Achievements from "@/pages/Achievements";
 import './App.css';
 
-function App() {
+export default function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <AuthProvider>
         <Router>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            {/* Add any additional routes here */}
-          </Routes>
-          <DebugPanel />
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/game" element={<Index />} />
+              <Route path="/multiplayer" element={<Multiplayer />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/streak" element={<Streak />} />
+              <Route path="/achievements" element={<Achievements />} />
+            </Routes>
+          </Layout>
           <Toaster />
+          <DebugPanel />
         </Router>
       </AuthProvider>
     </ThemeProvider>
   );
 }
-
-export default App;
