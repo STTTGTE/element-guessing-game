@@ -106,4 +106,38 @@ on conflict do nothing;
 alter publication supabase_realtime add table public.user_streaks;
 alter publication supabase_realtime add table public.game_history;
 alter publication supabase_realtime add table public.user_achievements;
-alter publication supabase_realtime add table public.achievements; 
+alter publication supabase_realtime add table public.achievements;
+
+-- Create RPC function for inserting game history
+create or replace function public.insert_game_history(
+  p_user_id uuid,
+  p_score integer,
+  p_total_questions integer,
+  p_game_mode text default 'single'
+)
+returns json
+language plpgsql
+security definer
+as $$
+declare
+  result json;
+begin
+  insert into public.game_history (
+    user_id,
+    score,
+    questions_answered,
+    correct_answers,
+    game_type
+  )
+  values (
+    p_user_id,
+    p_score,
+    p_total_questions,
+    p_score,
+    p_game_mode
+  )
+  returning to_jsonb(game_history.*) into result;
+  
+  return result;
+end;
+$$; 

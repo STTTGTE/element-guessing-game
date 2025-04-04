@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from './use-auth';
 import { useToast } from './use-toast';
-import { UserAchievement } from '@/lib/supabase';
+import { UserAchievement, Achievement } from '@/lib/supabase';
 
 export function useAchievements() {
   const { session } = useAuth();
@@ -25,16 +24,33 @@ export function useAchievements() {
           user_id,
           achievement_id,
           earned_at,
-          achievement:achievements(*)
+          achievement:achievements (
+            id,
+            name,
+            description,
+            condition,
+            icon,
+            created_at
+          )
         `)
         .eq('user_id', session.user.id);
       
       if (error) throw error;
       
-      // The data returned has the correct shape for our UserAchievement type
-      setAchievements(data || []);
+      // Transform the data to match UserAchievement type
+      const transformedData = (data || []).map(item => ({
+        ...item,
+        achievement: item.achievement as unknown as Achievement
+      }));
+      
+      setAchievements(transformedData);
     } catch (error: any) {
       console.error('Error fetching achievements:', error.message);
+      toast({
+        title: "Error",
+        description: "Failed to fetch achievements. Please try again later.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -45,20 +61,27 @@ export function useAchievements() {
     if (!session.user) return;
     
     try {
-      // Call an edge function or RPC to handle achievement granting
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (!currentSession?.access_token) {
+        throw new Error('No access token available');
+      }
+
       const { data, error } = await supabase.functions.invoke('update_achievements', {
-        body: {
-          user_id: session.user.id,
-          score,
-          streak
+        body: { score, streak },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentSession.access_token}`
         }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error calling update_achievements:', error);
+        throw error;
+      }
       
       if (data?.newAchievements?.length > 0) {
         // Show a toast for each new achievement
-        data.newAchievements.forEach((achievement: any) => {
+        data.newAchievements.forEach((achievement: Achievement) => {
           toast({
             title: "Achievement Unlocked! 🏆",
             description: achievement.name,
@@ -67,10 +90,11 @@ export function useAchievements() {
         });
         
         // Refresh achievements list
-        fetchAchievements();
+        await fetchAchievements();
       }
     } catch (error: any) {
       console.error('Error granting achievements:', error.message);
+      // Don't show error toast to user as this is a background operation
     }
   };
 

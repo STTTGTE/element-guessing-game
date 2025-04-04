@@ -49,33 +49,17 @@ export function useStreaks() {
 
   const createNewStreak = async (userId: string) => {
     try {
-      // First check if a streak already exists to avoid duplicate inserts
-      const { data: existingStreak, error: checkError } = await supabase
-        .from('user_streaks')
-        .select('id')
-        .eq('user_id', userId)
-        .maybeSingle();
-      
-      if (checkError) {
-        console.error('Error checking for existing streak:', checkError);
-        return;
-      }
-      
-      // If streak already exists, no need to create a new one
-      if (existingStreak) {
-        console.log('Streak already exists, fetching it');
-        fetchUserStreak();
-        return;
-      }
-      
-      // Create a new streak with proper data structure
+      // Use upsert instead of insert to handle potential conflicts
       const { error } = await supabase
         .from('user_streaks')
-        .insert({
+        .upsert({
           user_id: userId,
           current_streak: 0,
           longest_streak: 0,
           last_played: null
+        }, {
+          onConflict: 'user_id',
+          ignoreDuplicates: true
         });
 
       if (error) {
