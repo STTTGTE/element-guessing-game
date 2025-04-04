@@ -249,7 +249,7 @@ export default function Multiplayer() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <h1 className="text-3xl font-bold">Multiplayer</h1>
+        <h1 className="text-3xl font-bold text-foreground">Multiplayer</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -263,7 +263,7 @@ export default function Multiplayer() {
             <TabsContent value="find" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Find Players</CardTitle>
+                  <CardTitle className="text-foreground">Find Players</CardTitle>
                   <CardDescription>
                     Search for players to challenge in a multiplayer game
                   </CardDescription>
@@ -304,7 +304,7 @@ export default function Multiplayer() {
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-medium">{player.username}</p>
+                                <p className="font-medium text-foreground">{player.username}</p>
                               </div>
                             </div>
                             <Button 
@@ -330,7 +330,7 @@ export default function Multiplayer() {
             <TabsContent value="active" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Active Games</CardTitle>
+                  <CardTitle className="text-foreground">Active Games</CardTitle>
                   <CardDescription>
                     Your ongoing multiplayer games
                   </CardDescription>
@@ -353,11 +353,11 @@ export default function Multiplayer() {
                                       {game.player1?.username?.charAt(0).toUpperCase() || '?'}
                                     </AvatarFallback>
                                   </Avatar>
-                                  <p className="text-sm mt-1">{game.player1?.username || 'Player 1'}</p>
-                                  <p className="font-bold">{game.player1_score}</p>
+                                  <p className="text-sm mt-1 text-foreground">{game.player1?.username || 'Player 1'}</p>
+                                  <p className="font-bold text-foreground">{game.player1_score}</p>
                                 </div>
                                 
-                                <div className="text-2xl font-bold">VS</div>
+                                <div className="text-2xl font-bold text-foreground">VS</div>
                                 
                                 <div className="flex flex-col items-center">
                                   <Avatar>
@@ -365,8 +365,8 @@ export default function Multiplayer() {
                                       {game.player2?.username?.charAt(0).toUpperCase() || '?'}
                                     </AvatarFallback>
                                   </Avatar>
-                                  <p className="text-sm mt-1">{game.player2?.username || 'Waiting...'}</p>
-                                  <p className="font-bold">{game.player2_score}</p>
+                                  <p className="text-sm mt-1 text-foreground">{game.player2?.username || 'Waiting...'}</p>
+                                  <p className="font-bold text-foreground">{game.player2_score}</p>
                                 </div>
                               </div>
                               
@@ -402,7 +402,7 @@ export default function Multiplayer() {
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Your Profile</CardTitle>
+              <CardTitle className="text-foreground">Your Profile</CardTitle>
             </CardHeader>
             <CardContent>
               {userProfile ? (
@@ -412,7 +412,7 @@ export default function Multiplayer() {
                       {userProfile.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <h3 className="text-xl font-bold">{userProfile.username}</h3>
+                  <h3 className="text-xl font-bold text-foreground">{userProfile.username}</h3>
                   <p className="text-muted-foreground">Player since {new Date(userProfile.created_at).toLocaleDateString()}</p>
                 </div>
               ) : (

@@ -7,18 +7,19 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Flame, Loader2, Calendar, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/lib/supabase";
 
 export default function Streak() {
   const { session } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { streak, loading, fetchStreak } = useStreaks();
+  const { userStreak, loading, fetchUserStreak } = useStreaks();
   const [streakHistory, setStreakHistory] = useState<any[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
 
   useEffect(() => {
     if (session?.user) {
-      fetchStreak();
+      fetchUserStreak();
       fetchStreakHistory();
     }
   }, [session]);
@@ -78,13 +79,13 @@ export default function Streak() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <h1 className="text-3xl font-bold">My Streak</h1>
+        <h1 className="text-3xl font-bold text-foreground">My Streak</h1>
       </div>
 
       {!session.user ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-lg mb-4">You need to be signed in to view your streak.</p>
+            <p className="text-lg mb-4 text-foreground">You need to be signed in to view your streak.</p>
             <Button onClick={() => navigate('/game?mode=login')}>
               Sign In
             </Button>
@@ -95,7 +96,7 @@ export default function Streak() {
           <div className="md:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-foreground">
                   <Flame className="h-6 w-6 mr-2 text-orange-500" />
                   Current Streak
                 </CardTitle>
@@ -111,21 +112,21 @@ export default function Streak() {
                 ) : (
                   <div className="text-center">
                     <div className="text-6xl font-bold text-orange-500 mb-2">
-                      {streak?.current_streak || 0}
+                      {userStreak?.current_streak || 0}
                     </div>
                     <p className="text-muted-foreground mb-4">
-                      {streak?.current_streak === 0 
+                      {userStreak?.current_streak === 0 
                         ? "Start playing to build your streak!" 
-                        : `You've played for ${streak?.current_streak} day${streak?.current_streak === 1 ? '' : 's'} in a row`}
+                        : `You've played for ${userStreak?.current_streak} day${userStreak?.current_streak === 1 ? '' : 's'} in a row`}
                     </p>
                     
                     <div className="mt-6">
-                      <h3 className="text-lg font-semibold mb-2">Longest Streak</h3>
+                      <h3 className="text-lg font-semibold mb-2 text-foreground">Longest Streak</h3>
                       <div className="text-4xl font-bold text-primary">
-                        {streak?.longest_streak || 0}
+                        {userStreak?.max_streak || 0}
                       </div>
                       <p className="text-muted-foreground">
-                        {streak?.longest_streak === 0 
+                        {userStreak?.max_streak === 0 
                           ? "Your best streak will appear here" 
                           : "Your best streak so far"}
                       </p>
@@ -146,7 +147,7 @@ export default function Streak() {
             
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-foreground">
                   <Calendar className="h-5 w-5 mr-2" />
                   Activity Calendar
                 </CardTitle>
@@ -163,11 +164,11 @@ export default function Streak() {
                   <div className="space-y-4">
                     {streakHistory.map((day) => (
                       <div key={day.date} className="flex items-center">
-                        <div className="w-32 text-sm">{formatDate(day.date)}</div>
+                        <div className="w-32 text-sm text-foreground">{formatDate(day.date)}</div>
                         <div className="flex-1">
                           <Progress value={Math.min(day.count * 20, 100)} className="h-2" />
                         </div>
-                        <div className="w-12 text-right text-sm font-medium">
+                        <div className="w-12 text-right text-sm font-medium text-foreground">
                           {day.count} {day.count === 1 ? 'game' : 'games'}
                         </div>
                       </div>
@@ -185,7 +186,7 @@ export default function Streak() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-foreground">
                   <Trophy className="h-5 w-5 mr-2 text-yellow-500" />
                   Streak Milestones
                 </CardTitle>
@@ -199,31 +200,31 @@ export default function Streak() {
                     days={1} 
                     title="Getting Started" 
                     description="Play for 1 day in a row" 
-                    achieved={streak?.current_streak >= 1} 
+                    achieved={userStreak?.current_streak >= 1} 
                   />
                   <StreakMilestone 
                     days={3} 
                     title="Consistency" 
                     description="Play for 3 days in a row" 
-                    achieved={streak?.current_streak >= 3} 
+                    achieved={userStreak?.current_streak >= 3} 
                   />
                   <StreakMilestone 
                     days={7} 
                     title="Weekly Warrior" 
                     description="Play for 7 days in a row" 
-                    achieved={streak?.current_streak >= 7} 
+                    achieved={userStreak?.current_streak >= 7} 
                   />
                   <StreakMilestone 
                     days={14} 
                     title="Two Week Champion" 
                     description="Play for 14 days in a row" 
-                    achieved={streak?.current_streak >= 14} 
+                    achieved={userStreak?.current_streak >= 14} 
                   />
                   <StreakMilestone 
                     days={30} 
                     title="Monthly Master" 
                     description="Play for 30 days in a row" 
-                    achieved={streak?.current_streak >= 30} 
+                    achieved={userStreak?.current_streak >= 30} 
                   />
                 </div>
               </CardContent>
@@ -247,12 +248,12 @@ function StreakMilestone({
   achieved: boolean;
 }) {
   return (
-    <div className={`flex items-center p-3 rounded-lg ${achieved ? 'bg-primary/10' : 'bg-muted'}`}>
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${achieved ? 'bg-primary text-primary-foreground' : 'bg-muted-foreground/20'}`}>
+    <div className={`flex items-center p-3 rounded-md ${achieved ? 'bg-primary/10' : 'bg-muted/30'}`}>
+      <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${achieved ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
         {achieved ? <Trophy className="h-4 w-4" /> : days}
       </div>
       <div>
-        <p className={`font-medium ${achieved ? 'text-primary' : ''}`}>{title}</p>
+        <h4 className={`font-medium ${achieved ? 'text-foreground' : 'text-muted-foreground'}`}>{title}</h4>
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
     </div>

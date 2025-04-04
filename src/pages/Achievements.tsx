@@ -57,13 +57,13 @@ export default function Achievements() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <h1 className="text-3xl font-bold">Achievements</h1>
+        <h1 className="text-3xl font-bold text-foreground">Achievements</h1>
       </div>
 
       {!session.user ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-lg mb-4">You need to be signed in to view your achievements.</p>
+            <p className="text-lg mb-4 text-foreground">You need to be signed in to view your achievements.</p>
             <Button onClick={() => navigate('/game?mode=login')}>
               Sign In
             </Button>
@@ -73,7 +73,7 @@ export default function Achievements() {
         <div className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
+              <CardTitle className="flex items-center text-foreground">
                 <Trophy className="h-6 w-6 mr-2 text-yellow-500" />
                 Achievement Progress
               </CardTitle>
@@ -84,8 +84,8 @@ export default function Achievements() {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Progress</span>
-                  <span className="text-sm font-medium">{earnedCount} / {totalCount}</span>
+                  <span className="text-sm font-medium text-foreground">Progress</span>
+                  <span className="text-sm font-medium text-foreground">{earnedCount} / {totalCount}</span>
                 </div>
                 <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                   <div 
@@ -101,7 +101,7 @@ export default function Achievements() {
           </Card>
 
           <div>
-            <h2 className="text-2xl font-bold mb-4">All Achievements</h2>
+            <h2 className="text-2xl font-bold mb-4 text-foreground">All Achievements</h2>
             
             {allLoading ? (
               <div className="flex justify-center py-12">
@@ -117,7 +117,7 @@ export default function Achievements() {
                     <Card key={achievement.id} className={isEarned ? 'border-primary' : 'opacity-70'}>
                       <CardContent className="p-6">
                         <div className="flex items-start">
-                          <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${isEarned ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${isEarned ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
                             {isEarned ? (
                               <Trophy className="h-6 w-6" />
                             ) : (
@@ -125,7 +125,7 @@ export default function Achievements() {
                             )}
                           </div>
                           <div>
-                            <h3 className="font-bold text-lg">{achievement.name}</h3>
+                            <h3 className="font-bold text-lg text-foreground">{achievement.name}</h3>
                             <p className="text-sm text-muted-foreground">{achievement.description}</p>
                             {isEarned && earnedAchievement && (
                               <p className="text-xs text-primary mt-2">

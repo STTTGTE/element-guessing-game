@@ -67,13 +67,13 @@ export default function History() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <h1 className="text-3xl font-bold">Game History</h1>
+        <h1 className="text-3xl font-bold text-foreground">Game History</h1>
       </div>
 
       {!session.user ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-lg mb-4">You need to be signed in to view your game history.</p>
+            <p className="text-lg mb-4 text-foreground">You need to be signed in to view your game history.</p>
             <Button onClick={() => navigate('/game?mode=login')}>
               Sign In
             </Button>
@@ -137,7 +137,7 @@ function GameHistoryContent({
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <p className="text-lg">No game history found.</p>
+          <p className="text-lg text-foreground">No game history found.</p>
         </CardContent>
       </Card>
     );
@@ -149,7 +149,7 @@ function GameHistoryContent({
         <Card key={game.id}>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">
+              <CardTitle className="text-lg text-foreground">
                 {game.game_type === 'multiplayer' ? 'Multiplayer Game' : 'Single Player Game'}
               </CardTitle>
               {game.game_type === 'multiplayer' ? (
@@ -166,11 +166,11 @@ function GameHistoryContent({
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <p className="text-sm text-muted-foreground">Score</p>
-                <p className="text-xl font-bold">{game.score}</p>
+                <p className="text-xl font-bold text-foreground">{game.score}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Questions</p>
-                <p className="text-xl font-bold">{game.total_questions}</p>
+                <p className="text-xl font-bold text-foreground">{game.total_questions}</p>
               </div>
             </div>
           </CardContent>
