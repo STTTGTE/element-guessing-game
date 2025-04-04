@@ -37,7 +37,6 @@ export type Achievement = {
   name: string
   description: string
   icon?: string
-  condition: string
   created_at: string
 }
 

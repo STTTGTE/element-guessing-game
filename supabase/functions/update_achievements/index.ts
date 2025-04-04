@@ -75,16 +75,29 @@ serve(async (req) => {
     // Check if any new achievements should be awarded
     const newAchievements = [];
     for (const achievement of unearnedAchievements) {
-      const condition = achievement.condition;
       let shouldGrant = false;
       
-      // Evaluate the condition
-      if (condition.includes("score >=")) {
-        const requiredScore = parseInt(condition.split(">=")[1].trim());
-        shouldGrant = score >= requiredScore;
-      } else if (condition.includes("streak >=")) {
-        const requiredStreak = parseInt(condition.split(">=")[1].trim());
-        shouldGrant = streak >= requiredStreak;
+      // Determine if achievement should be granted based on name and description
+      if (achievement.name === "First Win" && score >= 1) {
+        shouldGrant = true;
+      } else if (achievement.name === "Streak Master" && streak >= 5) {
+        shouldGrant = true;
+      } else if (achievement.name === "Element Expert" && score >= 100) {
+        shouldGrant = true;
+      } else if (achievement.name === "Multiplayer Champion" && score >= 10) {
+        shouldGrant = true;
+      } else if (achievement.name === "Quick Thinker" && score >= 1) {
+        shouldGrant = true;
+      } else if (achievement.name === "Perfect Game" && score >= 10) {
+        shouldGrant = true;
+      } else if (achievement.name === "Dedicated Player" && score >= 50) {
+        shouldGrant = true;
+      } else if (achievement.name === "Noble Gas Guru" && score >= 5) {
+        shouldGrant = true;
+      } else if (achievement.name === "Transition Metal Master" && score >= 5) {
+        shouldGrant = true;
+      } else if (achievement.name === "Halogen Hero" && score >= 5) {
+        shouldGrant = true;
       }
       
       if (shouldGrant) {

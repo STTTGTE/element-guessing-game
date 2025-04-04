@@ -11,7 +11,6 @@ export type Database = {
     Tables: {
       achievements: {
         Row: {
-          condition: string
           created_at: string
           description: string
           icon: string | null
@@ -19,7 +18,6 @@ export type Database = {
           name: string
         }
         Insert: {
-          condition: string
           created_at?: string
           description: string
           icon?: string | null
@@ -27,7 +25,6 @@ export type Database = {
           name: string
         }
         Update: {
-          condition?: string
           created_at?: string
           description?: string
           icon?: string | null

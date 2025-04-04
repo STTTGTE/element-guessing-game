@@ -28,7 +28,6 @@ export function useAchievements() {
             id,
             name,
             description,
-            condition,
             icon,
             created_at
           )

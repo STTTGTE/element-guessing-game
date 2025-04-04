@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -12,7 +11,6 @@ export interface Database {
     Tables: {
       achievements: {
         Row: {
-          condition: string
           created_at: string
           description: string
           icon: string | null
@@ -20,7 +18,6 @@ export interface Database {
           name: string
         }
         Insert: {
-          condition: string
           created_at?: string
           description: string
           icon?: string | null
@@ -28,7 +25,6 @@ export interface Database {
           name: string
         }
         Update: {
-          condition?: string
           created_at?: string
           description?: string
           icon?: string | null
