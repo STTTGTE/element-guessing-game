@@ -140,3 +140,12 @@ create trigger on_matchmaking_insert
 -- Enable realtime
 drop publication if exists supabase_realtime;
 create publication supabase_realtime for table public.matchmaking, public.matches;
+
+-- Grant necessary permissions
+grant usage on schema public to anon, authenticated;
+grant all on public.matchmaking to anon, authenticated;
+grant all on public.matches to anon, authenticated;
+grant all on public.user_streaks to anon, authenticated;
+grant all on public.game_history to anon, authenticated;
+grant all on public.user_achievements to anon, authenticated;
+grant all on public.achievements to anon, authenticated;

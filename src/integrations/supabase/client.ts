@@ -41,11 +41,13 @@ export const supabase = createClient<Database>(
     auth: {
       persistSession: true,
       autoRefreshToken: true,
+      storage: customStorage,
     },
     global: {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'Prefer': 'return=representation',
       },
     },
   }
