@@ -51,5 +51,8 @@ export const supabase = createClient<Database>(
         'apikey': SUPABASE_PUBLISHABLE_KEY,
       },
     },
+    db: {
+      schema: 'public',
+    },
   }
 );

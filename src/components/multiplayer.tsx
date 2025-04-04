@@ -322,7 +322,7 @@ export function MultiplayerGame() {
         gameState.channel.unsubscribe();
       }
     };
-  }, [session, subscribeToMatchmaking, joinExistingGame, gameState.channel]);
+  }, [session, subscribeToMatchmaking, joinExistingGame]);
 
   const startMatchmaking = async () => {
     if (!session.user) {
