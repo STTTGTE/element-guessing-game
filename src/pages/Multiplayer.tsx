@@ -79,7 +79,16 @@ export default function Multiplayer() {
         .or(`player1_id.eq.${session.user.id},player2_id.eq.${session.user.id}`)
         .eq('is_active', true);
         
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching active games:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load active games",
+          variant: "destructive",
+        });
+        setActiveGames([]);
+        return;
+      }
       
       // Fetch player profiles separately
       if (data && data.length > 0) {
@@ -93,7 +102,12 @@ export default function Multiplayer() {
           .select('id, username, avatar_url')
           .in('id', playerIds);
           
-        if (profilesError) throw profilesError;
+        if (profilesError) {
+          console.error('Error fetching player profiles:', profilesError);
+          // Continue with games but without profile data
+          setActiveGames(data);
+          return;
+        }
         
         // Map profiles to games
         const gamesWithProfiles = data.map(game => {
@@ -118,6 +132,7 @@ export default function Multiplayer() {
         description: "Failed to load active games",
         variant: "destructive",
       });
+      setActiveGames([]);
     } finally {
       setLoading(false);
     }

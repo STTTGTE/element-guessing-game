@@ -39,17 +39,17 @@ const PeriodicTable = ({ onElementClick, selectedElement, correctElement }: Peri
 
   const getElementColor = (category: string) => {
     const colors = {
-      "nonmetal": "bg-emerald-100 hover:bg-emerald-200",
-      "noble-gas": "bg-purple-100 hover:bg-purple-200",
-      "alkali-metal": "bg-red-100 hover:bg-red-200",
-      "alkaline-earth": "bg-orange-100 hover:bg-orange-200",
-      "metalloid": "bg-teal-100 hover:bg-teal-200",
-      "halogen": "bg-yellow-100 hover:bg-yellow-200",
-      "transition": "bg-blue-100 hover:bg-blue-200",
-      "post-transition": "bg-indigo-100 hover:bg-indigo-200",
-      "actinide": "bg-pink-100 hover:bg-pink-200",
-      "lanthanide": "bg-rose-100 hover:bg-rose-200",
-      "default": "bg-gray-100 hover:bg-gray-200"
+      "nonmetal": "bg-emerald-100 dark:bg-emerald-900 hover:bg-emerald-200 dark:hover:bg-emerald-800",
+      "noble-gas": "bg-purple-100 dark:bg-purple-900 hover:bg-purple-200 dark:hover:bg-purple-800",
+      "alkali-metal": "bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800",
+      "alkaline-earth": "bg-orange-100 dark:bg-orange-900 hover:bg-orange-200 dark:hover:bg-orange-800",
+      "metalloid": "bg-teal-100 dark:bg-teal-900 hover:bg-teal-200 dark:hover:bg-teal-800",
+      "halogen": "bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800",
+      "transition": "bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800",
+      "post-transition": "bg-indigo-100 dark:bg-indigo-900 hover:bg-indigo-200 dark:hover:bg-indigo-800",
+      "actinide": "bg-pink-100 dark:bg-pink-900 hover:bg-pink-200 dark:hover:bg-pink-800",
+      "lanthanide": "bg-rose-100 dark:bg-rose-900 hover:bg-rose-200 dark:hover:bg-rose-800",
+      "default": "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
     };
     
     return colors[category as keyof typeof colors] || colors.default;

@@ -39,7 +39,7 @@ create table if not exists public.user_streaks (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users not null unique,
   current_streak integer not null default 0,
-  longest_streak integer not null default 0,
+  max_streak integer not null default 0,
   last_played timestamp with time zone,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null

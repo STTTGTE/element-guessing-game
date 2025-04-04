@@ -21,6 +21,7 @@ export function useStreaks() {
     if (!session.user) return
 
     try {
+      setLoading(true)
       const { data, error } = await supabase
         .from('user_streaks')
         .select('*')
@@ -55,7 +56,7 @@ export function useStreaks() {
         .upsert({
           user_id: userId,
           current_streak: 0,
-          longest_streak: 0,
+          max_streak: 0,
           last_played: null
         }, {
           onConflict: 'user_id',
@@ -98,40 +99,53 @@ export function useStreaks() {
       const yesterdayStr = yesterday.toISOString().split('T')[0]
 
       let newStreak = 1
+      let newMaxStreak = userStreak.max_streak
+
       if (lastPlayed === yesterdayStr) {
-        // Continue streak
-        newStreak = (userStreak.current_streak || 0) + 1
+        // Played yesterday, increment streak
+        newStreak = userStreak.current_streak + 1
+        if (newStreak > userStreak.max_streak) {
+          newMaxStreak = newStreak
+        }
+      } else {
+        // Streak broken, reset to 1
+        newStreak = 1
       }
 
-      const { data, error } = await supabase
+      // Update streak in database
+      const { error } = await supabase
         .from('user_streaks')
         .update({
           current_streak: newStreak,
-          longest_streak: Math.max(newStreak, userStreak.longest_streak || 0),
-          last_played: new Date().toISOString(),
+          max_streak: newMaxStreak,
+          last_played: new Date().toISOString()
         })
         .eq('user_id', session.user.id)
-        .select()
-        .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('Error updating streak:', error)
+        return userStreak.current_streak
+      }
 
-      setUserStreak(data)
-      return data.current_streak
+      // Update local state
+      setUserStreak({
+        ...userStreak,
+        current_streak: newStreak,
+        max_streak: newMaxStreak,
+        last_played: new Date().toISOString()
+      })
+
+      return newStreak
     } catch (error) {
       console.error('Error updating streak:', error)
-      toast({
-        title: "Streak Error",
-        description: "Failed to update streak. Please try again.",
-        variant: "destructive",
-      })
-      return undefined
+      return userStreak?.current_streak
     }
   }
 
   return {
     userStreak,
     loading,
-    updateStreak: session.user ? updateStreak : () => Promise.resolve(0)
+    updateStreak,
+    fetchUserStreak
   }
 }
