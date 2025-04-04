@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
 import { ElementData, Question } from "@/types/game";
@@ -14,6 +14,7 @@ import { RealtimeChannel } from "@supabase/supabase-js";
 export function MultiplayerGame() {
   const { session } = useAuth();
   const { toast } = useToast();
+  const channelRef = useRef<RealtimeChannel | null>(null);
   const [gameState, setGameState] = useState<{
     gameId: string | null;
     players: string[];
@@ -21,7 +22,6 @@ export function MultiplayerGame() {
     scores: Record<string, number>;
     questionNumber: number;
     isSearching: boolean;
-    channel: RealtimeChannel | null;
     error: string | null;
     loading: boolean;
   }>({
@@ -31,7 +31,6 @@ export function MultiplayerGame() {
     scores: {},
     questionNumber: 0,
     isSearching: false,
-    channel: null,
     error: null,
     loading: false
   });
@@ -126,7 +125,6 @@ export function MultiplayerGame() {
                     scores: {},
                     questionNumber: 0,
                     isSearching: false,
-                    channel: null,
                     error: null,
                     loading: false
                   });
@@ -136,6 +134,9 @@ export function MultiplayerGame() {
           }
         )
         .subscribe();
+      
+      // Store channel in ref
+      channelRef.current = channel;
       
       // Parse JSON data from database
       const currentQuestion = typeof data.current_question === 'string' 
@@ -157,7 +158,6 @@ export function MultiplayerGame() {
         scores: scores as Record<string, number>,
         questionNumber: data.question_number,
         isSearching: false,
-        channel,
         error: null,
         loading: false
       });
@@ -228,7 +228,8 @@ export function MultiplayerGame() {
       )
       .subscribe();
     
-    setGameState(prev => ({ ...prev, channel }));
+    // Store channel in ref
+    channelRef.current = channel;
   }, [session.user, joinExistingGame]);
 
   // Initialize the game component
@@ -259,13 +260,10 @@ export function MultiplayerGame() {
           .from('matchmaking')
           .select('*')
           .eq('user_id', session.user.id)
-          .single();
+          .maybeSingle();
         
         if (matchmakingError) {
-          // PGRST116 means no rows returned, which is expected if user is not in matchmaking
-          if (matchmakingError.code !== 'PGRST116') {
-            console.error("Error checking matchmaking:", matchmakingError);
-          }
+          console.error("Error checking matchmaking:", matchmakingError);
         }
         
         if (matchmakingData) {
@@ -287,13 +285,10 @@ export function MultiplayerGame() {
           .select('*')
           .or(`player1_id.eq.${session.user.id},player2_id.eq.${session.user.id}`)
           .eq('status', 'active')
-          .single();
+          .maybeSingle();
         
         if (matchesError) {
-          // PGRST116 means no rows returned, which is expected if user is not in a match
-          if (matchesError.code !== 'PGRST116') {
-            console.error("Error checking matches:", matchesError);
-          }
+          console.error("Error checking matches:", matchesError);
         }
         
         if (matchesData) {
@@ -317,9 +312,10 @@ export function MultiplayerGame() {
     
     return () => {
       // Clean up any subscriptions
-      if (gameState.channel) {
+      if (channelRef.current) {
         console.log("Unsubscribing from channel");
-        gameState.channel.unsubscribe();
+        channelRef.current.unsubscribe();
+        channelRef.current = null;
       }
     };
   }, [session, subscribeToMatchmaking, joinExistingGame]);
@@ -390,14 +386,14 @@ export function MultiplayerGame() {
       console.log("Matchmaking cancelled");
       
       // Unsubscribe from channel
-      if (gameState.channel) {
-        gameState.channel.unsubscribe();
+      if (channelRef.current) {
+        channelRef.current.unsubscribe();
       }
       
       setGameState(prev => ({ 
         ...prev, 
         isSearching: false, 
-        channel: null,
+        error: null,
         loading: false
       }));
       

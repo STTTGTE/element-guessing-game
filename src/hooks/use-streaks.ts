@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useAuth } from './use-auth'
 import { supabase, UserStreak } from '@/lib/supabase'
@@ -26,15 +25,18 @@ export function useStreaks() {
         .from('user_streaks')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
+        console.error('Error fetching user streak:', error)
+        setLoading(false)
+        return
+      }
+
+      if (!data) {
         // If no streak exists, create a new one
-        if (error.message.includes('No rows found')) {
-          await createNewStreak(session.user.id)
-          return // Exit to prevent further errors, the next fetch will get the new streak
-        }
-        throw error
+        await createNewStreak(session.user.id)
+        return // Exit to prevent further errors, the next fetch will get the new streak
       }
 
       setUserStreak(data as unknown as UserStreak)
