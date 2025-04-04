@@ -48,6 +48,7 @@ export const supabase = createClient<Database>(
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Prefer': 'return=representation',
+        'apikey': SUPABASE_PUBLISHABLE_KEY,
       },
     },
   }
