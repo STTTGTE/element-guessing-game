@@ -36,7 +36,7 @@ export default function History() {
         .order('created_at', { ascending: false });
       
       if (activeTab !== 'all') {
-        query = query.eq('game_mode', activeTab);
+        query = query.eq('game_type', activeTab);
       }
       
       const { data, error } = await query;
@@ -150,9 +150,9 @@ function GameHistoryContent({
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">
-                {game.game_mode === 'multiplayer' ? 'Multiplayer Game' : 'Single Player Game'}
+                {game.game_type === 'multiplayer' ? 'Multiplayer Game' : 'Single Player Game'}
               </CardTitle>
-              {game.game_mode === 'multiplayer' ? (
+              {game.game_type === 'multiplayer' ? (
                 <Users className="h-5 w-5 text-primary" />
               ) : (
                 <Trophy className="h-5 w-5 text-primary" />

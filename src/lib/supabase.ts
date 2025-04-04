@@ -14,7 +14,7 @@ export type GameHistory = {
   score: number
   total_questions: number
   created_at: string
-  game_mode?: string
+  game_type?: string
 }
 
 export type Profile = {

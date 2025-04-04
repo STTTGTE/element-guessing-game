@@ -113,7 +113,7 @@ create or replace function public.insert_game_history(
   p_user_id uuid,
   p_score integer,
   p_total_questions integer,
-  p_game_mode text default 'single'
+  p_game_type text default 'single'
 )
 returns json
 language plpgsql
@@ -134,7 +134,7 @@ begin
     p_score,
     p_total_questions,
     p_score,
-    p_game_mode
+    p_game_type
   )
   returning to_jsonb(game_history.*) into result;
   

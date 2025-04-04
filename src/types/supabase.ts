@@ -36,7 +36,7 @@ export interface Database {
       game_history: {
         Row: {
           created_at: string
-          game_mode: string | null
+          game_type: string | null
           id: string
           score: number
           total_questions: number
@@ -44,7 +44,7 @@ export interface Database {
         }
         Insert: {
           created_at?: string
-          game_mode?: string | null
+          game_type?: string | null
           id?: string
           score: number
           total_questions: number
@@ -52,7 +52,7 @@ export interface Database {
         }
         Update: {
           created_at?: string
-          game_mode?: string | null
+          game_type?: string | null
           id?: string
           score?: number
           total_questions?: number
@@ -236,7 +236,15 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      insert_game_history: {
+        Args: {
+          p_user_id: string
+          p_score: number
+          p_total_questions: number
+          p_game_type?: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

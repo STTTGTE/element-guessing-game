@@ -37,12 +37,34 @@ export default function Multiplayer() {
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
         
       if (error) throw error;
-      setUserProfile(data);
+      
+      if (data) {
+        setUserProfile(data);
+      } else {
+        // Create a profile if it doesn't exist
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert({
+            id: session.user.id,
+            username: session.user.email?.split('@')[0] || 'user',
+            avatar_url: null
+          })
+          .select()
+          .single();
+          
+        if (createError) throw createError;
+        setUserProfile(newProfile);
+      }
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load user profile",
+        variant: "destructive",
+      });
     }
   };
 
@@ -53,16 +75,42 @@ export default function Multiplayer() {
       setLoading(true);
       const { data, error } = await supabase
         .from('multiplayer_games')
-        .select(`
-          *,
-          player1:profiles!player1_id(username, avatar_url),
-          player2:profiles!player2_id(username, avatar_url)
-        `)
+        .select('*')
         .or(`player1_id.eq.${session.user.id},player2_id.eq.${session.user.id}`)
         .eq('is_active', true);
         
       if (error) throw error;
-      setActiveGames(data || []);
+      
+      // Fetch player profiles separately
+      if (data && data.length > 0) {
+        const playerIds = data.flatMap(game => [
+          game.player1_id, 
+          game.player2_id
+        ].filter(Boolean));
+        
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, username, avatar_url')
+          .in('id', playerIds);
+          
+        if (profilesError) throw profilesError;
+        
+        // Map profiles to games
+        const gamesWithProfiles = data.map(game => {
+          const player1Profile = profiles?.find(p => p.id === game.player1_id);
+          const player2Profile = game.player2_id ? profiles?.find(p => p.id === game.player2_id) : null;
+          
+          return {
+            ...game,
+            player1: player1Profile,
+            player2: player2Profile
+          };
+        });
+        
+        setActiveGames(gamesWithProfiles);
+      } else {
+        setActiveGames([]);
+      }
     } catch (error) {
       console.error('Error fetching active games:', error);
       toast({
@@ -82,7 +130,7 @@ export default function Multiplayer() {
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, username, avatar_url')
         .ilike('username', `%${searchQuery}%`)
         .neq('id', session?.user?.id)
         .limit(10);
@@ -96,6 +144,7 @@ export default function Multiplayer() {
         description: "Failed to search players",
         variant: "destructive",
       });
+      setSearchResults([]);
     } finally {
       setLoading(false);
     }

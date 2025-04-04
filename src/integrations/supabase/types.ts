@@ -36,7 +36,7 @@ export type Database = {
       game_history: {
         Row: {
           created_at: string
-          game_mode: string | null
+          game_type: string | null
           id: string
           score: number
           total_questions: number
@@ -44,7 +44,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          game_mode?: string | null
+          game_type?: string | null
           id?: string
           score: number
           total_questions: number
@@ -52,7 +52,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          game_mode?: string | null
+          game_type?: string | null
           id?: string
           score?: number
           total_questions?: number

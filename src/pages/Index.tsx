@@ -5,7 +5,6 @@ import PeriodicTable from "@/components/PeriodicTable";
 import QuestionPanel from "@/components/QuestionPanel";
 import ScoreBoard from "@/components/ScoreBoard";
 import { AuthForm } from "@/components/auth/auth-form";
-import { GameHistory } from "@/components/game-history";
 import { UserNav } from "@/components/user-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useToast } from "@/hooks/use-toast";
@@ -13,8 +12,6 @@ import { ElementData, Question } from "@/types/game";
 import { elementData } from "@/data/elements";
 import { questions } from "@/data/questions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; 
-import { Achievements } from "@/components/achievements";
-import { StreakDisplay } from "@/components/streak-display";
 import { useAchievements } from "@/hooks/use-achievements";
 import { useStreaks } from "@/hooks/use-streaks";
 import { Button } from "@/components/ui/button";
@@ -92,7 +89,7 @@ const Index = () => {
           p_user_id: session.user.id,
           p_score: score,
           p_total_questions: questionNumber,
-          p_game_mode: 'single'
+          p_game_type: 'single'
         });
       } catch (error) {
         console.error('Error saving game history:', error);
@@ -178,7 +175,7 @@ const Index = () => {
         </div>
       </div>
 
-      <main className="flex flex-col lg:flex-row flex-grow p-2 sm:p-4 md:p-6 max-w-7xl mx-auto w-full gap-4 md:gap-6">
+      <main className="flex flex-col flex-grow p-2 sm:p-4 md:p-6 max-w-7xl mx-auto w-full gap-4 md:gap-6">
         <div className="flex flex-col flex-grow gap-4 md:gap-6">
           {gameMode === 'single' ? (
             <>
@@ -208,26 +205,18 @@ const Index = () => {
           )}
         </div>
 
-        {!guestMode ? (
+        {!guestMode && (
           <div className="w-full lg:w-80">
-            <Tabs defaultValue="history" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="history">History</TabsTrigger>
-                <TabsTrigger value="streak">Streak</TabsTrigger>
-                <TabsTrigger value="achievements">Trophies</TabsTrigger>
-              </TabsList>
-              <TabsContent value="history" className="mt-2">
-                <GameHistory />
-              </TabsContent>
-              <TabsContent value="streak" className="mt-2">
-                <StreakDisplay />
-              </TabsContent>
-              <TabsContent value="achievements" className="mt-2">
-                <Achievements />
-              </TabsContent>
-            </Tabs>
+            <div className="bg-card text-card-foreground rounded-lg shadow-md p-4">
+              <h3 className="text-xl font-bold mb-4">Welcome back!</h3>
+              <p className="text-muted-foreground">
+                Keep playing to improve your knowledge of the periodic table!
+              </p>
+            </div>
           </div>
-        ) : (
+        )}
+
+        {guestMode && (
           <div className="w-full lg:w-80">
             <div className="bg-card text-card-foreground rounded-lg shadow-md p-4">
               <h3 className="text-xl font-bold mb-4">Guest Mode</h3>

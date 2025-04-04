@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from "react"
 import { useAuth } from "@/hooks/use-auth"
 import { type GameHistory as GameHistoryType, supabase } from "@/lib/supabase"
@@ -73,7 +72,7 @@ export function GameHistory() {
                   {new Date(game.created_at).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
-                  {game.game_mode === 'multiplayer' ? (
+                  {game.game_type === 'multiplayer' ? (
                     <Badge variant="secondary">Multiplayer</Badge>
                   ) : (
                     <Badge variant="outline">Single</Badge>
