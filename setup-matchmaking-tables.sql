@@ -1,3 +1,7 @@
+-- Drop existing tables if they exist
+drop table if exists public.matches;
+drop table if exists public.matchmaking;
+
 -- Create matchmaking table
 create table if not exists public.matchmaking (
   id uuid default gen_random_uuid() primary key,
@@ -22,6 +26,14 @@ create table if not exists public.matches (
 -- Enable Row Level Security
 alter table public.matchmaking enable row level security;
 alter table public.matches enable row level security;
+
+-- Drop existing policies if they exist
+drop policy if exists "Users can view their own matchmaking status." on public.matchmaking;
+drop policy if exists "Users can insert their own matchmaking entry." on public.matchmaking;
+drop policy if exists "Users can update their own matchmaking entry." on public.matchmaking;
+drop policy if exists "Users can delete their own matchmaking entry." on public.matchmaking;
+drop policy if exists "Users can view matches they are part of." on public.matches;
+drop policy if exists "Users can update matches they are part of." on public.matches;
 
 -- Create policies for matchmaking
 create policy "Users can view their own matchmaking status."
@@ -117,32 +129,14 @@ begin
 end;
 $$ language plpgsql security definer;
 
+-- Drop existing trigger if it exists
+drop trigger if exists on_matchmaking_insert on public.matchmaking;
+
 -- Create a trigger to run the match_players function
-create or replace trigger on_matchmaking_insert
+create trigger on_matchmaking_insert
   after insert on public.matchmaking
   for each row execute procedure public.match_players();
 
--- Enable realtime (only if not already added)
-do $$
-begin
-  -- Check if matchmaking is already in the publication
-  if not exists (
-    select 1 from pg_publication_tables 
-    where pubname = 'supabase_realtime' 
-    and schemaname = 'public' 
-    and tablename = 'matchmaking'
-  ) then
-    alter publication supabase_realtime add table public.matchmaking;
-  end if;
-  
-  -- Check if matches is already in the publication
-  if not exists (
-    select 1 from pg_publication_tables 
-    where pubname = 'supabase_realtime' 
-    and schemaname = 'public' 
-    and tablename = 'matches'
-  ) then
-    alter publication supabase_realtime add table public.matches;
-  end if;
-end
-$$;
+-- Enable realtime
+drop publication if exists supabase_realtime;
+create publication supabase_realtime for table public.matchmaking, public.matches;
