@@ -1,4 +1,3 @@
-
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +21,7 @@ export function GameResult({ gameResult, user, onPlayAgain, onLeaveGame }: GameR
     <div className="w-full max-w-4xl mx-auto p-4">
       <Card>
         <CardHeader className={`${userWon ? 'bg-green-100 dark:bg-green-900/20' : isDraw ? 'bg-yellow-100 dark:bg-yellow-900/20' : 'bg-red-100 dark:bg-red-900/20'}`}>
-          <CardTitle className="text-2xl flex items-center justify-center gap-2">
+          <CardTitle className="text-2xl flex items-center justify-center gap-2 text-foreground">
             {userWon ? (
               <>🏆 Victory!</>
             ) : isDraw ? (
@@ -35,13 +34,13 @@ export function GameResult({ gameResult, user, onPlayAgain, onLeaveGame }: GameR
         <CardContent className="py-6">
           <div className="flex justify-center items-center gap-8 mb-6">
             <div className="text-center">
-              <p className="text-sm font-medium">You</p>
-              <p className="text-3xl font-bold">{userScore}</p>
+              <p className="text-sm font-medium text-foreground">You</p>
+              <p className="text-3xl font-bold text-foreground">{userScore}</p>
             </div>
-            <div className="text-xl font-bold">vs</div>
+            <div className="text-xl font-bold text-foreground">vs</div>
             <div className="text-center">
-              <p className="text-sm font-medium">Opponent</p>
-              <p className="text-3xl font-bold">{opponentScore}</p>
+              <p className="text-sm font-medium text-foreground">Opponent</p>
+              <p className="text-3xl font-bold text-foreground">{opponentScore}</p>
             </div>
           </div>
           <div className="text-center text-sm text-muted-foreground">
