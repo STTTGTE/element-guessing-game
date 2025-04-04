@@ -83,13 +83,16 @@ export function SinglePlayerGame({ guestMode }: SinglePlayerGameProps) {
   const resetGame = async () => {
     if (session.user && !guestMode) {
       try {
-        // Fix for TypeScript error - explicitly using number for score and questionNumber
-        await supabase.rpc('insert_game_history', {
-          p_user_id: session.user.id,
-          p_score: score,
-          p_total_questions: questionNumber,
-          p_game_mode: 'single'
-        });
+        // Instead of using supabase.rpc, let's use supabase.from(...).insert directly
+        // This avoids type issues with the RPC method
+        await supabase
+          .from('game_history')
+          .insert({
+            user_id: session.user.id,
+            score: score,
+            total_questions: questionNumber,
+            game_mode: 'single'
+          });
       } catch (error) {
         console.error('Error saving game history:', error);
       }
