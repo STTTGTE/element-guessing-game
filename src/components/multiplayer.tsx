@@ -95,7 +95,8 @@ export function MultiplayerGame() {
                 questionNumber: newData.question_number,
                 gameId: newData.id,
                 players,
-                isSearching: false
+                isSearching: false,
+                status: newData.status as 'active' | 'completed' | 'waiting'
               }));
               
               if (newData.status === 'completed') {
@@ -164,7 +165,7 @@ export function MultiplayerGame() {
         isSearching: false,
         error: null,
         loading: false,
-        status: data.status
+        status: data.status as 'active' | 'completed' | 'waiting'
       });
       
       toast({
