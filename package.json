@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "create-pwa-assets": "node scripts/create-logo.js && node scripts/generate-icons.js"
+    "create-pwa-assets": "node scripts/create-logo.js && node scripts/generate-icons.js && node scripts/create-screenshot.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
