@@ -8,8 +8,9 @@ import PeriodicTable from "./PeriodicTable";
 import QuestionPanel from "./QuestionPanel";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trophy, RefreshCw } from "lucide-react";
 import { RealtimeChannel } from "@supabase/supabase-js";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function MultiplayerGame() {
   const { session } = useAuth();
@@ -24,6 +25,7 @@ export function MultiplayerGame() {
     isSearching: boolean;
     error: string | null;
     loading: boolean;
+    status: 'active' | 'completed' | 'waiting';
   }>({
     gameId: null,
     players: [],
@@ -32,7 +34,8 @@ export function MultiplayerGame() {
     questionNumber: 0,
     isSearching: false,
     error: null,
-    loading: false
+    loading: false,
+    status: 'waiting'
   });
 
   // Function to join an existing game - wrapped in useCallback to avoid dependency issues
@@ -126,7 +129,8 @@ export function MultiplayerGame() {
                     questionNumber: 0,
                     isSearching: false,
                     error: null,
-                    loading: false
+                    loading: false,
+                    status: 'completed'
                   });
                 }, 3000);
               }
@@ -159,7 +163,8 @@ export function MultiplayerGame() {
         questionNumber: data.question_number,
         isSearching: false,
         error: null,
-        loading: false
+        loading: false,
+        status: data.status
       });
       
       toast({
@@ -462,10 +467,10 @@ export function MultiplayerGame() {
         variant: isCorrect ? "default" : "destructive",
       });
     } catch (error) {
-      console.error("Error handling element selection:", error);
+      console.error("Error handling element click:", error);
       toast({
         title: "Error",
-        description: "There was an error submitting your answer",
+        description: "Failed to update game state. Please try again.",
         variant: "destructive",
       });
     }
@@ -520,38 +525,80 @@ export function MultiplayerGame() {
   // Render game or start button
   return gameState.gameId ? (
     <div className="flex flex-col space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Multiplayer Game</h2>
-        <div className="flex space-x-4">
-          <div>
-            <span className="font-bold">Question:</span> {gameState.questionNumber + 1}/10
-          </div>
-          <div>
-            <span className="font-bold">Score:</span> {gameState.scores[session.user?.id || ""] || 0}
-          </div>
+      {gameState.status === 'completed' ? (
+        <div className="w-full max-w-4xl mx-auto p-4">
+          <Card>
+            <CardHeader className="bg-green-100 dark:bg-green-900/20">
+              <CardTitle className="text-2xl flex items-center justify-center gap-2 text-foreground">
+                <Trophy className="h-6 w-6 text-amber-500" />
+                Game Complete!
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="py-6">
+              <div className="flex justify-center items-center gap-8 mb-6">
+                <div className="text-center">
+                  <p className="text-sm font-medium text-foreground">You</p>
+                  <p className="text-3xl font-bold text-foreground">{gameState.scores[session.user?.id || ""] || 0}</p>
+                </div>
+                <div className="text-xl font-bold text-foreground">vs</div>
+                <div className="text-center">
+                  <p className="text-sm font-medium text-foreground">Opponent</p>
+                  <p className="text-3xl font-bold text-foreground">
+                    {Object.entries(gameState.scores)
+                      .filter(([id]) => id !== session.user?.id)
+                      .reduce((sum, [_, score]) => sum + score, 0)}
+                  </p>
+                </div>
+              </div>
+              <div className="text-center text-sm text-muted-foreground">
+                <p>You answered {gameState.scores[session.user?.id || ""] || 0} out of {gameState.questionNumber + 1} questions correctly.</p>
+                <p>Keep practicing to improve your knowledge of the periodic table!</p>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-center gap-4">
+              <Button onClick={startMatchmaking} className="flex items-center gap-2">
+                <RefreshCw className="h-4 w-4" />
+                Play Again
+              </Button>
+            </CardFooter>
+          </Card>
         </div>
-      </div>
-
-      {gameState.currentQuestion && (
+      ) : (
         <>
-          <QuestionPanel 
-            question={gameState.currentQuestion} 
-            questionNumber={gameState.questionNumber}
-          />
-          <div className="bg-card text-card-foreground rounded-lg shadow-md p-2 sm:p-4 overflow-x-auto">
-            <PeriodicTable
-              onElementClick={handleElementClick}
-              selectedElement={null}
-              correctElement={null}
-            />
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-foreground">Multiplayer Game</h2>
+            <div className="flex space-x-4">
+              <div>
+                <span className="font-bold text-foreground">Question:</span> {gameState.questionNumber + 1}/10
+              </div>
+              <div>
+                <span className="font-bold text-foreground">Score:</span> {gameState.scores[session.user?.id || ""] || 0}
+              </div>
+            </div>
           </div>
+
+          {gameState.currentQuestion && (
+            <>
+              <QuestionPanel 
+                question={gameState.currentQuestion} 
+                questionNumber={gameState.questionNumber}
+              />
+              <div className="bg-card text-card-foreground rounded-lg shadow-md p-2 sm:p-4 overflow-x-auto">
+                <PeriodicTable
+                  onElementClick={handleElementClick}
+                  selectedElement={null}
+                  correctElement={null}
+                />
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
   ) : (
     <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
-      <h2 className="text-2xl font-bold mb-6">Multiplayer Mode</h2>
-      <p className="text-lg mb-6">Challenge other players in real-time!</p>
+      <h2 className="text-2xl font-bold mb-6 text-foreground">Multiplayer Mode</h2>
+      <p className="text-lg mb-6 text-foreground">Challenge other players in real-time!</p>
       <Button 
         size="lg" 
         onClick={startMatchmaking}

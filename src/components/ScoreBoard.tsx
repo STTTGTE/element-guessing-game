@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
@@ -15,21 +14,21 @@ const ScoreBoard = ({ score, questionNumber, resetGame }: ScoreBoardProps) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
+    <div className="bg-card text-card-foreground rounded-lg shadow-md p-4">
       <div className="flex justify-between items-center">
         <div className="text-center flex-1">
-          <p className="text-gray-600 text-sm">Score</p>
-          <p className="text-2xl font-bold">{score}</p>
+          <p className="text-muted-foreground text-sm">Score</p>
+          <p className="text-2xl font-bold text-foreground">{score}</p>
         </div>
         
         <div className="text-center flex-1">
-          <p className="text-gray-600 text-sm">Questions</p>
-          <p className="text-2xl font-bold">{questionNumber}</p>
+          <p className="text-muted-foreground text-sm">Questions</p>
+          <p className="text-2xl font-bold text-foreground">{questionNumber}</p>
         </div>
         
         <div className="text-center flex-1">
-          <p className="text-gray-600 text-sm">Accuracy</p>
-          <p className="text-2xl font-bold">
+          <p className="text-muted-foreground text-sm">Accuracy</p>
+          <p className="text-2xl font-bold text-foreground">
             {calculatePercentage()}%
           </p>
         </div>

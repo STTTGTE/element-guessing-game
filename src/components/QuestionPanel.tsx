@@ -1,4 +1,3 @@
-
 import { Question } from "@/types/game";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -14,15 +13,15 @@ const QuestionPanel = ({ question, questionNumber }: QuestionPanelProps) => {
   
   return (
     <div className="flex flex-col items-center justify-center w-full">
-      <div className="text-sm text-gray-500 mb-2">Question {questionNumber + 1}</div>
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">{question.text}</h2>
+      <div className="text-sm text-muted-foreground mb-2">Question {questionNumber + 1}</div>
+      <h2 className="text-2xl font-bold mb-4 text-center text-foreground">{question.text}</h2>
       
       {question.hint && (
         <div className="w-full flex flex-col items-center">
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex items-center gap-1 text-gray-600 mb-2"
+            className="flex items-center gap-1 text-muted-foreground mb-2"
             onClick={() => setShowHint(!showHint)}
           >
             <HelpCircle className="h-4 w-4" />
@@ -30,7 +29,7 @@ const QuestionPanel = ({ question, questionNumber }: QuestionPanelProps) => {
           </Button>
           
           {showHint && (
-            <div className="text-sm italic text-indigo-600 bg-indigo-50 px-4 py-2 rounded-md">
+            <div className="text-sm italic text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 px-4 py-2 rounded-md">
               {question.hint}
             </div>
           )}

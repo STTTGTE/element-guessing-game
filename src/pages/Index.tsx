@@ -15,8 +15,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAchievements } from "@/hooks/use-achievements";
 import { useStreaks } from "@/hooks/use-streaks";
 import { Button } from "@/components/ui/button";
-import { LogIn, UserPlus, Swords } from "lucide-react";
+import { LogIn, UserPlus, Swords, Clock } from "lucide-react";
 import { MultiplayerGame } from "@/components/multiplayer";
+import Timer from "@/components/Timer";
+import SinglePlayerGameResult from "@/components/SinglePlayerGameResult";
 
 const Index = () => {
   const { session } = useAuth();
@@ -26,19 +28,24 @@ const Index = () => {
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
   const [guestMode, setGuestMode] = useState(false);
   const [gameMode, setGameMode] = useState<'single' | 'multiplayer'>('single');
+  const [gameType, setGameType] = useState<'classic' | 'timed'>('classic');
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameEnded, setGameEnded] = useState(false);
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [timerActive, setTimerActive] = useState(false);
   const { toast } = useToast();
   const { checkAndGrantAchievements } = useAchievements();
   const { updateStreak } = useStreaks();
 
   useEffect(() => {
-    if (questions.length > 0 && gameMode === 'single') {
+    if (questions.length > 0 && gameMode === 'single' && !gameStarted) {
       const randomIndex = Math.floor(Math.random() * questions.length);
       setCurrentQuestion(questions[randomIndex]);
     }
-  }, [gameMode]);
+  }, [gameMode, gameStarted]);
 
   const handleElementClick = async (element: ElementData) => {
-    if (gameMode !== 'single') return;
+    if (gameMode !== 'single' || gameEnded) return;
     
     setSelectedElement(element);
     
@@ -89,7 +96,7 @@ const Index = () => {
           p_user_id: session.user.id,
           p_score: score,
           p_total_questions: questionNumber,
-          p_game_type: 'single'
+          p_game_type: gameType === 'timed' ? 'timed' : 'single'
         });
       } catch (error) {
         console.error('Error saving game history:', error);
@@ -98,7 +105,25 @@ const Index = () => {
 
     setScore(0);
     setQuestionNumber(0);
+    setGameEnded(false);
+    setTimeSpent(0);
+    setTimerActive(false);
+    setGameStarted(false);
     nextQuestion();
+  };
+
+  const startGame = () => {
+    setGameStarted(true);
+    setTimerActive(true);
+    setTimeSpent(0);
+    setScore(0);
+    setQuestionNumber(0);
+    nextQuestion();
+  };
+
+  const handleTimeUp = () => {
+    setTimerActive(false);
+    setGameEnded(true);
   };
 
   const startGuestMode = () => {
@@ -115,8 +140,25 @@ const Index = () => {
       if (mode === 'single') {
         setScore(0);
         setQuestionNumber(0);
+        setGameEnded(false);
+        setTimeSpent(0);
+        setTimerActive(false);
+        setGameStarted(false);
         nextQuestion();
       }
+    }
+  };
+
+  const switchGameType = (type: 'classic' | 'timed') => {
+    if (gameType !== type) {
+      setGameType(type);
+      setScore(0);
+      setQuestionNumber(0);
+      setGameEnded(false);
+      setTimeSpent(0);
+      setTimerActive(false);
+      setGameStarted(false);
+      nextQuestion();
     }
   };
 
@@ -144,61 +186,102 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background transition-colors">
-      <header className="bg-primary text-primary-foreground py-4 px-6 shadow-md relative">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold">Element Guessing Game</h1>
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen flex flex-col">
+      <header className="border-b">
+        <div className="container flex h-16 items-center px-4">
+          <div className="mr-4 hidden md:flex">
+            <a className="mr-6 flex items-center space-x-2" href="/">
+              <span className="hidden font-bold sm:inline-block">
+                Periodic Table Game
+              </span>
+            </a>
+            <nav className="flex items-center space-x-6 text-sm font-medium">
+              <Tabs value={gameMode} onValueChange={(value) => switchGameMode(value as 'single' | 'multiplayer')}>
+                <TabsList>
+                  <TabsTrigger value="single">Single Player</TabsTrigger>
+                  <TabsTrigger value="multiplayer">Multiplayer</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </nav>
+          </div>
+          <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            <div className="w-full flex-1 md:w-auto md:flex-none">
+              {gameMode === 'single' && (
+                <Tabs value={gameType} onValueChange={(value) => switchGameType(value as 'classic' | 'timed')}>
+                  <TabsList>
+                    <TabsTrigger value="classic">Classic</TabsTrigger>
+                    <TabsTrigger value="timed">Timed</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              )}
+            </div>
             <ThemeToggle />
-            {guestMode ? (
-              <Button onClick={exitGuestMode} size="sm" className="flex items-center gap-2">
-                <LogIn className="h-4 w-4" />
-                Sign In
-              </Button>
-            ) : (
-              <UserNav />
-            )}
+            {session.user && <UserNav />}
           </div>
         </div>
       </header>
-
-      <div className="bg-muted/40 border-b">
-        <div className="max-w-7xl mx-auto px-4">
-          <Tabs value={gameMode} onValueChange={(value) => switchGameMode(value as 'single' | 'multiplayer')} className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mt-2">
-              <TabsTrigger value="single">Single Player</TabsTrigger>
-              <TabsTrigger value="multiplayer" className="flex items-center gap-1">
-                <Swords className="h-4 w-4" /> Multiplayer
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </div>
 
       <main className="flex flex-col flex-grow p-2 sm:p-4 md:p-6 max-w-7xl mx-auto w-full gap-4 md:gap-6">
         <div className="flex flex-col flex-grow gap-4 md:gap-6">
           {gameMode === 'single' ? (
             <>
-              <div className="bg-card text-card-foreground rounded-lg shadow-md p-4 md:p-6">
-                {currentQuestion ? (
-                  <QuestionPanel 
-                    question={currentQuestion} 
-                    questionNumber={questionNumber} 
-                  />
-                ) : (
-                  <div className="text-center p-4">Loading question...</div>
-                )}
-              </div>
-
-              <ScoreBoard score={score} questionNumber={questionNumber} resetGame={resetGame} />
-              
-              <div className="bg-card text-card-foreground rounded-lg shadow-md p-2 sm:p-4 overflow-x-auto">
-                <PeriodicTable 
-                  onElementClick={handleElementClick} 
-                  selectedElement={selectedElement}
-                  correctElement={currentQuestion?.correctElement}
+              {gameEnded && gameType === 'timed' ? (
+                <SinglePlayerGameResult 
+                  score={score}
+                  totalQuestions={questionNumber}
+                  timeSpent={timeSpent}
+                  onPlayAgain={resetGame}
                 />
-              </div>
+              ) : (
+                <>
+                  <div className="bg-card text-card-foreground rounded-lg shadow-md p-4 md:p-6">
+                    {gameType === 'timed' && !gameStarted ? (
+                      <div className="flex flex-col items-center justify-center py-8">
+                        <h2 className="text-2xl font-bold mb-4 text-center text-foreground">Timed Challenge</h2>
+                        <p className="text-muted-foreground mb-6 text-center">
+                          Answer as many questions as you can in 60 seconds!
+                        </p>
+                        <Button size="lg" onClick={startGame} className="flex items-center gap-2">
+                          <Clock className="h-5 w-5" />
+                          Start Challenge
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        {gameType === 'timed' && (
+                          <div className="mb-4">
+                            <Timer 
+                              initialTime={60} 
+                              onTimeUp={handleTimeUp} 
+                              isActive={timerActive} 
+                            />
+                          </div>
+                        )}
+                        {currentQuestion ? (
+                          <QuestionPanel 
+                            question={currentQuestion} 
+                            questionNumber={questionNumber} 
+                          />
+                        ) : (
+                          <div className="text-center p-4">Loading question...</div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  {gameStarted && (
+                    <ScoreBoard score={score} questionNumber={questionNumber} resetGame={resetGame} />
+                  )}
+                  
+                  <div className="bg-card text-card-foreground rounded-lg shadow-md p-2 sm:p-4 overflow-x-auto">
+                    <PeriodicTable 
+                      onElementClick={handleElementClick} 
+                      selectedElement={selectedElement}
+                      correctElement={currentQuestion?.correctElement}
+                    />
+                  </div>
+                </>
+              )}
             </>
           ) : (
             <MultiplayerGame />
@@ -208,24 +291,10 @@ const Index = () => {
         {!guestMode && (
           <div className="w-full lg:w-80">
             <div className="bg-card text-card-foreground rounded-lg shadow-md p-4">
-              <h3 className="text-xl font-bold mb-4">Welcome back!</h3>
+              <h3 className="text-xl font-bold mb-4 text-foreground">Welcome back!</h3>
               <p className="text-muted-foreground">
                 Keep playing to improve your knowledge of the periodic table!
               </p>
-            </div>
-          </div>
-        )}
-
-        {guestMode && (
-          <div className="w-full lg:w-80">
-            <div className="bg-card text-card-foreground rounded-lg shadow-md p-4">
-              <h3 className="text-xl font-bold mb-4">Guest Mode</h3>
-              <p className="text-muted-foreground mb-4">
-                You're playing as a guest. Sign in to track your progress, earn achievements, and keep your streak going!
-              </p>
-              <Button onClick={exitGuestMode} className="w-full">
-                Sign In Now
-              </Button>
             </div>
           </div>
         )}
