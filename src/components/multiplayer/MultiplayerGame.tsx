@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Flag } from "lucide-react";
@@ -13,25 +12,46 @@ import { GameFinderCard } from "./GameFinderCard";
 import { GameLobbyCard } from "./GameLobbyCard";
 import { GameResult } from "./GameResult";
 import { GameStatusBar } from "./GameStatusBar";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 export function MultiplayerGame() {
   const { session } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [gameState, setGameState] = useState<MultiplayerGameState | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
   const [gameResult, setGameResult] = useState<MultiplayerGameResult | null>(null);
 
+  // Reset error when session changes
+  useEffect(() => {
+    setError(null);
+  }, [session.user]);
+
   const findGame = async () => {
-    if (!session.user) return;
+    if (!session.user) {
+      setError("Please sign in to play multiplayer");
+      return;
+    }
     
     setLoading(true);
+    setError(null);
+    
     try {
-      await multiplayerService.findGame(session.user);
+      console.log('Finding game for user:', session.user.id);
+      const gameState = await multiplayerService.findGame(session.user);
+      
+      if (!gameState) {
+        throw new Error("Failed to create or join a game");
+      }
+      
+      console.log('Game state:', gameState);
       setCurrentQuestion(multiplayerService.getCurrentQuestion());
     } catch (error) {
       console.error("Error finding game:", error);
+      setError("Failed to find or create a game. Please try again.");
       toast({
         title: "Error",
         description: "Failed to find or create a game. Please try again.",
@@ -45,13 +65,25 @@ export function MultiplayerGame() {
   const leaveGame = async () => {
     if (!session.user || !gameState) return;
     
+    setLoading(true);
+    setError(null);
+    
     try {
+      console.log('Leaving game:', gameState.id);
       await multiplayerService.leaveGame(session.user.id);
       setGameState(null);
       setCurrentQuestion(null);
       setGameResult(null);
     } catch (error) {
       console.error("Error leaving game:", error);
+      setError("Failed to leave the game. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to leave the game. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,12 +113,15 @@ export function MultiplayerGame() {
   };
 
   useEffect(() => {
+    console.log('Setting up game subscriptions...');
     const unsubscribeState = multiplayerService.subscribeToGameState((state) => {
+      console.log('Game state updated:', state);
       setGameState(state);
       setCurrentQuestion(multiplayerService.getCurrentQuestion());
     });
     
     const unsubscribeResult = multiplayerService.subscribeToGameResult((result) => {
+      console.log('Game result received:', result);
       setGameResult(result);
       
       if (result.is_draw) {
@@ -112,11 +147,46 @@ export function MultiplayerGame() {
     });
     
     return () => {
+      console.log('Cleaning up game subscriptions...');
       unsubscribeState();
       unsubscribeResult();
       multiplayerService.cleanup();
     };
   }, [session.user, toast]);
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="w-full max-w-4xl mx-auto p-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Error</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center py-8">
+            <p className="text-red-500 mb-4">{error}</p>
+            <Button onClick={() => setError(null)}>Try Again</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show loading state while session is loading
+  if (session.loading) {
+    return (
+      <div className="w-full max-w-4xl mx-auto p-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Loading</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p>Initializing game...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Render finder card when there's no game state
   if (!gameState) {

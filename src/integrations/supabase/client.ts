@@ -2,17 +2,27 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://mvamjukraqbpxutyuwwj.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12YW1qdWtyYXFicHh1dHl1d3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM0OTc1NTIsImV4cCI6MjA1OTA3MzU1Mn0.x3wNYOtK1wQiJR0Y1Uzny6NVrehg7OvjVKZxRpFdltQ";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
+// Validate environment variables
+if (!SUPABASE_URL) {
+  console.error('Missing VITE_SUPABASE_URL environment variable');
+  throw new Error('Missing VITE_SUPABASE_URL environment variable');
+}
+
+if (!SUPABASE_PUBLISHABLE_KEY) {
+  console.error('Missing VITE_SUPABASE_ANON_KEY environment variable');
+  throw new Error('Missing VITE_SUPABASE_ANON_KEY environment variable');
+}
 
 // Custom storage implementation to handle JSON properly
 const customStorage = {
   getItem: (key: string): string | null => {
     try {
-      return localStorage.getItem(key);
+      const value = localStorage.getItem(key);
+      console.log(`Getting item from storage: ${key}`, value ? 'found' : 'not found');
+      return value;
     } catch (error) {
       console.error('Error getting item from localStorage:', error);
       return null;
@@ -20,6 +30,7 @@ const customStorage = {
   },
   setItem: (key: string, value: string): void => {
     try {
+      console.log(`Setting item in storage: ${key}`);
       localStorage.setItem(key, value);
     } catch (error) {
       console.error('Error setting item in localStorage:', error);
@@ -27,12 +38,15 @@ const customStorage = {
   },
   removeItem: (key: string): void => {
     try {
+      console.log(`Removing item from storage: ${key}`);
       localStorage.removeItem(key);
     } catch (error) {
       console.error('Error removing item from localStorage:', error);
     }
   }
 };
+
+console.log('Initializing Supabase client...');
 
 export const supabase = createClient<Database>(
   SUPABASE_URL,
@@ -42,6 +56,7 @@ export const supabase = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
       storage: customStorage,
+      debug: true, // Enable debug logging for auth
     },
     global: {
       headers: {
@@ -56,3 +71,11 @@ export const supabase = createClient<Database>(
     },
   }
 );
+
+// Test the connection
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event, session?.user?.id);
+});
+
+// Export the client
+export default supabase;

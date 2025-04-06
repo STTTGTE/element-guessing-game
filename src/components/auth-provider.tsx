@@ -1,4 +1,3 @@
-
 import { createContext, useEffect, useState, ReactNode } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -42,38 +41,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Initialize auth state
   useEffect(() => {
+    console.log('Initializing auth state...');
+    let isMounted = true;
+
     // Get the current session
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Getting current session...');
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          throw error;
+        }
         
         if (session?.user) {
-          setUser(session.user);
-          // We're not fetching profiles anymore as it's causing type errors
+          console.log('User found in session:', session.user.id);
+          if (isMounted) {
+            setUser(session.user);
+          }
+        } else {
+          console.log('No user found in session');
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          console.log('Setting loading to false');
+          setLoading(false);
+        }
       }
     };
 
     initializeAuth();
 
     // Set up auth state listener
+    console.log('Setting up auth state listener...');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setUser(session?.user || null);
-        setLoading(false);
-        
-        if (!session?.user) {
-          setProfile(null);
+        console.log('Auth state changed:', event, session?.user?.id);
+        if (isMounted) {
+          setUser(session?.user || null);
+          setLoading(false);
+          
+          if (!session?.user) {
+            setProfile(null);
+          }
         }
       }
     );
 
     // Clean up the subscription
     return () => {
+      console.log('Cleaning up auth provider...');
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, []);
