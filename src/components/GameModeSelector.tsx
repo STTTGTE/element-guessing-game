@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GameMode } from '@/types/game';
-import { Beaker, Clock, FlaskConical, Sword, Atom, Microscope } from 'lucide-react';
+import { Beaker, Clock, FlaskConical, Sword, Atom, Microscope, Palette, Layers, Globe, Thermometer, Droplet, Zap, Magnet, Scale, Brain, Leaf } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface GameModeSelectorProps {
@@ -116,6 +116,76 @@ const gameModes = [
     icon: Atom,
     requiresUnlock: false,
   },
+  {
+    id: 'color_spectrum',
+    title: 'Color Spectrum',
+    description: 'Explore elements through their visual properties',
+    icon: Palette,
+    requiresUnlock: false,
+  },
+  {
+    id: 'layered_view',
+    title: 'Layered View',
+    description: 'Discover elements through their electron layers',
+    icon: Layers,
+    requiresUnlock: false,
+  },
+  {
+    id: 'geological_map',
+    title: 'Geological Map',
+    description: 'View elements by their natural occurrence',
+    icon: Globe,
+    requiresUnlock: false,
+  },
+  {
+    id: 'thermal_view',
+    title: 'Thermal View',
+    description: 'Explore elements by their melting and boiling points',
+    icon: Thermometer,
+    requiresUnlock: false,
+  },
+  {
+    id: 'liquid_metals',
+    title: 'Liquid Metals',
+    description: 'Focus on elements that are liquid at room temperature',
+    icon: Droplet,
+    requiresUnlock: false,
+  },
+  {
+    id: 'electrical_conductors',
+    title: 'Electrical Conductors',
+    description: 'Study elements by their electrical properties',
+    icon: Zap,
+    requiresUnlock: false,
+  },
+  {
+    id: 'magnetic_elements',
+    title: 'Magnetic Elements',
+    description: 'Explore elements by their magnetic properties',
+    icon: Magnet,
+    requiresUnlock: false,
+  },
+  {
+    id: 'density_map',
+    title: 'Density Map',
+    description: 'View elements arranged by their density',
+    icon: Scale,
+    requiresUnlock: false,
+  },
+  {
+    id: 'cognitive_map',
+    title: 'Cognitive Map',
+    description: 'Learn elements through memory techniques',
+    icon: Brain,
+    requiresUnlock: false,
+  },
+  {
+    id: 'organic_elements',
+    title: 'Organic Elements',
+    description: 'Focus on elements essential for life',
+    icon: Leaf,
+    requiresUnlock: false,
+  }
 ];
 
 export default function GameModeSelector({ onSelectMode, unlockedFeatures }: GameModeSelectorProps) {
