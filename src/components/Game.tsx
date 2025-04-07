@@ -12,54 +12,50 @@ interface GameProps {
 }
 
 const themeDescriptions: Record<TableVariant, { title: string; description: string }> = {
-  standard: {
+  'standard': {
     title: 'Standard View',
-    description: 'Classic periodic table layout with traditional element categories'
+    description: 'Classic periodic table with category-based colors'
   },
-  color_spectrum: {
+  'color_spectrum': {
     title: 'Color Spectrum',
-    description: 'Elements colored based on their chemical properties and categories'
+    description: 'Enhanced color contrast for better visibility'
   },
-  layered_view: {
-    title: 'Layered View',
-    description: 'Elements arranged by electron shell configuration'
-  },
-  geological_map: {
-    title: 'Geological Map',
-    description: 'Shows natural occurrence and abundance of elements in Earth\'s crust'
-  },
-  thermal_view: {
+  'thermal_view': {
     title: 'Thermal View',
-    description: 'Elements colored by their melting and boiling points'
+    description: 'Elements colored by their melting points'
   },
-  liquid_metals: {
-    title: 'Liquid Metals',
-    description: 'Highlights elements that are liquid at room temperature'
-  },
-  electrical_conductors: {
+  'electrical_conductors': {
     title: 'Electrical Conductors',
-    description: 'Elements categorized by their electrical conductivity'
+    description: 'Elements colored by their electrical conductivity'
   },
-  magnetic_elements: {
+  'magnetic_elements': {
     title: 'Magnetic Elements',
-    description: 'Shows magnetic properties of elements'
+    description: 'Elements colored by their magnetic properties'
   },
-  density_map: {
+  'density_map': {
     title: 'Density Map',
-    description: 'Elements arranged and colored by their density'
+    description: 'Elements colored by their density'
   },
-  cognitive_map: {
-    title: 'Cognitive Map',
-    description: 'Memory-optimized layout for learning element positions'
+  'geological_map': {
+    title: 'Geological Map',
+    description: 'Elements colored by their natural occurrence'
   },
-  organic_elements: {
+  'organic_elements': {
     title: 'Organic Elements',
-    description: 'Highlights elements essential for life and biological processes'
+    description: 'Elements colored by their biological role'
+  },
+  'layered_view': {
+    title: 'Layered View',
+    description: 'Elements arranged by periods with distinct colors'
+  },
+  '3d_view': {
+    title: '3D View',
+    description: 'Interactive 3D visualization of the periodic table'
   }
 };
 
 export default function Game({ mode, onBack }: GameProps) {
-  const [currentTheme, setCurrentTheme] = useState<TableVariant>('standard');
+  const [currentTheme, setCurrentTheme] = useState<TableVariant>('3d_view');
   const [highlightedElements, setHighlightedElements] = useState<string[]>([]);
 
   return (

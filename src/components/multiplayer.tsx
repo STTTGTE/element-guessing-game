@@ -36,7 +36,7 @@ export function MultiplayerGame({ onBack }: MultiplayerGameProps) {
   const { session } = useAuth();
   const { toast } = useToast();
   const channelRef = useRef<RealtimeChannel | null>(null);
-  const [currentTheme, setCurrentTheme] = useState<TableVariant>('standard');
+  const [currentTheme, setCurrentTheme] = useState<TableVariant>('3d_view');
   const [gameState, setGameState] = useState<MultiplayerGameState | null>(null);
 
   // Function to join an existing game - wrapped in useCallback to avoid dependency issues

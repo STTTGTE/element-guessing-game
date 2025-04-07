@@ -24,7 +24,7 @@ export default function Index() {
   const { toast } = useToast();
   const { checkAndGrantAchievements } = useAchievements();
   const { updateStreak } = useStreaks();
-  const [currentTheme, setCurrentTheme] = useState<TableVariant>('standard');
+  const [currentTheme, setCurrentTheme] = useState<TableVariant>('3d_view');
   const [activeTab, setActiveTab] = useState<'single' | 'multi'>('single');
 
   const [gameState, setGameState] = useState<GameState>({
