@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GameMode } from '@/types/game';
-import { Beaker, Clock, Flask, Sword, Atom, Microscope } from 'lucide-react';
+import { Beaker, Clock, FlaskConical, Sword, Atom, Microscope } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface GameModeSelectorProps {
@@ -23,7 +22,7 @@ const gameModes = [
     id: 'valence_voyager',
     title: 'Valence Voyager',
     description: 'Master valence electron configurations',
-    icon: Flask,
+    icon: FlaskConical,
     requiresUnlock: false,
   },
   {
@@ -65,7 +64,7 @@ const gameModes = [
     id: 'molecular_master',
     title: 'Molecular Master',
     description: 'Create stable molecular combinations',
-    icon: Flask,
+    icon: FlaskConical,
     requiresUnlock: true,
   },
   {
@@ -86,7 +85,7 @@ const gameModes = [
     id: 'synthesis_sprint',
     title: 'Synthesis Sprint',
     description: 'Race against time balancing chemical equations',
-    icon: Flask,
+    icon: FlaskConical,
     requiresUnlock: false,
   },
   {
