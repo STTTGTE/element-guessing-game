@@ -5,180 +5,390 @@ export const questions: Question[] = [
     id: 1,
     text: "I am the primary element used in organic compounds. What am I?",
     correctElement: "C",
-    hint: "I'm essential for all known life forms."
+    hint: "I'm essential for all known life forms.",
+    difficulty: "easy",
+    category: "properties",
+    points: 10,
+    timeLimit: 30,
+    historicalContext: "Discovered in prehistoric times, carbon is the basis of all known life.",
+    realWorldApplication: "Used in everything from pencils to diamonds to carbon fiber.",
+    careerPath: "Materials scientist, organic chemist"
   },
   {
     id: 2,
     text: "I am the lightest and most abundant element in the universe. What am I?",
     correctElement: "H",
-    hint: "I'm named after the Greek word for 'water-forming'."
+    hint: "I'm named after the Greek word for 'water-forming'.",
+    difficulty: "easy",
+    category: "properties",
+    points: 10,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1766 by Henry Cavendish, hydrogen is the simplest element.",
+    realWorldApplication: "Used in fuel cells and as a clean energy source.",
+    careerPath: "Energy engineer, chemical engineer"
   },
   {
     id: 3,
     text: "I am a noble gas used in lighting and signs. What am I?",
     correctElement: "Ne",
-    hint: "My name comes from the Greek word for 'new'."
+    hint: "My name comes from the Greek word for 'new'.",
+    difficulty: "medium",
+    category: "applications",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1898 by William Ramsay and Morris Travers.",
+    realWorldApplication: "Used in neon signs and high-voltage indicators.",
+    careerPath: "Lighting designer, electrical engineer"
   },
   {
     id: 4,
     text: "I am needed for cellular respiration in most living organisms. What am I?",
     correctElement: "O",
-    hint: "You breathe me in to survive."
+    hint: "You breathe me in to survive.",
+    difficulty: "easy",
+    category: "properties",
+    points: 10,
+    timeLimit: 30,
+    historicalContext: "Discovered independently by Carl Wilhelm Scheele and Joseph Priestley in the 1770s.",
+    realWorldApplication: "Essential for life, used in medical oxygen therapy.",
+    careerPath: "Medical researcher, environmental scientist"
   },
   {
     id: 5,
     text: "I am a soft, silvery-white alkali metal that reacts vigorously with water. What am I?",
     correctElement: "Na",
-    hint: "I'm commonly found in table salt."
+    hint: "I'm commonly found in table salt.",
+    difficulty: "medium",
+    category: "properties",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "First isolated by Humphry Davy in 1807 using electrolysis.",
+    realWorldApplication: "Used in sodium-vapor lamps and as a coolant in nuclear reactors.",
+    careerPath: "Chemical engineer, materials scientist"
   },
   {
     id: 6,
     text: "I am a yellow nonmetal used in matches and fertilizers. What am I?",
     correctElement: "S",
-    hint: "I have a distinctive smell in my gaseous compounds."
+    hint: "I have a distinctive smell in my gaseous compounds.",
+    difficulty: "medium",
+    category: "applications",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Known since ancient times, sulfur was used in medicine and warfare.",
+    realWorldApplication: "Used in fertilizers, matches, and vulcanization of rubber.",
+    careerPath: "Agricultural scientist, materials engineer"
   },
   {
     id: 7,
     text: "I am a transition metal prized for my conductivity and used in electrical wiring. What am I?",
     correctElement: "Cu",
-    hint: "I give U.S. pennies their distinctive color."
+    hint: "I give U.S. pennies their distinctive color.",
+    difficulty: "medium",
+    category: "applications",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Used by humans for over 10,000 years, named after Cyprus.",
+    realWorldApplication: "Essential for electrical wiring and electronics.",
+    careerPath: "Electrical engineer, metallurgist"
   },
   {
     id: 8,
     text: "I am a metal that has been used by humans for thousands of years and is highly valued. What am I?",
     correctElement: "Au",
-    hint: "I'm often used in jewelry and as a standard for monetary systems."
+    hint: "I'm often used in jewelry and as a standard for monetary systems.",
+    difficulty: "easy",
+    category: "history",
+    points: 10,
+    timeLimit: 30,
+    historicalContext: "Used since prehistoric times, gold has been a symbol of wealth and power.",
+    realWorldApplication: "Used in jewelry, electronics, and as a monetary standard.",
+    careerPath: "Jeweler, materials scientist"
   },
   {
     id: 9,
     text: "I am a gas that makes up about 78% of Earth's atmosphere. What am I?",
     correctElement: "N",
-    hint: "Plants need compounds of me to grow."
+    hint: "Plants need compounds of me to grow.",
+    difficulty: "easy",
+    category: "properties",
+    points: 10,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1772 by Daniel Rutherford.",
+    realWorldApplication: "Essential for plant growth, used in fertilizers.",
+    careerPath: "Agricultural scientist, environmental engineer"
   },
   {
     id: 10,
     text: "I am a halogen used in water purification and swimming pools. What am I?",
     correctElement: "Cl",
-    hint: "I form a common salt when combined with sodium."
+    hint: "I form a common salt when combined with sodium.",
+    difficulty: "medium",
+    category: "applications",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1774 by Carl Wilhelm Scheele.",
+    realWorldApplication: "Used in water purification and PVC production.",
+    careerPath: "Water treatment specialist, chemical engineer"
   },
   {
     id: 11,
     text: "I am an element essential for strong bones and teeth. What am I?",
     correctElement: "Ca",
-    hint: "You can find me in dairy products."
+    hint: "You can find me in dairy products.",
+    difficulty: "easy",
+    category: "properties",
+    points: 10,
+    timeLimit: 30,
+    historicalContext: "Known since ancient times, calcium was first isolated in 1808.",
+    realWorldApplication: "Essential for bone health, used in construction materials.",
+    careerPath: "Nutritionist, materials engineer"
   },
   {
     id: 12,
     text: "I am a heavy, bluish-gray metal historically used in plumbing. What am I?",
     correctElement: "Pb",
-    hint: "My symbol comes from the Latin word 'plumbum'."
+    hint: "My symbol comes from the Latin word 'plumbum'.",
+    difficulty: "medium",
+    category: "history",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Used since ancient times, lead was used in Roman plumbing.",
+    realWorldApplication: "Used in batteries and radiation shielding.",
+    careerPath: "Environmental engineer, materials scientist"
   },
   {
     id: 13,
     text: "I am a transition metal used in stainless steel. What am I?",
     correctElement: "Cr",
-    hint: "My name comes from the Greek word for 'color'"
+    hint: "My name comes from the Greek word for 'color'",
+    difficulty: "medium",
+    category: "applications",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1797 by Louis Nicolas Vauquelin.",
+    realWorldApplication: "Used in stainless steel and chrome plating.",
+    careerPath: "Metallurgist, materials engineer"
   },
   {
     id: 14,
     text: "I am a shiny, costly precious metal used in jewelry and industrial applications. What am I?",
     correctElement: "Pt",
-    hint: "I have a similar appearance to silver"
+    hint: "I have a similar appearance to silver",
+    difficulty: "hard",
+    category: "applications",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Known to pre-Columbian South Americans, rediscovered in 1735.",
+    realWorldApplication: "Used in catalytic converters and jewelry.",
+    careerPath: "Chemical engineer, materials scientist"
   },
   {
     id: 15,
     text: "I am a metal that is liquid at room temperature, along with bromine. What am I?",
     correctElement: "Hg",
-    hint: "I'm named after a Roman god"
+    hint: "I'm named after a Roman god",
+    difficulty: "medium",
+    category: "properties",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Known since ancient times, mercury was used in alchemy.",
+    realWorldApplication: "Used in thermometers and fluorescent lights.",
+    careerPath: "Environmental scientist, materials engineer"
   },
   {
     id: 16,
     text: "I am a rare earth element used in powerful magnets. What am I?",
     correctElement: "Nd",
-    hint: "My name means 'new twin'"
+    hint: "My name means 'new twin'",
+    difficulty: "hard",
+    category: "applications",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1885 by Carl Auer von Welsbach.",
+    realWorldApplication: "Used in powerful magnets and lasers.",
+    careerPath: "Materials scientist, electrical engineer"
   },
   {
     id: 17,
     text: "I am the most electronegative element. What am I?",
     correctElement: "F",
-    hint: "I'm named after the Latin word for 'flow'"
+    hint: "I'm named after the Latin word for 'flow'",
+    difficulty: "hard",
+    category: "properties",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1886 by Henri Moissan.",
+    realWorldApplication: "Used in toothpaste and refrigerants.",
+    careerPath: "Chemical engineer, materials scientist"
   },
   {
     id: 18,
     text: "I am a metal that glows green in flames. What am I?",
     correctElement: "Cu",
-    hint: "You might find me in electrical wiring"
+    hint: "You might find me in electrical wiring",
+    difficulty: "medium",
+    category: "properties",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Used by humans for over 10,000 years, named after Cyprus.",
+    realWorldApplication: "Used in electrical wiring and plumbing.",
+    careerPath: "Electrical engineer, materials scientist"
   },
   {
     id: 19,
     text: "I am a noble gas used in advertising signs with a reddish-orange glow. What am I?",
     correctElement: "Ne",
-    hint: "My name means 'new'"
+    hint: "My name means 'new'",
+    difficulty: "medium",
+    category: "applications",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1898 by William Ramsay and Morris Travers.",
+    realWorldApplication: "Used in neon signs and high-voltage indicators.",
+    careerPath: "Lighting designer, electrical engineer"
   },
   {
     id: 20,
     text: "I am the most abundant metal in the Earth's crust. What am I?",
     correctElement: "Al",
-    hint: "I'm used in making cans and foil"
+    hint: "I'm used in making cans and foil",
+    difficulty: "medium",
+    category: "properties",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "First isolated in 1825 by Hans Christian Ørsted.",
+    realWorldApplication: "Used in aircraft, packaging, and construction.",
+    careerPath: "Materials engineer, aerospace engineer"
   },
   {
     id: 21,
     text: "I am a radioactive element used in nuclear power plants. What am I?",
     correctElement: "U",
-    hint: "I'm named after a planet"
+    hint: "I'm named after a planet",
+    difficulty: "hard",
+    category: "applications",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1789 by Martin Klaproth.",
+    realWorldApplication: "Used in nuclear power and weapons.",
+    careerPath: "Nuclear engineer, materials scientist"
   },
   {
     id: 22,
     text: "I am a metal that's known for its resistance to corrosion. What am I?",
     correctElement: "Ti",
-    hint: "I'm named after the Titans in Greek mythology"
+    hint: "I'm named after the Titans in Greek mythology",
+    difficulty: "hard",
+    category: "properties",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1791 by William Gregor.",
+    realWorldApplication: "Used in aircraft, medical implants, and sports equipment.",
+    careerPath: "Materials engineer, biomedical engineer"
   },
   {
     id: 23,
     text: "I am a halogen with a distinctive violet vapor. What am I?",
     correctElement: "I",
-    hint: "My name comes from the Greek word for 'violet'"
+    hint: "My name comes from the Greek word for 'violet'",
+    difficulty: "medium",
+    category: "properties",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1811 by Bernard Courtois.",
+    realWorldApplication: "Used in medicine and photography.",
+    careerPath: "Medical researcher, chemical engineer"
   },
   {
     id: 24,
     text: "I am a transition metal used to strengthen steel alloys. What am I?",
     correctElement: "Mn",
-    hint: "My name comes from the Latin word 'magnes', meaning magnet"
+    hint: "My name comes from the Latin word 'magnes', meaning magnet",
+    difficulty: "hard",
+    category: "applications",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1774 by Johan Gottlieb Gahn.",
+    realWorldApplication: "Used in steel production and batteries.",
+    careerPath: "Metallurgist, materials engineer"
   },
   {
     id: 25,
     text: "I am the second-lightest noble gas. What am I?",
     correctElement: "Ne",
-    hint: "I'm used in signs that glow reddish-orange"
+    hint: "I'm used in signs that glow reddish-orange",
+    difficulty: "medium",
+    category: "properties",
+    points: 15,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1898 by William Ramsay and Morris Travers.",
+    realWorldApplication: "Used in neon signs and high-voltage indicators.",
+    careerPath: "Lighting designer, electrical engineer"
   },
   {
     id: 26,
     text: "I am a metalloid used in semiconductors and solar cells. What am I?",
     correctElement: "Si",
-    hint: "I'm the second most abundant element in the Earth's crust"
+    hint: "I'm the second most abundant element in the Earth's crust",
+    difficulty: "hard",
+    category: "applications",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1824 by Jöns Jacob Berzelius.",
+    realWorldApplication: "Used in computer chips and solar panels.",
+    careerPath: "Electrical engineer, materials scientist"
   },
   {
     id: 27,
     text: "I am a transition metal used in catalytic converters. What am I?",
     correctElement: "Pd",
-    hint: "I'm named after the asteroid Pallas"
+    hint: "I'm named after the asteroid Pallas",
+    difficulty: "hard",
+    category: "applications",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1803 by William Hyde Wollaston.",
+    realWorldApplication: "Used in catalytic converters and jewelry.",
+    careerPath: "Chemical engineer, materials scientist"
   },
   {
     id: 28,
     text: "I am a silvery-white metal that ignites spontaneously in air. What am I?",
     correctElement: "Cs",
-    hint: "I'm the most electropositive element"
+    hint: "I'm the most electropositive element",
+    difficulty: "hard",
+    category: "properties",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1860 by Robert Bunsen and Gustav Kirchhoff.",
+    realWorldApplication: "Used in atomic clocks and photoelectric cells.",
+    careerPath: "Physicist, materials scientist"
   },
   {
     id: 29,
     text: "I am a radioactive element used in smoke detectors. What am I?",
     correctElement: "Am",
-    hint: "I'm named after a continent"
+    hint: "I'm named after a continent",
+    difficulty: "hard",
+    category: "applications",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1944 by Glenn T. Seaborg and colleagues.",
+    realWorldApplication: "Used in smoke detectors and neutron sources.",
+    careerPath: "Nuclear engineer, materials scientist"
   },
   {
     id: 30,
     text: "I am the rarest naturally occurring element in the Earth's crust. What am I?",
     correctElement: "Rn",
-    hint: "I'm a noble gas that can cause health issues in basements"
+    hint: "I'm a noble gas that can cause health issues in basements",
+    difficulty: "hard",
+    category: "properties",
+    points: 20,
+    timeLimit: 30,
+    historicalContext: "Discovered in 1900 by Friedrich Ernst Dorn.",
+    realWorldApplication: "Used in radiation therapy and earthquake prediction.",
+    careerPath: "Medical physicist, environmental scientist"
   }
 ];
