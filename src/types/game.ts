@@ -1,4 +1,3 @@
-
 export interface ElementData {
   name: string;
   symbol: string;
@@ -13,6 +12,17 @@ export interface ElementData {
   discoveredBy?: string;
   unlockedFeatures?: string[];
   masteryLevel?: number;
+  block: string;
+  atomicRadius?: number;
+  ionizationEnergy?: number;
+  density?: number;
+  meltingPoint?: number;
+  boilingPoint?: number;
+  naturalOccurrence?: 'common' | 'rare' | 'synthetic';
+  isRadioactive: boolean;
+  electricalConductivity?: 'high' | 'medium' | 'low';
+  magneticProperty?: 'ferromagnetic' | 'paramagnetic' | 'diamagnetic';
+  biologicalRole?: 'essential' | 'trace' | 'none' | 'toxic';
 }
 
 export interface Question {
@@ -44,14 +54,9 @@ export interface GameState {
 }
 
 export type GameMode = 
-  | 'quantum_leap' 
-  | 'synthesis_sprint' 
-  | 'isotope_investigator' 
-  | 'periodic_war' 
-  | 'nano_architect' 
   | 'standard'
   | 'electron_explorer'
-  | 'valence_voyager' 
+  | 'valence_voyager'
   | 'orbital_odyssey'
   | 'reaction_rush'
   | 'atomic_architect'
@@ -59,19 +64,25 @@ export type GameMode =
   | 'element_evolution'
   | 'molecular_master'
   | 'bonding_battle'
-  | 'atomic_assembly';
+  | 'atomic_assembly'
+  | 'synthesis_sprint'
+  | 'isotope_investigator'
+  | 'periodic_war'
+  | 'nano_architect';
 
-export type TableVariant =
+export type TableVariant = 
   | 'standard'
-  | 'long'
-  | 'spiral'
-  | 'electron_shell'
-  | 'periodic_3d'
-  | 'quantum_mechanical'
-  | 'reactivity'
-  | 'atomic_radius'
-  | 'electronegativity'
-  | 'ionization_energy';
+  | 'color_spectrum'
+  | 'layered_view'
+  | 'geological_map'
+  | 'thermal_view'
+  | 'liquid_metals'
+  | 'electrical_conductors'
+  | 'magnetic_elements'
+  | 'density_map'
+  | 'cognitive_map'
+  | 'organic_elements';
+
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type CategoryFilter = 'all' | string;
 export type ViewMode = 'standard' | 'compact' | 'accessibility';
