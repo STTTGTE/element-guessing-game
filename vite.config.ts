@@ -7,7 +7,14 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }: { mode: string }): UserConfig => ({
   server: {
     host: "::",
-    port: 8080
+    port: 8080,
+    fs: {
+      strict: true
+    },
+    middlewareMode: false,
+    hmr: {
+      protocol: 'ws'
+    }
   },
   plugins: [
     react(),
@@ -29,6 +36,12 @@ export default defineConfig(({ mode }: { mode: string }): UserConfig => ({
         }
       }
     },
-    target: 'esnext'
+    target: 'esnext',
+    modulePreload: {
+      polyfill: true
+    }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom']
   }
 }));
