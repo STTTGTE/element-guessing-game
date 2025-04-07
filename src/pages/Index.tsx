@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
 import PeriodicTable from "@/components/PeriodicTable";
@@ -112,13 +112,6 @@ export default function Index() {
     });
   };
 
-  if (!selectedMode) {
-    return <GameModeSelector 
-      onSelectMode={handleModeSelect} 
-      unlockedFeatures={['standard', 'timed', 'challenge']} 
-    />;
-  }
-
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -134,24 +127,33 @@ export default function Index() {
               </div>
             </CardContent>
           </Card>
-          <PeriodicTable 
-            onElementClick={handleElementClick}
-            highlightedElements={gameState.currentQuestion ? [gameState.currentQuestion.correctElement] : []}
-            variant={currentTheme}
-          />
-        </div>
-        <div className="space-y-4">
-          <ScoreBoard 
-            score={gameState.score}
-            questionNumber={gameState.questionsAnswered}
-            resetGame={resetGame}
-          />
-          <QuestionPanel 
-            question={gameState.currentQuestion}
-            timeRemaining={gameState.timeRemaining}
-            gameMode={gameState.gameMode}
-            masteryLevel={0}
-          />
+          {!selectedMode ? (
+            <GameModeSelector 
+              onSelectMode={handleModeSelect} 
+              unlockedFeatures={['standard', 'timed', 'challenge']} 
+            />
+          ) : (
+            <>
+              <PeriodicTable 
+                onElementClick={handleElementClick}
+                highlightedElements={gameState.currentQuestion ? [gameState.currentQuestion.correctElement] : []}
+                variant={currentTheme}
+              />
+              <div className="space-y-4">
+                <ScoreBoard 
+                  score={gameState.score}
+                  questionNumber={gameState.questionsAnswered}
+                  resetGame={resetGame}
+                />
+                <QuestionPanel 
+                  question={gameState.currentQuestion}
+                  timeRemaining={gameState.timeRemaining}
+                  gameMode={gameState.gameMode}
+                  masteryLevel={0}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
