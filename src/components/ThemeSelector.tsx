@@ -81,12 +81,12 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
   const currentThemeData = themes.find(theme => theme.id === currentTheme);
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 w-full">
       <Select
         value={currentTheme}
         onValueChange={(value) => onThemeChange(value as TableVariant)}
       >
-        <SelectTrigger className="w-[300px]">
+        <SelectTrigger className="w-full">
           <div className="flex items-center gap-2">
             {currentThemeData && (
               <currentThemeData.icon className="h-4 w-4" />
@@ -94,7 +94,7 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
             <SelectValue placeholder="Select a theme" />
           </div>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="w-[300px]">
           {themes.map((theme) => (
             <SelectItem 
               key={theme.id} 

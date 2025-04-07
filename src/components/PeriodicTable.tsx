@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ElementData, TableVariant } from '@/types/game';
 import { Tooltip } from '@/components/ui/tooltip';
 import { motion } from 'framer-motion';
@@ -14,6 +14,66 @@ interface PeriodicTableProps {
   variant?: TableVariant;
 }
 
+const categoryColors = {
+  'alkali-metal': 'bg-red-200 dark:bg-red-800',
+  'alkaline-earth-metal': 'bg-orange-200 dark:bg-orange-800',
+  'transition-metal': 'bg-yellow-200 dark:bg-yellow-800',
+  'post-transition-metal': 'bg-green-200 dark:bg-green-800',
+  'metalloid': 'bg-teal-200 dark:bg-teal-800',
+  'nonmetal': 'bg-blue-200 dark:bg-blue-800',
+  'noble-gas': 'bg-purple-200 dark:bg-purple-800',
+  'lanthanide': 'bg-pink-200 dark:bg-pink-800',
+  'actinide': 'bg-rose-200 dark:bg-rose-800',
+  'unknown': 'bg-gray-200 dark:bg-gray-800'
+};
+
+const thermalColors = {
+  cold: 'bg-blue-200 dark:bg-blue-800',
+  cool: 'bg-cyan-200 dark:bg-cyan-800',
+  moderate: 'bg-green-200 dark:bg-green-800',
+  warm: 'bg-yellow-200 dark:bg-yellow-800',
+  hot: 'bg-orange-200 dark:bg-orange-800',
+  extreme: 'bg-red-200 dark:bg-red-800'
+};
+
+const conductivityColors = {
+  high: 'bg-yellow-200 dark:bg-yellow-800',
+  medium: 'bg-orange-200 dark:bg-orange-800',
+  low: 'bg-red-200 dark:bg-red-800',
+  unknown: 'bg-gray-200 dark:bg-gray-800'
+};
+
+const magneticColors = {
+  ferromagnetic: 'bg-blue-200 dark:bg-blue-800',
+  paramagnetic: 'bg-indigo-200 dark:bg-indigo-800',
+  diamagnetic: 'bg-purple-200 dark:bg-purple-800',
+  unknown: 'bg-gray-200 dark:bg-gray-800'
+};
+
+const densityColors = {
+  veryLight: 'bg-blue-200 dark:bg-blue-800',
+  light: 'bg-green-200 dark:bg-green-800',
+  moderate: 'bg-yellow-200 dark:bg-yellow-800',
+  heavy: 'bg-orange-200 dark:bg-orange-800',
+  veryHeavy: 'bg-red-200 dark:bg-red-800',
+  unknown: 'bg-gray-200 dark:bg-gray-800'
+};
+
+const geologicalColors = {
+  common: 'bg-green-200 dark:bg-green-800',
+  rare: 'bg-yellow-200 dark:bg-yellow-800',
+  synthetic: 'bg-red-200 dark:bg-red-800',
+  unknown: 'bg-gray-200 dark:bg-gray-800'
+};
+
+const biologicalColors = {
+  essential: 'bg-green-200 dark:bg-green-800',
+  trace: 'bg-blue-200 dark:bg-blue-800',
+  toxic: 'bg-red-200 dark:bg-red-800',
+  none: 'bg-gray-200 dark:bg-gray-800',
+  unknown: 'bg-gray-200 dark:bg-gray-800'
+};
+
 export default function PeriodicTable({
   onElementClick,
   highlightedElements = [],
@@ -26,50 +86,50 @@ export default function PeriodicTable({
   const getElementColor = (element: ElementData) => {
     switch (variant) {
       case 'color_spectrum':
-        return `bg-${element.category}-100 dark:bg-${element.category}-900`;
-      case 'thermal_view':
-        return element.meltingPoint 
-          ? `bg-gradient-to-r from-blue-${Math.min(900, Math.floor(element.meltingPoint/100)*100)} to-red-${Math.min(900, Math.floor(element.boilingPoint/100)*100)}`
-          : 'bg-gray-100 dark:bg-gray-800';
+        return categoryColors[element.category] || categoryColors.unknown;
+      
+      case 'thermal_view': {
+        const meltingPoint = element.meltingPoint || 0;
+        if (meltingPoint === 0) return thermalColors.unknown;
+        if (meltingPoint < 273) return thermalColors.cold;
+        if (meltingPoint < 373) return thermalColors.cool;
+        if (meltingPoint < 1000) return thermalColors.moderate;
+        if (meltingPoint < 2000) return thermalColors.warm;
+        if (meltingPoint < 4000) return thermalColors.hot;
+        return thermalColors.extreme;
+      }
+
       case 'electrical_conductors':
-        return element.electricalConductivity === 'high' 
-          ? 'bg-yellow-100 dark:bg-yellow-900'
-          : element.electricalConductivity === 'medium'
-          ? 'bg-orange-100 dark:bg-orange-900'
-          : 'bg-red-100 dark:bg-red-900';
+        return conductivityColors[element.electricalConductivity || 'unknown'];
+
       case 'magnetic_elements':
-        return element.magneticProperty === 'ferromagnetic'
-          ? 'bg-blue-100 dark:bg-blue-900'
-          : element.magneticProperty === 'paramagnetic'
-          ? 'bg-indigo-100 dark:bg-indigo-900'
-          : 'bg-purple-100 dark:bg-purple-900';
-      case 'density_map':
-        return element.density
-          ? `bg-gradient-to-r from-green-${Math.min(900, Math.floor(element.density*100))} to-blue-${Math.min(900, Math.floor(element.density*100))}`
-          : 'bg-gray-100 dark:bg-gray-800';
+        return magneticColors[element.magneticProperty || 'unknown'];
+
+      case 'density_map': {
+        const density = element.density || 0;
+        if (density === 0) return densityColors.unknown;
+        if (density < 1) return densityColors.veryLight;
+        if (density < 5) return densityColors.light;
+        if (density < 10) return densityColors.moderate;
+        if (density < 15) return densityColors.heavy;
+        return densityColors.veryHeavy;
+      }
+
       case 'geological_map':
-        return element.naturalOccurrence === 'common'
-          ? 'bg-green-100 dark:bg-green-900'
-          : element.naturalOccurrence === 'rare'
-          ? 'bg-yellow-100 dark:bg-yellow-900'
-          : 'bg-red-100 dark:bg-red-900';
+        return geologicalColors[element.naturalOccurrence || 'unknown'];
+
       case 'organic_elements':
-        return element.biologicalRole === 'essential'
-          ? 'bg-green-100 dark:bg-green-900'
-          : element.biologicalRole === 'trace'
-          ? 'bg-blue-100 dark:bg-blue-900'
-          : element.biologicalRole === 'toxic'
-          ? 'bg-red-100 dark:bg-red-900'
-          : 'bg-gray-100 dark:bg-gray-800';
+        return biologicalColors[element.biologicalRole || 'unknown'];
+
       default:
-        return `bg-${element.category}-100 dark:bg-${element.category}-900`;
+        return categoryColors[element.category] || categoryColors.unknown;
     }
   };
 
   const getAdditionalInfo = (element: ElementData) => {
     switch (variant) {
       case 'thermal_view':
-        return `MP: ${element.meltingPoint}K BP: ${element.boilingPoint}K`;
+        return `MP: ${element.meltingPoint || '?'}K`;
       case 'electrical_conductors':
         return element.electricalConductivity || 'Unknown';
       case 'magnetic_elements':
@@ -81,7 +141,7 @@ export default function PeriodicTable({
       case 'organic_elements':
         return element.biologicalRole || 'Unknown';
       default:
-        return '';
+        return element.category;
     }
   };
 
@@ -94,27 +154,30 @@ export default function PeriodicTable({
       <motion.div
         key={element.symbol}
         className={cn(
-          "element-tile",
+          "element-tile relative",
           getElementColor(element),
           "rounded-lg p-2 cursor-pointer transition-all",
-          "flex flex-col items-center justify-center",
+          "hover:scale-105",
           isHighlighted && "ring-2 ring-primary",
           isDisabled && "opacity-50 cursor-not-allowed",
           viewMode === 'compact' ? 'w-8 h-8' : 'w-16 h-16'
         )}
-        whileHover={{ scale: isDisabled ? 1 : 1.05 }}
         onClick={() => !isDisabled && onElementClick?.(element)}
       >
-        <span className="font-bold">{element.symbol}</span>
-        {viewMode === 'standard' && showDetails && (
-          <>
-            <span className="text-xs">{element.atomicNumber}</span>
-            <span className="text-xs truncate">{element.name}</span>
-            {additionalInfo && (
-              <span className="text-xs mt-1 opacity-75">{additionalInfo}</span>
-            )}
-          </>
-        )}
+        <div className="flex flex-col items-center justify-center h-full">
+          <span className="font-bold text-foreground">{element.symbol}</span>
+          {viewMode === 'standard' && showDetails && (
+            <>
+              <span className="text-xs text-foreground/80">{element.atomicNumber}</span>
+              <span className="text-xs text-foreground/80 truncate max-w-full">{element.name}</span>
+              {additionalInfo && (
+                <span className="text-[10px] text-foreground/60 mt-0.5 truncate max-w-full">
+                  {additionalInfo}
+                </span>
+              )}
+            </>
+          )}
+        </div>
       </motion.div>
     );
   };
@@ -122,8 +185,8 @@ export default function PeriodicTable({
   return (
     <div className={cn(
       "periodic-table-grid grid gap-1",
-      variant === 'layered_view' && "grid-cols-18 grid-rows-7",
-      variant === 'standard' && "grid-cols-18 grid-rows-10"
+      variant === 'layered_view' ? "grid-cols-18 grid-rows-7" : "grid-cols-18 grid-rows-10",
+      "p-4 rounded-lg bg-background/50 border"
     )}>
       {elementData.map((element) => renderElement(element))}
     </div>

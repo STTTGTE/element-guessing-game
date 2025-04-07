@@ -74,20 +74,20 @@ export default function Game({ mode, onBack }: GameProps) {
           </button>
         </div>
         
-        <Card>
+        <Card className="w-full">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4">
               <div>
                 <CardTitle>{themeDescriptions[currentTheme].title}</CardTitle>
                 <CardDescription>{themeDescriptions[currentTheme].description}</CardDescription>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">App Theme:</span>
                   <ThemeToggle />
                 </div>
-                <Separator orientation="vertical" className="h-8" />
-                <div className="flex items-center gap-2">
+                <Separator orientation="vertical" className="h-8 hidden sm:block" />
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                   <span className="text-sm font-medium">Board Theme:</span>
                   <ThemeSelector
                     currentTheme={currentTheme}
