@@ -1,5 +1,5 @@
 import { defineConfig, UserConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
@@ -7,7 +7,7 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }: { mode: string }): UserConfig => ({
   server: {
     host: "::",
-    port: 8080,
+    port: 8080
   },
   plugins: [
     react(),
@@ -28,6 +28,7 @@ export default defineConfig(({ mode }: { mode: string }): UserConfig => ({
           'framer-motion': 'framerMotion'
         }
       }
-    }
+    },
+    target: 'esnext'
   }
 }));
