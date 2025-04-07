@@ -85,7 +85,7 @@ export type TableVariant =
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type CategoryFilter = 'all' | string;
-export type ViewMode = 'standard' | 'compact' | 'accessibility';
+export type ViewMode = TableVariant;
 
 export interface Achievement {
   id: string;

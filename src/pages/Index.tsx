@@ -26,6 +26,7 @@ export default function Index() {
   const { checkAndGrantAchievements } = useAchievements();
   const { updateStreak } = useStreaks();
   const [currentTheme, setCurrentTheme] = useState<TableVariant>('standard');
+  const [activeTab, setActiveTab] = useState<'single' | 'multi'>('single');
 
   const [gameState, setGameState] = useState<GameState>({
     score: 0,
@@ -45,7 +46,6 @@ export default function Index() {
   const handleModeSelect = (mode: GameMode) => {
     setSelectedMode(mode);
     setGameState(prev => ({ ...prev, gameMode: mode }));
-    // Initialize game mode specific settings
   };
 
   const handleElementClick = (element: ElementData) => {
@@ -127,33 +127,53 @@ export default function Index() {
               </div>
             </CardContent>
           </Card>
-          {!selectedMode ? (
-            <GameModeSelector 
-              onSelectMode={handleModeSelect} 
-              unlockedFeatures={['standard', 'timed', 'challenge']} 
-            />
-          ) : (
-            <>
-              <PeriodicTable 
-                onElementClick={handleElementClick}
-                highlightedElements={gameState.currentQuestion ? [gameState.currentQuestion.correctElement] : []}
-                variant={currentTheme}
-              />
-              <div className="space-y-4">
-                <ScoreBoard 
-                  score={gameState.score}
-                  questionNumber={gameState.questionsAnswered}
-                  resetGame={resetGame}
+
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'single' | 'multi')} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="single">
+                <Swords className="w-4 h-4 mr-2" />
+                Single Player
+              </TabsTrigger>
+              <TabsTrigger value="multi">
+                <UserPlus className="w-4 h-4 mr-2" />
+                Multiplayer
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="single" className="space-y-4">
+              {!selectedMode ? (
+                <GameModeSelector 
+                  onSelectMode={handleModeSelect} 
+                  unlockedFeatures={['standard', 'timed', 'challenge']} 
                 />
-                <QuestionPanel 
-                  question={gameState.currentQuestion}
-                  timeRemaining={gameState.timeRemaining}
-                  gameMode={gameState.gameMode}
-                  masteryLevel={0}
-                />
-              </div>
-            </>
-          )}
+              ) : (
+                <>
+                  <PeriodicTable 
+                    onElementClick={handleElementClick}
+                    highlightedElements={gameState.currentQuestion ? [gameState.currentQuestion.correctElement] : []}
+                    variant={currentTheme}
+                  />
+                  <div className="space-y-4">
+                    <ScoreBoard 
+                      score={gameState.score}
+                      questionNumber={gameState.questionsAnswered}
+                      resetGame={resetGame}
+                    />
+                    <QuestionPanel 
+                      question={gameState.currentQuestion}
+                      timeRemaining={gameState.timeRemaining}
+                      gameMode={gameState.gameMode}
+                      masteryLevel={0}
+                    />
+                  </div>
+                </>
+              )}
+            </TabsContent>
+
+            <TabsContent value="multi">
+              <MultiplayerGame onBack={() => setActiveTab('single')} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
