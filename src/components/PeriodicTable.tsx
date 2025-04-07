@@ -9,7 +9,6 @@ interface PeriodicTableProps {
   onElementClick?: (element: ElementData) => void;
   highlightedElements?: string[];
   disabledElements?: string[];
-  viewMode?: 'standard' | 'compact';
   showDetails?: boolean;
   variant?: TableVariant;
 }
@@ -33,7 +32,8 @@ const thermalColors = {
   moderate: 'bg-green-200 dark:bg-green-800',
   warm: 'bg-yellow-200 dark:bg-yellow-800',
   hot: 'bg-orange-200 dark:bg-orange-800',
-  extreme: 'bg-red-200 dark:bg-red-800'
+  extreme: 'bg-red-200 dark:bg-red-800',
+  unknown: 'bg-gray-200 dark:bg-gray-800'
 };
 
 const conductivityColors = {
@@ -78,7 +78,6 @@ export default function PeriodicTable({
   onElementClick,
   highlightedElements = [],
   disabledElements = [],
-  viewMode = 'standard',
   showDetails = true,
   variant = 'standard',
 }: PeriodicTableProps) {
@@ -160,13 +159,13 @@ export default function PeriodicTable({
           "hover:scale-105",
           isHighlighted && "ring-2 ring-primary",
           isDisabled && "opacity-50 cursor-not-allowed",
-          viewMode === 'compact' ? 'w-8 h-8' : 'w-16 h-16'
+          "w-16 h-16"
         )}
         onClick={() => !isDisabled && onElementClick?.(element)}
       >
         <div className="flex flex-col items-center justify-center h-full">
           <span className="font-bold text-foreground">{element.symbol}</span>
-          {viewMode === 'standard' && showDetails && (
+          {showDetails && (
             <>
               <span className="text-xs text-foreground/80">{element.atomicNumber}</span>
               <span className="text-xs text-foreground/80 truncate max-w-full">{element.name}</span>
