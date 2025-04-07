@@ -99,3 +99,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+.periodic-table-grid {
+  grid-template-columns: repeat(18, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.element-tile {
+  aspect-ratio: 1;
+  transition: all 0.2s ease-in-out;
+}
