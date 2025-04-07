@@ -35,7 +35,9 @@ export default function Index() {
     timeRemaining: 0,
     gameMode: 'standard',
     difficulty: 'easy',
-    currentQuestion: null
+    currentQuestion: null,
+    unlockedFeatures: ['standard', 'timed', 'challenge'],
+    masteryLevels: {}
   });
 
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
@@ -104,7 +106,9 @@ export default function Index() {
       timeRemaining: 0,
       gameMode: gameState.gameMode,
       difficulty: 'easy',
-      currentQuestion: getNextQuestion()
+      currentQuestion: getNextQuestion(),
+      unlockedFeatures: gameState.unlockedFeatures,
+      masteryLevels: gameState.masteryLevels
     });
   };
 
