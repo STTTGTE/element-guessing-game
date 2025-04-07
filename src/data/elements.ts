@@ -184,6 +184,13 @@ export const elementData: ElementData[] = [
     group: 1, 
     period: 3,
     block: "s",
+    meltingPoint: 370.87,
+    boilingPoint: 1156,
+    density: 0.968,
+    electricalConductivity: "high",
+    magneticProperty: "paramagnetic",
+    naturalOccurrence: "common",
+    biologicalRole: "essential",
     isRadioactive: false
   },
   { 
@@ -194,6 +201,13 @@ export const elementData: ElementData[] = [
     group: 2, 
     period: 3,
     block: "s",
+    meltingPoint: 923,
+    boilingPoint: 1363,
+    density: 1.738,
+    electricalConductivity: "high",
+    magneticProperty: "paramagnetic",
+    naturalOccurrence: "common",
+    biologicalRole: "essential",
     isRadioactive: false
   },
   { 
@@ -204,6 +218,13 @@ export const elementData: ElementData[] = [
     group: 13, 
     period: 3,
     block: "p",
+    meltingPoint: 933.47,
+    boilingPoint: 2792,
+    density: 2.70,
+    electricalConductivity: "high",
+    magneticProperty: "paramagnetic",
+    naturalOccurrence: "common",
+    biologicalRole: "none",
     isRadioactive: false
   },
   { 
@@ -214,6 +235,13 @@ export const elementData: ElementData[] = [
     group: 14, 
     period: 3,
     block: "p",
+    meltingPoint: 1687,
+    boilingPoint: 3538,
+    density: 2.3296,
+    electricalConductivity: "low",
+    magneticProperty: "diamagnetic",
+    naturalOccurrence: "common",
+    biologicalRole: "trace",
     isRadioactive: false
   },
   { 
@@ -224,6 +252,13 @@ export const elementData: ElementData[] = [
     group: 15, 
     period: 3,
     block: "p",
+    meltingPoint: 317.3,
+    boilingPoint: 553.7,
+    density: 1.82,
+    electricalConductivity: "low",
+    magneticProperty: "diamagnetic",
+    naturalOccurrence: "common",
+    biologicalRole: "essential",
     isRadioactive: false
   },
   { 
@@ -234,6 +269,13 @@ export const elementData: ElementData[] = [
     group: 16, 
     period: 3,
     block: "p",
+    meltingPoint: 388.36,
+    boilingPoint: 717.8,
+    density: 2.067,
+    electricalConductivity: "low",
+    magneticProperty: "diamagnetic",
+    naturalOccurrence: "common",
+    biologicalRole: "essential",
     isRadioactive: false
   },
   { 
@@ -244,6 +286,13 @@ export const elementData: ElementData[] = [
     group: 17, 
     period: 3,
     block: "p",
+    meltingPoint: 171.6,
+    boilingPoint: 239.11,
+    density: 0.003214,
+    electricalConductivity: "low",
+    magneticProperty: "diamagnetic",
+    naturalOccurrence: "common",
+    biologicalRole: "essential",
     isRadioactive: false
   },
   { 
@@ -254,6 +303,13 @@ export const elementData: ElementData[] = [
     group: 18, 
     period: 3,
     block: "p",
+    meltingPoint: 83.81,
+    boilingPoint: 87.30,
+    density: 0.001784,
+    electricalConductivity: "low",
+    magneticProperty: "diamagnetic",
+    naturalOccurrence: "common",
+    biologicalRole: "none",
     isRadioactive: false
   },
   

@@ -115,7 +115,7 @@ export default function Index() {
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-background border rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-background border rounded-lg shadow-sm">
             <div className="flex items-center gap-4">
               <h2 className="text-lg font-semibold">Theme:</h2>
               <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
