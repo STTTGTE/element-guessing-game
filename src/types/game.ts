@@ -11,6 +11,8 @@ export interface ElementData {
   electronConfiguration?: string;
   discoveryYear?: number;
   discoveredBy?: string;
+  unlockedFeatures?: string[];
+  masteryLevel?: number;
 }
 
 export interface Question {
@@ -22,6 +24,9 @@ export interface Question {
   category: 'properties' | 'history' | 'applications' | 'reactions' | 'structure';
   points: number;
   timeLimit?: number;
+  historicalContext?: string;
+  realWorldApplication?: string;
+  careerPath?: string;
 }
 
 export interface GameState {
@@ -33,12 +38,15 @@ export interface GameState {
   currentQuestion?: Question;
   gameMode: GameMode;
   difficulty: Difficulty;
+  unlockedFeatures: string[];
+  masteryLevels: Record<string, number>;
+  lastReviewTime?: Date;
 }
 
-export type GameMode = 'quantum_leap' | 'synthesis_sprint' | 'isotope_investigator' | 'periodic_war' | 'standard';
+export type GameMode = 'quantum_leap' | 'synthesis_sprint' | 'isotope_investigator' | 'periodic_war' | 'nano_architect' | 'standard';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type CategoryFilter = 'all' | string;
-export type ViewMode = 'standard' | 'compact';
+export type ViewMode = 'standard' | 'compact' | 'accessibility';
 
 export interface Achievement {
   id: string;
@@ -49,6 +57,7 @@ export interface Achievement {
   progress: number;
   target: number;
   category: 'mastery' | 'exploration' | 'social' | 'streak';
+  bonusPoints?: number;
 }
 
 export interface PlayerStats {
@@ -58,4 +67,7 @@ export interface PlayerStats {
   bestStreak: number;
   elementMastery: Record<string, number>;
   achievements: Achievement[];
+  lastReviewDate?: Date;
+  unlockedFeatures: string[];
+  socialScore?: number;
 }
