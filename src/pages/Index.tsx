@@ -57,19 +57,55 @@ const Index = () => {
         className: "bg-green-500 text-white",
       });
       
-      setScore(score + 1);
-      nextQuestion();
+      const newScore = score + 1;
+      setScore(newScore);
       
       if (session.user && !guestMode) {
-        const currentStreak = await updateStreak();
-        checkAndGrantAchievements(score + 1, currentStreak || 1);
+        try {
+          // Update streak for correct answer
+          const currentStreak = await updateStreak();
+          checkAndGrantAchievements(newScore, currentStreak || 1);
+
+          // Save game history for classic mode after each answer
+          if (gameType === 'classic') {
+            await supabase.rpc('insert_game_history', {
+              p_user_id: session.user.id,
+              p_score: newScore,
+              p_total_questions: questionNumber + 1,
+              p_game_type: 'single'
+            });
+          }
+        } catch (error) {
+          console.error('Error updating game state:', error);
+          toast({
+            title: "Error",
+            description: "Failed to update game state",
+            variant: "destructive",
+          });
+        }
       }
+      
+      nextQuestion();
     } else if (currentQuestion) {
       toast({
         title: "Incorrect!",
         description: `The correct answer was ${elementData.find(e => e.symbol === currentQuestion.correctElement)?.name} (${currentQuestion.correctElement})`,
         variant: "destructive",
       });
+      
+      if (session.user && !guestMode && gameType === 'classic') {
+        try {
+          // Save game history for incorrect answer in classic mode
+          await supabase.rpc('insert_game_history', {
+            p_user_id: session.user.id,
+            p_score: score,
+            p_total_questions: questionNumber + 1,
+            p_game_type: 'single'
+          });
+        } catch (error) {
+          console.error('Error saving game history:', error);
+        }
+      }
       
       nextQuestion();
     }
@@ -121,9 +157,32 @@ const Index = () => {
     nextQuestion();
   };
 
-  const handleTimeUp = () => {
+  const handleTimeUp = async () => {
     setTimerActive(false);
     setGameEnded(true);
+
+    if (session.user && !guestMode) {
+      try {
+        // Save game history
+        await supabase.rpc('insert_game_history', {
+          p_user_id: session.user.id,
+          p_score: score,
+          p_total_questions: questionNumber,
+          p_game_type: 'timed'
+        });
+
+        // Update streak
+        const currentStreak = await updateStreak();
+        checkAndGrantAchievements(score, currentStreak || 1);
+      } catch (error) {
+        console.error('Error saving game history:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save game history",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   const startGuestMode = () => {

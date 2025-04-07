@@ -76,71 +76,86 @@ export function useStreaks() {
   }
 
   const updateStreak = async (): Promise<number | undefined> => {
-    if (!session.user) return
+    if (!session.user) return;
 
-    const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
     try {
+      console.log('Updating streak for user:', session.user.id);
+
       // If no streak exists, create a new one
       if (!userStreak) {
-        await createNewStreak(session.user.id)
-        return 1 // Indicate the start of a new streak
+        console.log('No streak found, creating new streak');
+        await createNewStreak(session.user.id);
+        return 1; // Indicate the start of a new streak
       }
 
-      const lastPlayed = userStreak.last_played ? userStreak.last_played.split('T')[0] : null
+      const lastPlayed = userStreak.last_played ? new Date(userStreak.last_played).toISOString().split('T')[0] : null;
+      console.log('Last played:', lastPlayed, 'Today:', today);
 
       if (lastPlayed === today) {
         // Already played today, do nothing
-        return userStreak.current_streak
+        console.log('Already played today, keeping current streak:', userStreak.current_streak);
+        return userStreak.current_streak;
       }
 
-      const yesterday = new Date()
-      yesterday.setDate(yesterday.getDate() - 1)
-      const yesterdayStr = yesterday.toISOString().split('T')[0]
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-      let newStreak = 1
-      let newMaxStreak = userStreak.max_streak
+      let newStreak = 1;
+      let newMaxStreak = userStreak.max_streak;
 
       if (lastPlayed === yesterdayStr) {
         // Played yesterday, increment streak
-        newStreak = userStreak.current_streak + 1
+        console.log('Played yesterday, incrementing streak');
+        newStreak = userStreak.current_streak + 1;
         if (newStreak > userStreak.max_streak) {
-          newMaxStreak = newStreak
+          newMaxStreak = newStreak;
         }
+      } else if (!lastPlayed) {
+        // First time playing
+        console.log('First time playing');
+        newStreak = 1;
       } else {
         // Streak broken, reset to 1
-        newStreak = 1
+        console.log('Streak broken, resetting to 1');
+        newStreak = 1;
       }
 
+      console.log('Updating streak:', { newStreak, newMaxStreak });
+
       // Update streak in database
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('user_streaks')
-        .update({
+        .upsert({
+          user_id: session.user.id,
           current_streak: newStreak,
           max_streak: newMaxStreak,
-          last_played: new Date().toISOString()
+          last_played: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
         })
-        .eq('user_id', session.user.id)
+        .select()
+        .single();
 
       if (error) {
-        console.error('Error updating streak:', error)
-        return userStreak.current_streak
+        console.error('Error updating streak:', error);
+        return userStreak.current_streak;
       }
 
       // Update local state
-      setUserStreak({
-        ...userStreak,
-        current_streak: newStreak,
-        max_streak: newMaxStreak,
-        last_played: new Date().toISOString()
-      })
+      const updatedStreak = data as unknown as UserStreak;
+      console.log('Streak updated:', updatedStreak);
+      setUserStreak(updatedStreak);
 
-      return newStreak
+      return newStreak;
     } catch (error) {
-      console.error('Error updating streak:', error)
-      return userStreak?.current_streak
+      console.error('Error updating streak:', error);
+      return userStreak?.current_streak;
     }
-  }
+  };
 
   return {
     userStreak,
