@@ -5,7 +5,7 @@ import PeriodicTable from "@/components/PeriodicTable";
 import QuestionPanel from "@/components/QuestionPanel";
 import ScoreBoard from "@/components/ScoreBoard";
 import GameModeSelector from "@/components/GameModeSelector";
-import { ElementData, GameState, GameMode, Question } from "@/types/game";
+import { ElementData, GameState, GameMode, Question, TableVariant } from "@/types/game";
 import { useToast } from "@/hooks/use-toast";
 import { useAchievements } from "@/hooks/use-achievements";
 import { useStreaks } from "@/hooks/use-streaks";
@@ -17,12 +17,15 @@ import Timer from "@/components/Timer";
 import SinglePlayerGameResult from "@/components/SinglePlayerGameResult";
 import { elementData } from "@/data/elements";
 import { questions } from "@/data/questions";
+import ThemeSelector from "@/components/ThemeSelector";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Index() {
   const { session } = useAuth();
   const { toast } = useToast();
-  const { updateAchievements } = useAchievements();
+  const { checkAndGrantAchievements } = useAchievements();
   const { updateStreak } = useStreaks();
+  const [currentTheme, setCurrentTheme] = useState<TableVariant>('standard');
 
   const [gameState, setGameState] = useState<GameState>({
     score: 0,
@@ -65,10 +68,7 @@ export default function Index() {
       });
 
       updateStreak();
-      updateAchievements({
-        questionsAnswered: gameState.questionsAnswered + 1,
-        correctAnswers: gameState.correctAnswers + 1
-      });
+      checkAndGrantAchievements(gameState.score, gameState.streak);
     } else {
       setGameState(prev => ({
         ...prev,
@@ -95,30 +95,56 @@ export default function Index() {
     setGameState(prev => ({...prev, currentQuestion: getNextQuestion()}));
   }, []);
 
+  const resetGame = () => {
+    setGameState({
+      score: 0,
+      streak: 0,
+      questionsAnswered: 0,
+      correctAnswers: 0,
+      timeRemaining: 0,
+      gameMode: gameState.gameMode,
+      difficulty: 'easy',
+      currentQuestion: getNextQuestion()
+    });
+  };
+
   if (!selectedMode) {
-    return <GameModeSelector onSelectMode={handleModeSelect} />;
+    return <GameModeSelector 
+      onSelectMode={handleModeSelect} 
+      unlockedFeatures={['standard', 'timed', 'challenge']} 
+    />;
   }
 
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div>
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Theme Selection</CardTitle>
+              <CardDescription>Choose how you want to view the periodic table</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
+            </CardContent>
+          </Card>
           <PeriodicTable 
             onElementClick={handleElementClick}
             highlightedElements={gameState.currentQuestion ? [gameState.currentQuestion.correctElement] : []}
+            variant={currentTheme}
           />
         </div>
         <div className="space-y-4">
           <ScoreBoard 
             score={gameState.score}
-            streak={gameState.streak}
-            questionsAnswered={gameState.questionsAnswered}
-            correctAnswers={gameState.correctAnswers}
+            questionNumber={gameState.questionsAnswered}
+            resetGame={resetGame}
           />
           <QuestionPanel 
             question={gameState.currentQuestion}
             timeRemaining={gameState.timeRemaining}
             gameMode={gameState.gameMode}
+            masteryLevel={0}
           />
         </div>
       </div>
