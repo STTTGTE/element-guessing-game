@@ -87,7 +87,7 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
         onValueChange={(value) => onThemeChange(value as TableVariant)}
         defaultValue="standard"
       >
-        <SelectTrigger className="w-full bg-background">
+        <SelectTrigger className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
           <div className="flex items-center gap-2">
             {currentThemeData && (
               <currentThemeData.icon className="h-4 w-4" />
@@ -99,7 +99,7 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
         </SelectTrigger>
         <SelectContent
           position="popper"
-          className="w-[300px] bg-background border rounded-md shadow-lg"
+          className="w-[300px] bg-background border rounded-md shadow-lg z-50"
           align="start"
         >
           {themes.map((theme) => (
