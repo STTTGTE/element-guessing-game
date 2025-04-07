@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { GameMode, TableVariant } from '@/types/game';
 import PeriodicTable from './PeriodicTable';
 import ThemeSelector from './ThemeSelector';
+import { ThemeToggle } from './theme-toggle';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 interface GameProps {
   mode: GameMode;
@@ -74,15 +76,27 @@ export default function Game({ mode, onBack }: GameProps) {
         
         <Card>
           <CardHeader>
-            <CardTitle>{themeDescriptions[currentTheme].title}</CardTitle>
-            <CardDescription>{themeDescriptions[currentTheme].description}</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>{themeDescriptions[currentTheme].title}</CardTitle>
+                <CardDescription>{themeDescriptions[currentTheme].description}</CardDescription>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">App Theme:</span>
+                  <ThemeToggle />
+                </div>
+                <Separator orientation="vertical" className="h-8" />
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Board Theme:</span>
+                  <ThemeSelector
+                    currentTheme={currentTheme}
+                    onThemeChange={setCurrentTheme}
+                  />
+                </div>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent>
-            <ThemeSelector
-              currentTheme={currentTheme}
-              onThemeChange={setCurrentTheme}
-            />
-          </CardContent>
         </Card>
       </div>
       
