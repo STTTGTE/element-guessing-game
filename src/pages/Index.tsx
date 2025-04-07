@@ -11,14 +11,13 @@ import { useAchievements } from "@/hooks/use-achievements";
 import { useStreaks } from "@/hooks/use-streaks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Swords, Clock } from "lucide-react";
+import { UserPlus, Swords, Clock, Layout } from "lucide-react";
 import { MultiplayerGame } from "@/components/multiplayer";
 import Timer from "@/components/Timer";
 import SinglePlayerGameResult from "@/components/SinglePlayerGameResult";
 import { elementData } from "@/data/elements";
 import { questions } from "@/data/questions";
 import ThemeSelector from "@/components/ThemeSelector";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Index() {
   const { session } = useAuth();
@@ -116,17 +115,21 @@ export default function Index() {
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="space-y-4">
-          <Card className="w-full relative z-10">
-            <CardHeader>
-              <CardTitle>Theme Selection</CardTitle>
-              <CardDescription>Choose how you want to view the periodic table</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="relative">
-                <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex items-center justify-between p-4 bg-background border rounded-lg">
+            <div className="flex items-center gap-4">
+              <h2 className="text-lg font-semibold">Theme:</h2>
+              <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentTheme('standard')}
+              className="flex items-center gap-2"
+            >
+              <Layout className="h-4 w-4" />
+              Reset to Standard
+            </Button>
+          </div>
 
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'single' | 'multi')} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
