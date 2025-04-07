@@ -18,12 +18,16 @@ import SinglePlayerGameResult from "@/components/SinglePlayerGameResult";
 import { elementData } from "@/data/elements";
 import { questions } from "@/data/questions";
 import ThemeSelector from "@/components/ThemeSelector";
+import LanguageSelector from "@/components/LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { UserNav } from "@/components/user-nav";
 
 export default function Index() {
   const { session } = useAuth();
   const { toast } = useToast();
   const { checkAndGrantAchievements } = useAchievements();
   const { updateStreak } = useStreaks();
+  const { t } = useLanguage();
   const [currentTheme, setCurrentTheme] = useState<TableVariant>('3d_view');
   const [activeTab, setActiveTab] = useState<'single' | 'multi'>('single');
 
@@ -112,73 +116,61 @@ export default function Index() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-background border rounded-lg shadow-sm">
-            <div className="flex items-center gap-4">
-              <h2 className="text-lg font-semibold">Theme:</h2>
-              <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentTheme('standard')}
-              className="flex items-center gap-2"
-            >
-              <Layout className="h-4 w-4" />
-              Reset to Standard
-            </Button>
-          </div>
-
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'single' | 'multi')} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="single">
-                <Swords className="w-4 h-4 mr-2" />
-                Single Player
-              </TabsTrigger>
-              <TabsTrigger value="multi">
-                <UserPlus className="w-4 h-4 mr-2" />
-                Multiplayer
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="single" className="space-y-4">
-              {!selectedMode ? (
-                <GameModeSelector 
-                  onSelectMode={handleModeSelect} 
-                  unlockedFeatures={['standard', 'timed', 'challenge']} 
-                />
-              ) : (
-                <>
-                  <PeriodicTable 
-                    onElementClick={handleElementClick}
-                    highlightedElements={gameState.currentQuestion ? [gameState.currentQuestion.correctElement] : []}
-                    variant={currentTheme}
-                  />
-                  <div className="space-y-4">
-                    <ScoreBoard 
-                      score={gameState.score}
-                      questionNumber={gameState.questionsAnswered}
-                      resetGame={resetGame}
-                    />
-                    <QuestionPanel 
-                      question={gameState.currentQuestion}
-                      timeRemaining={gameState.timeRemaining}
-                      gameMode={gameState.gameMode}
-                      masteryLevel={0}
-                    />
-                  </div>
-                </>
-              )}
-            </TabsContent>
-
-            <TabsContent value="multi">
-              <MultiplayerGame onBack={() => setActiveTab('single')} />
-            </TabsContent>
-          </Tabs>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center space-x-4">
+          <LanguageSelector />
+          <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
         </div>
+        {session?.user && <UserNav />}
       </div>
+      
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'single' | 'multi')}>
+        <TabsList className="mb-4">
+          <TabsTrigger value="single">
+            <Swords className="w-4 h-4 mr-2" />
+            {t('singlePlayer')}
+          </TabsTrigger>
+          <TabsTrigger value="multi">
+            <UserPlus className="w-4 h-4 mr-2" />
+            {t('multiplayer')}
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="single">
+          {!selectedMode ? (
+            <GameModeSelector 
+              onSelectMode={handleModeSelect} 
+              unlockedFeatures={['standard', 'timed', 'challenge']} 
+            />
+          ) : (
+            <>
+              <PeriodicTable 
+                onElementClick={handleElementClick}
+                highlightedElements={gameState.currentQuestion ? [gameState.currentQuestion.correctElement] : []}
+                variant={currentTheme}
+              />
+              <div className="space-y-4">
+                <ScoreBoard 
+                  score={gameState.score}
+                  questionNumber={gameState.questionsAnswered}
+                  resetGame={resetGame}
+                />
+                <QuestionPanel 
+                  question={gameState.currentQuestion}
+                  timeRemaining={gameState.timeRemaining}
+                  gameMode={gameState.gameMode}
+                  masteryLevel={0}
+                />
+              </div>
+            </>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="multi">
+          <MultiplayerGame onBack={() => setActiveTab('single')} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

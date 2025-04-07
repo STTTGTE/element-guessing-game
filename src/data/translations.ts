@@ -22,6 +22,8 @@ export interface LanguageTranslations {
       tryAgain: string;
       score: string;
       highScore: string;
+      singlePlayer: string;
+      multiplayer: string;
     };
   };
 }
@@ -48,7 +50,9 @@ export const translations: LanguageTranslations = {
       incorrect: "Falsch!",
       tryAgain: "Nochmal versuchen",
       score: "Punktzahl",
-      highScore: "Höchstpunktzahl"
+      highScore: "Höchstpunktzahl",
+      singlePlayer: "Einzelspieler",
+      multiplayer: "Mehrspieler"
     }
   },
   it: {
@@ -72,7 +76,9 @@ export const translations: LanguageTranslations = {
       incorrect: "Sbagliato!",
       tryAgain: "Riprova",
       score: "Punteggio",
-      highScore: "Punteggio massimo"
+      highScore: "Punteggio massimo",
+      singlePlayer: "Giocatore singolo",
+      multiplayer: "Multigiocatore"
     }
   },
   es: {
@@ -96,7 +102,9 @@ export const translations: LanguageTranslations = {
       incorrect: "¡Incorrecto!",
       tryAgain: "Intentar de nuevo",
       score: "Puntuación",
-      highScore: "Puntuación máxima"
+      highScore: "Puntuación máxima",
+      singlePlayer: "Un jugador",
+      multiplayer: "Multijugador"
     }
   },
   fr: {
@@ -120,7 +128,9 @@ export const translations: LanguageTranslations = {
       incorrect: "Incorrect!",
       tryAgain: "Réessayer",
       score: "Score",
-      highScore: "Meilleur score"
+      highScore: "Meilleur score",
+      singlePlayer: "Un joueur",
+      multiplayer: "Multijoueur"
     }
   },
   sv: {
@@ -144,7 +154,9 @@ export const translations: LanguageTranslations = {
       incorrect: "Fel!",
       tryAgain: "Försök igen",
       score: "Poäng",
-      highScore: "Högsta poäng"
+      highScore: "Högsta poäng",
+      singlePlayer: "Enspelarläge",
+      multiplayer: "Flerspelarläge"
     }
   }
 }; 
