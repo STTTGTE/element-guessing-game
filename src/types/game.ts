@@ -73,15 +73,14 @@ export type GameMode =
 export type TableVariant = 
   | 'standard'
   | 'color_spectrum'
-  | 'layered_view'
-  | 'geological_map'
   | 'thermal_view'
-  | 'liquid_metals'
   | 'electrical_conductors'
   | 'magnetic_elements'
   | 'density_map'
-  | 'cognitive_map'
-  | 'organic_elements';
+  | 'geological_map'
+  | 'organic_elements'
+  | 'layered_view'
+  | '3d_view';
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type CategoryFilter = 'all' | string;
