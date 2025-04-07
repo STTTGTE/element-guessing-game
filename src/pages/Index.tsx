@@ -119,13 +119,15 @@ export default function Index() {
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="space-y-4">
-          <Card className="w-full">
+          <Card className="w-full relative z-10">
             <CardHeader>
               <CardTitle>Theme Selection</CardTitle>
               <CardDescription>Choose how you want to view the periodic table</CardDescription>
             </CardHeader>
             <CardContent>
-              <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
+              <div className="relative">
+                <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
+              </div>
             </CardContent>
           </Card>
           <PeriodicTable 
