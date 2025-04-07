@@ -122,7 +122,7 @@ export default function Index() {
           <LanguageSelector />
           <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
         </div>
-        {session?.user && <UserNav />}
+        {session && <UserNav />}
       </div>
       
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'single' | 'multi')}>
