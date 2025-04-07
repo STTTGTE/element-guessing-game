@@ -43,7 +43,35 @@ export interface GameState {
   lastReviewTime?: Date;
 }
 
-export type GameMode = 'quantum_leap' | 'synthesis_sprint' | 'isotope_investigator' | 'periodic_war' | 'nano_architect' | 'standard';
+export type GameMode = 
+  | 'quantum_leap' 
+  | 'synthesis_sprint' 
+  | 'isotope_investigator' 
+  | 'periodic_war' 
+  | 'nano_architect' 
+  | 'standard'
+  | 'electron_explorer'
+  | 'valence_voyager' 
+  | 'orbital_odyssey'
+  | 'reaction_rush'
+  | 'atomic_architect'
+  | 'periodic_puzzle'
+  | 'element_evolution'
+  | 'molecular_master'
+  | 'bonding_battle'
+  | 'atomic_assembly';
+
+export type TableVariant =
+  | 'standard'
+  | 'long'
+  | 'spiral'
+  | 'electron_shell'
+  | 'periodic_3d'
+  | 'quantum_mechanical'
+  | 'reactivity'
+  | 'atomic_radius'
+  | 'electronegativity'
+  | 'ionization_energy';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type CategoryFilter = 'all' | string;
 export type ViewMode = 'standard' | 'compact' | 'accessibility';

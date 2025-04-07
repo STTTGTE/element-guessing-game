@@ -13,13 +13,48 @@ interface PeriodicTableProps {
   showDetails?: boolean;
 }
 
+interface PeriodicTableProps {
+  onElementClick?: (element: ElementData) => void;
+  highlightedElements?: string[];
+  disabledElements?: string[];
+  viewMode?: 'standard' | 'compact';
+  showDetails?: boolean;
+  variant?: TableVariant;
+}
+
 export default function PeriodicTable({
   onElementClick,
   highlightedElements = [],
   disabledElements = [],
   viewMode = 'standard',
   showDetails = true,
+  variant = 'standard',
 }: PeriodicTableProps) {
+
+  const getTableLayout = () => {
+    switch (variant) {
+      case 'long':
+        return 'grid-cols-18 grid-rows-7';
+      case 'spiral':
+        return 'grid-spiral';
+      case 'electron_shell':
+        return 'grid-shells';
+      case 'periodic_3d':
+        return 'grid-3d transform-style-3d';
+      case 'quantum_mechanical':
+        return 'grid-quantum';
+      case 'reactivity':
+        return 'grid-reactivity';
+      case 'atomic_radius':
+        return 'grid-radius';
+      case 'electronegativity':
+        return 'grid-electronegativity';
+      case 'ionization_energy':
+        return 'grid-ionization';
+      default:
+        return 'grid-cols-18 grid-rows-10';
+    }
+  };
   const [hoveredElement, setHoveredElement] = useState<ElementData | null>(null);
 
   const getElementColor = (category: string) => {
