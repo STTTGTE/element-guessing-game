@@ -2,6 +2,7 @@ import React from 'react';
 import { TableVariant } from '@/types/game';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Palette, Layers, Globe, Thermometer, Droplet, Zap, Magnet, Scale, Brain, Leaf, Layout } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ThemeSelectorProps {
   currentTheme: TableVariant;
@@ -81,13 +82,13 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
   const currentThemeData = themes.find(theme => theme.id === currentTheme);
 
   return (
-    <div className="relative w-full">
+    <div className="flex items-center gap-4">
       <Select
         value={currentTheme}
         onValueChange={(value) => onThemeChange(value as TableVariant)}
         defaultValue="standard"
       >
-        <SelectTrigger className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+        <SelectTrigger className="w-[300px] bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
           <div className="flex items-center gap-2">
             {currentThemeData && (
               <currentThemeData.icon className="h-4 w-4" />
@@ -119,6 +120,15 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
           ))}
         </SelectContent>
       </Select>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onThemeChange('standard')}
+        className="flex items-center gap-2"
+      >
+        <Layout className="h-4 w-4" />
+        Reset to Standard
+      </Button>
     </div>
   );
 } 
