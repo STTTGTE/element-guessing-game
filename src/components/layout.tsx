@@ -2,6 +2,7 @@ import { NavMenu } from "@/components/nav-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserNav } from "@/components/user-nav";
 import { useAuth } from "@/hooks/use-auth";
+import LanguageSelector from "@/components/LanguageSelector";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -19,6 +20,7 @@ export function Layout({ children }: LayoutProps) {
             <h1 className="text-xl font-bold ml-4 text-foreground">Periodic Table Game</h1>
           </div>
           <div className="flex items-center space-x-4">
+            <LanguageSelector />
             {session.user && <UserNav />}
             <ThemeToggle />
           </div>
