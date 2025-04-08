@@ -118,7 +118,7 @@ export default function Index() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-4">
           <LanguageSelector />
           <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
         </div>
