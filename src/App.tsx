@@ -11,6 +11,7 @@ import Multiplayer from "@/pages/Multiplayer";
 import History from "@/pages/History";
 import Streak from "@/pages/Streak";
 import Achievements from "@/pages/Achievements";
+import Auth from "@/pages/Auth";
 import './App.css';
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
                 <Route path="/history" element={<History />} />
                 <Route path="/streak" element={<Streak />} />
                 <Route path="/achievements" element={<Achievements />} />
+                <Route path="/auth" element={<Auth />} />
               </Routes>
             </Layout>
             <Toaster />
