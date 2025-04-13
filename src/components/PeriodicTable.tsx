@@ -201,14 +201,12 @@ interface PeriodicTableProps {
   onElementClick: (element: ElementData) => void;
   selectedElement: ElementData | null;
   correctElement?: string;
-  viewMode?: "standard" | "compact";
 }
 
 const PeriodicTable = ({
   onElementClick,
   selectedElement,
   correctElement,
-  viewMode = "standard",
 }: PeriodicTableProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [theme, setTheme] = useState<Theme>("classic");
@@ -328,45 +326,55 @@ const PeriodicTable = ({
                 colStart = element.atomicNumber === 1 ? 1 : 18;
                 rowStart = 1;
               } else if (element.atomicNumber <= 10) {
-                // Second period
-                colStart = element.atomicNumber - 1;
+                // Second period (Li to Ne)
+                colStart = element.atomicNumber === 3 || element.atomicNumber === 4 ? element.atomicNumber - 2 : element.atomicNumber + 8;
                 rowStart = 2;
               } else if (element.atomicNumber <= 18) {
-                // Third period
-                colStart = element.atomicNumber - 9;
+                // Third period (Na to Ar)
+                colStart = element.atomicNumber === 11 || element.atomicNumber === 12 ? element.atomicNumber - 10 : element.atomicNumber;
                 rowStart = 3;
               } else if (element.atomicNumber <= 36) {
-                // Fourth period
+                // Fourth period (K to Kr)
                 if (element.atomicNumber <= 20) {
-                  colStart = element.atomicNumber - 17;
-                  rowStart = 4;
+                  // K, Ca
+                  colStart = element.atomicNumber - 18;
                 } else if (element.atomicNumber <= 30) {
-                  colStart = element.atomicNumber - 17;
-                  rowStart = 4;
+                  // Sc to Zn
+                  colStart = element.atomicNumber - 18;
                 } else {
-                  colStart = element.atomicNumber - 17;
-                  rowStart = 4;
+                  // Ga to Kr
+                  colStart = element.atomicNumber - 18;
                 }
+                rowStart = 4;
               } else if (element.atomicNumber <= 54) {
-                // Fifth period
+                // Fifth period (Rb to Xe)
                 if (element.atomicNumber <= 38) {
-                  colStart = element.atomicNumber - 35;
-                  rowStart = 5;
+                  // Rb, Sr
+                  colStart = element.atomicNumber - 36;
                 } else if (element.atomicNumber <= 48) {
-                  colStart = element.atomicNumber - 35;
-                  rowStart = 5;
+                  // Y to Cd
+                  colStart = element.atomicNumber - 36;
                 } else {
-                  colStart = element.atomicNumber - 35;
-                  rowStart = 5;
+                  // In to Xe
+                  colStart = element.atomicNumber - 36;
                 }
+                rowStart = 5;
               } else if (element.atomicNumber <= 56) {
-                // Sixth period (Ba)
-                colStart = element.atomicNumber - 53;
+                // Start of sixth period (Cs, Ba)
+                colStart = element.atomicNumber - 54;
                 rowStart = 6;
-              } else if (element.atomicNumber >= 72) {
-                // Sixth period (Hf onwards)
-                colStart = element.atomicNumber - 69;
+              } else if (element.atomicNumber >= 72 && element.atomicNumber <= 86) {
+                // Rest of sixth period (Hf to Rn)
+                colStart = element.atomicNumber - 68;
                 rowStart = 6;
+              } else if (element.atomicNumber >= 87 && element.atomicNumber <= 88) {
+                // Start of seventh period (Fr, Ra)
+                colStart = element.atomicNumber - 86;
+                rowStart = 7;
+              } else if (element.atomicNumber >= 104 && element.atomicNumber <= 118) {
+                // Rest of seventh period (Rf to Og)
+                colStart = element.atomicNumber - 100;
+                rowStart = 7;
               }
 
               return (
@@ -377,9 +385,12 @@ const PeriodicTable = ({
                     "p-2 rounded-md transition-all duration-200 flex flex-col items-center justify-center",
                     getElementColor(element.category),
                     selectedElement?.symbol === element.symbol &&
-                      "ring-2 ring-primary ring-offset-2",
-                    `col-start-${colStart} row-start-${rowStart}`
+                      "ring-2 ring-primary ring-offset-2"
                   )}
+                  style={{
+                    gridColumn: colStart,
+                    gridRow: rowStart
+                  }}
                 >
                   <span className="text-xs font-medium">{element.atomicNumber}</span>
                   <span className="text-lg font-bold">{element.symbol}</span>
@@ -390,46 +401,67 @@ const PeriodicTable = ({
         </div>
 
         {/* Lanthanides and Actinides */}
-        <div className="space-y-2">
-          <div className="grid grid-cols-15 gap-1 ml-[3rem]">
-            {elementData
-              .filter((element) => element.atomicNumber >= 57 && element.atomicNumber <= 71)
-              .map((element) => (
-                <button
-                  key={element.symbol}
-                  onClick={() => onElementClick(element)}
-                  className={cn(
-                    "p-2 rounded-md transition-all duration-200 flex flex-col items-center justify-center",
-                    getElementColor(element.category),
-                    selectedElement?.symbol === element.symbol &&
-                      "ring-2 ring-primary ring-offset-2"
-                  )}
-                >
-                  <span className="text-xs font-medium">{element.atomicNumber}</span>
-                  <span className="text-lg font-bold">{element.symbol}</span>
-                  <span className="text-xs">{element.name}</span>
-                </button>
-              ))}
+        <div className="space-y-2 mt-8">
+          {/* Labels */}
+          <div className="grid grid-cols-18 gap-1">
+            <div className="col-start-3 text-center text-sm">
+              <span className="font-medium">57-71</span>
+              <br />
+              <span className="text-xs">Lanthanides</span>
+            </div>
+            <div className="col-start-3 row-start-2 text-center text-sm">
+              <span className="font-medium">89-103</span>
+              <br />
+              <span className="text-xs">Actinides</span>
+            </div>
           </div>
-          <div className="grid grid-cols-15 gap-1 ml-[3rem]">
-            {elementData
-              .filter((element) => element.atomicNumber >= 89 && element.atomicNumber <= 103)
-              .map((element) => (
-                <button
-                  key={element.symbol}
-                  onClick={() => onElementClick(element)}
-                  className={cn(
-                    "p-2 rounded-md transition-all duration-200 flex flex-col items-center justify-center",
-                    getElementColor(element.category),
-                    selectedElement?.symbol === element.symbol &&
-                      "ring-2 ring-primary ring-offset-2"
-                  )}
-                >
-                  <span className="text-xs font-medium">{element.atomicNumber}</span>
-                  <span className="text-lg font-bold">{element.symbol}</span>
-                  <span className="text-xs">{element.name}</span>
-                </button>
-              ))}
+
+          {/* Lanthanides row */}
+          <div className="grid grid-cols-18 gap-1">
+            <div className="col-start-4 col-span-15 grid grid-cols-15 gap-1">
+              {elementData
+                .filter((element) => element.atomicNumber >= 57 && element.atomicNumber <= 71)
+                .map((element) => (
+                  <button
+                    key={element.symbol}
+                    onClick={() => onElementClick(element)}
+                    className={cn(
+                      "p-2 rounded-md transition-all duration-200 flex flex-col items-center justify-center",
+                      getElementColor(element.category),
+                      selectedElement?.symbol === element.symbol &&
+                        "ring-2 ring-primary ring-offset-2"
+                    )}
+                  >
+                    <span className="text-xs font-medium">{element.atomicNumber}</span>
+                    <span className="text-lg font-bold">{element.symbol}</span>
+                    <span className="text-xs">{element.name}</span>
+                  </button>
+                ))}
+            </div>
+          </div>
+
+          {/* Actinides row */}
+          <div className="grid grid-cols-18 gap-1">
+            <div className="col-start-4 col-span-15 grid grid-cols-15 gap-1">
+              {elementData
+                .filter((element) => element.atomicNumber >= 89 && element.atomicNumber <= 103)
+                .map((element) => (
+                  <button
+                    key={element.symbol}
+                    onClick={() => onElementClick(element)}
+                    className={cn(
+                      "p-2 rounded-md transition-all duration-200 flex flex-col items-center justify-center",
+                      getElementColor(element.category),
+                      selectedElement?.symbol === element.symbol &&
+                        "ring-2 ring-primary ring-offset-2"
+                    )}
+                  >
+                    <span className="text-xs font-medium">{element.atomicNumber}</span>
+                    <span className="text-lg font-bold">{element.symbol}</span>
+                    <span className="text-xs">{element.name}</span>
+                  </button>
+                ))}
+            </div>
           </div>
         </div>
       </div>
