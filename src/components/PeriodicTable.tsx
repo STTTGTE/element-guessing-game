@@ -208,260 +208,157 @@ const PeriodicTable = ({
   selectedElement,
   correctElement,
 }: PeriodicTableProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [theme, setTheme] = useState<Theme>("classic");
+  const [theme, setTheme] = useState<Theme>("3d");
   const [isDarkMode, setIsDarkMode] = useState(false);
-
-  const categories = [
-    "all",
-    "nonmetal",
-    "noble-gas",
-    "alkali-metal",
-    "alkaline-earth",
-    "metalloid",
-    "halogen",
-    "transition",
-    "post-transition",
-    "actinide",
-    "lanthanide",
-  ];
 
   const getElementColor = (category: string) => {
     const themeStyle = themeStyles[theme];
     return themeStyle[category as keyof typeof themeStyle] || themeStyle.default;
   };
 
+  const renderElement = (element: ElementData, colStart: number, rowStart: number) => (
+    <div
+      key={element.symbol}
+      style={{
+        gridColumn: `${colStart}`,
+        gridRow: `${rowStart}`,
+      }}
+      className="aspect-square"
+    >
+      <button
+        onClick={() => onElementClick(element)}
+        className={cn(
+          "w-full h-full p-2 rounded-md transition-all duration-200 flex flex-col items-center justify-center",
+          getElementColor(element.category),
+          selectedElement?.symbol === element.symbol &&
+            "ring-2 ring-primary ring-offset-2"
+        )}
+      >
+        <span className="text-xs font-medium">{element.atomicNumber}</span>
+        <span className="text-lg font-bold">{element.symbol}</span>
+        <span className="text-xs truncate w-full text-center">{element.name}</span>
+      </button>
+    </div>
+  );
+
   return (
-    <div className={cn("space-y-4", isDarkMode ? "dark" : "")}>
-      <div className="flex flex-wrap gap-2 items-center justify-between">
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={cn(
-                "px-3 py-1 rounded-md text-sm font-medium transition-colors",
-                selectedCategory === category
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted hover:bg-muted/80"
-              )}
+    <div className={cn("space-y-4", isDarkMode ? "dark" : "")}>      
+      <div className="flex items-center justify-end gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">Theme:</span>
+          <Select value={theme} onValueChange={(value: Theme) => setTheme(value)}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Select theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="classic">Classic</SelectItem>
+              <SelectItem value="3d">3D</SelectItem>
+              <SelectItem value="neon">Neon</SelectItem>
+              <SelectItem value="pastel">Pastel</SelectItem>
+              <SelectItem value="monochrome">Monochrome</SelectItem>
+              <SelectItem value="gradient">Gradient</SelectItem>
+              <SelectItem value="retro">Retro</SelectItem>
+              <SelectItem value="cyberpunk">Cyberpunk</SelectItem>
+              <SelectItem value="nature">Nature</SelectItem>
+              <SelectItem value="ocean">Ocean</SelectItem>
+              <SelectItem value="space">Space</SelectItem>
+              <SelectItem value="rainbow">Rainbow</SelectItem>
+              <SelectItem value="minimal">Minimal</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <button
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className={cn(
+            "p-2 rounded-md transition-colors",
+            isDarkMode
+              ? "bg-gray-800 text-yellow-400 hover:bg-gray-700"
+              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+          )}
+          aria-label="Toggle dark mode"
+        >
+          {isDarkMode ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
             >
-              {category.replace("-", " ")}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Theme:</span>
-            <Select value={theme} onValueChange={(value: Theme) => setTheme(value)}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Select theme" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="classic">Classic</SelectItem>
-                <SelectItem value="3d">3D</SelectItem>
-                <SelectItem value="neon">Neon</SelectItem>
-                <SelectItem value="pastel">Pastel</SelectItem>
-                <SelectItem value="monochrome">Monochrome</SelectItem>
-                <SelectItem value="gradient">Gradient</SelectItem>
-                <SelectItem value="retro">Retro</SelectItem>
-                <SelectItem value="cyberpunk">Cyberpunk</SelectItem>
-                <SelectItem value="nature">Nature</SelectItem>
-                <SelectItem value="ocean">Ocean</SelectItem>
-                <SelectItem value="space">Space</SelectItem>
-                <SelectItem value="rainbow">Rainbow</SelectItem>
-                <SelectItem value="minimal">Minimal</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className={cn(
-              "p-2 rounded-md transition-colors",
-              isDarkMode
-                ? "bg-gray-800 text-yellow-400 hover:bg-gray-700"
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-            )}
-            aria-label="Toggle dark mode"
-          >
-            {isDarkMode ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d='M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z'
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-              </svg>
-            )}
-          </button>
-        </div>
+              <path
+                fillRule="evenodd"
+                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                clipRule="evenodd"
+              />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+            </svg>
+          )}
+        </button>
       </div>
 
       <div className="space-y-4">
-        {/* Main periodic table */}
-        <div className="grid grid-cols-18 gap-1">
-          {elementData
-            .filter((element) => element.atomicNumber <= 56 || element.atomicNumber >= 72)
-            .map((element) => {
-              // Calculate grid position based on atomic number
-              let colStart = 1;
-              let rowStart = 1;
-              
-              if (element.atomicNumber <= 2) {
-                // First period (H, He)
-                colStart = element.atomicNumber === 1 ? 1 : 18;
-                rowStart = 1;
-              } else if (element.atomicNumber <= 10) {
-                // Second period (Li to Ne)
-                colStart = element.atomicNumber === 3 || element.atomicNumber === 4 ? element.atomicNumber - 2 : element.atomicNumber + 8;
-                rowStart = 2;
-              } else if (element.atomicNumber <= 18) {
-                // Third period (Na to Ar)
-                colStart = element.atomicNumber === 11 || element.atomicNumber === 12 ? element.atomicNumber - 10 : element.atomicNumber;
-                rowStart = 3;
-              } else if (element.atomicNumber <= 36) {
-                // Fourth period (K to Kr)
-                if (element.atomicNumber <= 20) {
-                  // K, Ca
-                  colStart = element.atomicNumber - 18;
-                } else if (element.atomicNumber <= 30) {
-                  // Sc to Zn
-                  colStart = element.atomicNumber - 18;
-                } else {
-                  // Ga to Kr
-                  colStart = element.atomicNumber - 18;
-                }
-                rowStart = 4;
-              } else if (element.atomicNumber <= 54) {
-                // Fifth period (Rb to Xe)
-                if (element.atomicNumber <= 38) {
-                  // Rb, Sr
-                  colStart = element.atomicNumber - 36;
-                } else if (element.atomicNumber <= 48) {
-                  // Y to Cd
-                  colStart = element.atomicNumber - 36;
-                } else {
-                  // In to Xe
-                  colStart = element.atomicNumber - 36;
-                }
-                rowStart = 5;
-              } else if (element.atomicNumber <= 56) {
-                // Start of sixth period (Cs, Ba)
-                colStart = element.atomicNumber - 54;
-                rowStart = 6;
-              } else if (element.atomicNumber >= 72 && element.atomicNumber <= 86) {
-                // Rest of sixth period (Hf to Rn)
-                colStart = element.atomicNumber - 68;
-                rowStart = 6;
-              } else if (element.atomicNumber >= 87 && element.atomicNumber <= 88) {
-                // Start of seventh period (Fr, Ra)
-                colStart = element.atomicNumber - 86;
-                rowStart = 7;
-              } else if (element.atomicNumber >= 104 && element.atomicNumber <= 118) {
-                // Rest of seventh period (Rf to Og)
-                colStart = element.atomicNumber - 100;
-                rowStart = 7;
-              }
+        <div className="grid grid-cols-18 gap-2">
+          {elementData.map((element) => {
+            let colStart = 1;
+            let rowStart = 1;
 
-              return (
-                <button
-                  key={element.symbol}
-                  onClick={() => onElementClick(element)}
-                  className={cn(
-                    "p-2 rounded-md transition-all duration-200 flex flex-col items-center justify-center",
-                    getElementColor(element.category),
-                    selectedElement?.symbol === element.symbol &&
-                      "ring-2 ring-primary ring-offset-2"
-                  )}
-                  style={{
-                    gridColumn: colStart,
-                    gridRow: rowStart
-                  }}
-                >
-                  <span className="text-xs font-medium">{element.atomicNumber}</span>
-                  <span className="text-lg font-bold">{element.symbol}</span>
-                  <span className="text-xs">{element.name}</span>
-                </button>
-              );
-            })}
+            // Define grid positions for each element based on atomic number
+            if (element.atomicNumber === 1) {
+              colStart = 1;
+              rowStart = 1;
+            } else if (element.atomicNumber === 2) {
+              colStart = 18;
+              rowStart = 1;
+            } else if (element.atomicNumber >= 3 && element.atomicNumber <= 10) {
+              const period2Map = [1, 2, 13, 14, 15, 16, 17, 18];
+              colStart = period2Map[element.atomicNumber - 3];
+              rowStart = 2;
+            } else if (element.atomicNumber >= 11 && element.atomicNumber <= 18) {
+              const period3Map = [1, 2, 13, 14, 15, 16, 17, 18];
+              colStart = period3Map[element.atomicNumber - 11];
+              rowStart = 3;
+            } else if (element.atomicNumber >= 19 && element.atomicNumber <= 36) {
+              const period4Map = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+              colStart = period4Map[element.atomicNumber - 19];
+              rowStart = 4;
+            } else if (element.atomicNumber >= 37 && element.atomicNumber <= 54) {
+              const period5Map = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+              colStart = period5Map[element.atomicNumber - 37];
+              rowStart = 5;
+            } else if (element.atomicNumber >= 55 && element.atomicNumber <= 86) {
+              const period6Map = [1, 2, null, null, null, null, null, null, null, null, null, null, 13, 14, 15, 16, 17, 18];
+              colStart = period6Map[element.atomicNumber - 55] || 3;
+              rowStart = 6;
+            } else if (element.atomicNumber >= 87 && element.atomicNumber <= 118) {
+              const period7Map = [1, 2, null, null, null, null, null, null, null, null, null, null, 13, 14, 15, 16, 17, 18];
+              colStart = period7Map[element.atomicNumber - 87] || 3;
+              rowStart = 7;
+            }
+
+            return renderElement(element, colStart, rowStart);
+          })}
         </div>
 
         {/* Lanthanides and Actinides */}
-        <div className="space-y-2 mt-8">
-          {/* Labels */}
-          <div className="grid grid-cols-18 gap-1">
-            <div className="col-start-3 text-center text-sm">
-              <span className="font-medium">57-71</span>
-              <br />
-              <span className="text-xs">Lanthanides</span>
-            </div>
-            <div className="col-start-3 row-start-2 text-center text-sm">
-              <span className="font-medium">89-103</span>
-              <br />
-              <span className="text-xs">Actinides</span>
-            </div>
+        <div className="mt-8">
+          <div className="grid grid-cols-15 gap-2">
+            {/* Lanthanides */}
+            {elementData
+              .filter((element) => element.atomicNumber >= 57 && element.atomicNumber <= 71)
+              .map((element, index) => renderElement(element, index + 1, 8))}
           </div>
-
-          {/* Lanthanides row */}
-          <div className="grid grid-cols-18 gap-1">
-            <div className="col-start-4 col-span-15 grid grid-cols-15 gap-1">
-              {elementData
-                .filter((element) => element.atomicNumber >= 57 && element.atomicNumber <= 71)
-                .map((element) => (
-                  <button
-                    key={element.symbol}
-                    onClick={() => onElementClick(element)}
-                    className={cn(
-                      "p-2 rounded-md transition-all duration-200 flex flex-col items-center justify-center",
-                      getElementColor(element.category),
-                      selectedElement?.symbol === element.symbol &&
-                        "ring-2 ring-primary ring-offset-2"
-                    )}
-                  >
-                    <span className="text-xs font-medium">{element.atomicNumber}</span>
-                    <span className="text-lg font-bold">{element.symbol}</span>
-                    <span className="text-xs">{element.name}</span>
-                  </button>
-                ))}
-            </div>
-          </div>
-
-          {/* Actinides row */}
-          <div className="grid grid-cols-18 gap-1">
-            <div className="col-start-4 col-span-15 grid grid-cols-15 gap-1">
-              {elementData
-                .filter((element) => element.atomicNumber >= 89 && element.atomicNumber <= 103)
-                .map((element) => (
-                  <button
-                    key={element.symbol}
-                    onClick={() => onElementClick(element)}
-                    className={cn(
-                      "p-2 rounded-md transition-all duration-200 flex flex-col items-center justify-center",
-                      getElementColor(element.category),
-                      selectedElement?.symbol === element.symbol &&
-                        "ring-2 ring-primary ring-offset-2"
-                    )}
-                  >
-                    <span className="text-xs font-medium">{element.atomicNumber}</span>
-                    <span className="text-lg font-bold">{element.symbol}</span>
-                    <span className="text-xs">{element.name}</span>
-                  </button>
-                ))}
-            </div>
+          <div className="grid grid-cols-15 gap-2 mt-4">
+            {/* Actinides */}
+            {elementData
+              .filter((element) => element.atomicNumber >= 89 && element.atomicNumber <= 103)
+              .map((element, index) => renderElement(element, index + 1, 9))}
           </div>
         </div>
       </div>

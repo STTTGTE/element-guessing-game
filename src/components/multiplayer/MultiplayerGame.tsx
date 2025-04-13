@@ -24,6 +24,8 @@ export function MultiplayerGame() {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
   const [gameResult, setGameResult] = useState<MultiplayerGameResult | null>(null);
+  const [timer, setTimer] = useState<number | null>(null);
+  const [wrongAnswers, setWrongAnswers] = useState(0);
 
   // Reset error when session changes
   useEffect(() => {
@@ -74,6 +76,8 @@ export function MultiplayerGame() {
       setGameState(null);
       setCurrentQuestion(null);
       setGameResult(null);
+      setTimer(null);
+      setWrongAnswers(0);
     } catch (error) {
       console.error("Error leaving game:", error);
       setError("Failed to leave the game. Please try again.");
@@ -106,6 +110,7 @@ export function MultiplayerGame() {
         description: `That was not the correct answer.`,
         variant: "destructive",
       });
+      setWrongAnswers((prev) => prev + 1);
     }
     
     setCurrentQuestion(multiplayerService.getCurrentQuestion());
@@ -118,6 +123,7 @@ export function MultiplayerGame() {
       console.log('Game state updated:', state);
       setGameState(state);
       setCurrentQuestion(multiplayerService.getCurrentQuestion());
+      setTimer(state.timer);
     });
     
     const unsubscribeResult = multiplayerService.subscribeToGameResult((result) => {
@@ -153,6 +159,17 @@ export function MultiplayerGame() {
       multiplayerService.cleanup();
     };
   }, [session.user, toast]);
+
+  useEffect(() => {
+    if (wrongAnswers >= 3) {
+      toast({
+        title: "Game Over",
+        description: "You have reached the maximum number of wrong answers.",
+        variant: "destructive",
+      });
+      leaveGame();
+    }
+  }, [wrongAnswers]);
 
   // Show error state
   if (error) {
@@ -214,7 +231,7 @@ export function MultiplayerGame() {
   return (
     <div className="w-full max-w-5xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-        <GameStatusBar gameState={gameState} userId={session.user?.id || ''} />
+        <GameStatusBar gameState={gameState} userId={session.user?.id || ''} timer={timer} />
       </div>
 
       <div className="bg-card text-card-foreground rounded-lg shadow-sm p-4 mb-4">
